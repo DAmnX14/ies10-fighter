@@ -1,0 +1,122 @@
+{
+ "chispa_golpe": {
+  "file": "chispa_golpe.png",
+  "w": 40,
+  "h": 40,
+  "frames": 7,
+  "dur": 2,
+  "loop": false
+ },
+ "chispa_fuerte": {
+  "file": "chispa_fuerte.png",
+  "w": 64,
+  "h": 64,
+  "frames": 8,
+  "dur": 2,
+  "loop": false
+ },
+ "chispa_bloqueo": {
+  "file": "chispa_bloqueo.png",
+  "w": 36,
+  "h": 36,
+  "frames": 6,
+  "dur": 2,
+  "loop": false
+ },
+ "polvo": {
+  "file": "polvo.png",
+  "w": 48,
+  "h": 24,
+  "frames": 7,
+  "dur": 3,
+  "loop": false
+ },
+ "onda_metal": {
+  "file": "onda_metal.png",
+  "w": 56,
+  "h": 48,
+  "frames": 4,
+  "dur": 4,
+  "loop": true
+ },
+ "notas": {
+  "file": "notas.png",
+  "w": 48,
+  "h": 36,
+  "frames": 4,
+  "dur": 4,
+  "loop": true
+ },
+ "rayo_notas": {
+  "file": "rayo_notas.png",
+  "w": 96,
+  "h": 64,
+  "frames": 4,
+  "dur": 3,
+  "loop": true
+ },
+ "credencial": {
+  "file": "credencial.png",
+  "w": 28,
+  "h": 28,
+  "frames": 8,
+  "dur": 2,
+  "loop": true
+ },
+ "onda_choque": {
+  "file": "onda_choque.png",
+  "w": 140,
+  "h": 48,
+  "frames": 6,
+  "dur": 3,
+  "loop": true
+ },
+ "explosion": {
+  "file": "explosion.png",
+  "w": 96,
+  "h": 96,
+  "frames": 11,
+  "dur": 3,
+  "loop": false
+ },
+ "aura": {
+  "file": "aura.png",
+  "w": 80,
+  "h": 130,
+  "frames": 6,
+  "dur": 3,
+  "loop": true
+ },
+ "tornado": {
+  "file": "tornado.png",
+  "w": 64,
+  "h": 110,
+  "frames": 6,
+  "dur": 2,
+  "loop": true
+ },
+ "puno_energia": {
+  "file": "puno_energia.png",
+  "w": 90,
+  "h": 64,
+  "frames": 4,
+  "dur": 3,
+  "loop": true
+ },
+ "estela": {
+  "file": "estela.png",
+  "w": 48,
+  "h": 24,
+  "frames": 3,
+  "dur": 2,
+  "loop": true
+ },
+ "destello": {
+  "file": "destello.png",
+  "w": 64,
+  "h": 64,
+  "frames": 1,
+  "dur": 4,
+  "loop": false
+ }
+}

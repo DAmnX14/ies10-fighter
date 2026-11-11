@@ -1,0 +1,9 @@
+# Para JUGAR alcanza con esto:
+pygame-ce>=2.4      # (también funciona con pygame>=2.5)
+
+# Sólo para REGENERAR los recursos con las herramientas de /tools (opcional):
+numpy>=1.24
+Pillow>=10.0
+opencv-python>=4.8
+scipy>=1.10
+espeakng-loader>=0.2   # voces del locutor y los personajes
