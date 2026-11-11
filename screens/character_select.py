@@ -204,18 +204,14 @@ class CharacterSelect(Scene):
             for i in range(20):
                 pygame.draw.ellipse(glow, d['color'] + (6,), (i * 10, i * 12, 420 - i * 20, 500 - i * 24))
             surf.blit(glow, (x - 210, 130))
-            pygame.draw.ellipse(surf, (0, 0, 0), (x - 100, 600, 200, 30))
-            self.side_anim[side].draw(surf, x, 615, 1 if side == 1 else -1, 3,
+            pygame.draw.ellipse(surf, (0, 0, 0), (x - 90, 655, 180, 26))
+            self.side_anim[side].draw(surf, x, 668, 1 if side == 1 else -1, 2,
                                       glow=(255, 255, 255) if cur.flash and (cur.flash // 3) % 2 else None)
             # nombre y estadísticas
             nm = ui.text_gradient(d['display'], 34, (255, 255, 255), d['color'], extrude=4)
             ui.blit_center(surf, nm, x, 175)
             ui.blit_center(surf, ui.text_outline(d['title'], 12, C.YELLOW), x, 210)
             sx = 40 if side == 1 else C.WIDTH - 40 - 300
-            for i, (k, lab) in enumerate(STAT_LABELS):
-                yy = 470 + i * 24 + 170
-                if yy > C.HEIGHT - 60:
-                    break
             panel_y = 236
             ui.panel(surf, (sx, panel_y, 300, 132), (0, 0, 0, 150), d['color'], 2)
             for i, (k, lab) in enumerate(STAT_LABELS):
@@ -223,13 +219,13 @@ class CharacterSelect(Scene):
                 surf.blit(ui.text(lab, 10, C.WHITE), (sx + 10, yy + 2))
                 ui.stat_bar(surf, sx + 140, yy, 148, 14, d['stats'][k], 10, d['color'])
             if self.bubble[side]:
-                q = ui.text_outline('«' + self.bubble[side][0] + '»', 12, C.WHITE)
+                q = ui.text_outline('«' + self.bubble[side][0] + '»', 9, C.WHITE)
                 bx = max(10, min(C.WIDTH - q.get_width() - 10, x - q.get_width() / 2))
-                ui.panel(surf, (bx - 8, 640, q.get_width() + 16, 36), (0, 0, 0, 210), d['color'], 2)
-                surf.blit(q, (bx, 648))
+                ui.panel(surf, (bx - 8, 380, q.get_width() + 16, 36), (0, 0, 0, 210), d['color'], 2)
+                surf.blit(q, (bx, 388))
             if cur.ready:
                 lab = ui.text_gradient('¡LISTO!', 26, (255, 255, 255), C.YELLOW, extrude=3)
-                ui.blit_center(surf, lab, x, 390 + math.sin(t * 0.2) * 4)
+                ui.blit_center(surf, lab, x, 440 + math.sin(t * 0.2) * 4)
         # grilla de retratos
         for i, n in enumerate(C.CHARACTERS):
             r = self.tile_rect(i)

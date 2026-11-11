@@ -29,6 +29,7 @@ class Fighter:
         self.moves = normals()
         self.moves.update(self.data['moves'])
         self.color = self.data['color']
+        self.push_w = {'pantoja': 78, 'parada': 64, 'nehuen': 62, 'luciano': 64}.get(name, 64)
         self.reset_round()
         self.wins = 0
 
@@ -572,9 +573,9 @@ class Fighter:
         elif self.invuln > 0 and self.state == 'getup' and (M.tick // 3) % 2:
             img = img.copy(); img.set_alpha(150)
         surf.blit(img, (sx + dx, sy + dy))
-        if self.aura and (M.tick // 2) % 2 == 0:
+        if self.aura and (M.tick // 4) % 3 == 0:
             glow = img.copy()
-            glow.fill(tuple(c // 3 for c in self.color) + (0,), special_flags=pygame.BLEND_RGB_ADD)
+            glow.fill(tuple(c // 8 for c in self.color) + (0,), special_flags=pygame.BLEND_RGB_ADD)
             surf.blit(glow, (sx + dx, sy + dy))
 
     def draw_debug(self, surf, cam):

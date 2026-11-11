@@ -373,29 +373,36 @@ class Match:
             return
         if b.move and b.move.get('passthrough') and b.move['passthrough'][0] <= b.mframe <= b.move['passthrough'][1]:
             return
-        if a.state in ('lying',) or b.state in ('lying',):
+        if a.state == 'lying' or b.state == 'lying':
             return
-        if abs(a.y - b.y) > 230:
+        # si uno está muy por encima del otro (saltándolo), no se empujan
+        if abs(a.y - b.y) > 260:
             return
-        w = 78
+        w = a.push_w + b.push_w
         dx = b.x - a.x
         if abs(dx) < w:
+            if dx != 0:
+                s = 1 if dx > 0 else -1
+            else:
+                s = a.facing
+            st = self.stage
+            # quien cae encima de un rival arrinconado se resbala hacia el lado libre
+            if not a.on_ground and b.on_ground:
+                s = -1 if b.x <= st.left + 5 else (1 if b.x >= st.right - 5 else s)
+            elif not b.on_ground and a.on_ground:
+                s = 1 if a.x <= st.left + 5 else (-1 if a.x >= st.right - 5 else s)
             push = (w - abs(dx)) / 2
-            s = 1 if dx >= 0 else -1
-            if dx == 0:
-                s = 1 if a.facing > 0 else -1
             a.x -= s * push
             b.x += s * push
-            st = self.stage
-            for f in (a, b):
+            for f, other in ((a, b), (b, a)):
                 if f.x < st.left:
-                    other = b if f is a else a
-                    other.x += st.left - f.x; f.x = st.left
-                if f.x > st.right:
-                    other = b if f is a else a
-                    other.x -= f.x - st.right; f.x = st.right
+                    other.x += st.left - f.x
+                    f.x = st.left
+                elif f.x > st.right:
+                    other.x -= f.x - st.right
+                    f.x = st.right
         # distancia máxima en pantalla
-        maxd = C.WIDTH - 140
+        maxd = C.WIDTH - 320
         if abs(b.x - a.x) > maxd:
             mid = (a.x + b.x) / 2
             s = 1 if b.x > a.x else -1

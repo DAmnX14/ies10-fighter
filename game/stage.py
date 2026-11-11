@@ -14,8 +14,8 @@ class Stage:
         self.h = C.STAGE_HEIGHT
         self.bg = pygame.transform.smoothscale(raw, (self.w, self.h))
         self.ground_y = int(C.GROUND_SRC_Y * k)
-        self.left = 70
-        self.right = self.w - 70
+        self.left = 150
+        self.right = self.w - 150
         self.t = 0
         self.flicker = 0
         # motas de polvo en la luz
