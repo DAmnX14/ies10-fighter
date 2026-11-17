@@ -140,8 +140,8 @@ ANIMS = {
     'patada_agachado': dict(keys=[
         K(1, ry=22, bf=(-6, 0), ff=(5, 0), lean=6),
         K(1, ry=26, bf=(-8, 0), ff_abs=(40, -3), ffa=-5, lean=8, rx=-2),
-        K(1, ry=28, bf=(-10, 0), ff_abs=(56, -3), ffa=-10, lean=10, rx=-4, bh=(80, 0.6)),
-        K(1, ry=28, bf=(-10, 0), ff_abs=(56, -3), ffa=-10, lean=10, rx=-4, bh=(80, 0.6)),
+        K(1, ry=28, bf=(-10, 0), ff_abs=(56, -3), ffa=-10, lean=10, rx=-4),
+        K(1, ry=28, bf=(-10, 0), ff_abs=(56, -3), ffa=-10, lean=10, rx=-4),
         K(1, ry=24, bf=(-6, 0), ff_abs=(30, -3), lean=7),
         K(1, ry=20, bf=(-5, 0), ff=(5, 0), lean=7),
     ], dur=4),
@@ -178,14 +178,14 @@ ANIMS = {
     'victoria': dict(keys=[
         K(1, ry=4, lean=4),
         K(1, bh=(-60, 0.6), lean=-2, head=-4),
-        K(1, bh=(-95, 1.0), fh=(-50, 0.5), lean=-6, head=-12, ry=-2),
-        K(1, bh=(-92, 1.0), fh=(-55, 0.5), lean=-7, head=-14, ry=-3),
-        K(1, bh=(-96, 1.0), fh=(-45, 0.5), lean=-5, head=-10, ry=-1),
-        K(1, bh=(-92, 1.0), fh=(-55, 0.5), lean=-7, head=-14, ry=-3),
-        K(1, bh=(-96, 1.0), fh=(-45, 0.5), lean=-5, head=-10, ry=-1),
-        K(1, bh=(-92, 1.0), fh=(-55, 0.5), lean=-7, head=-14, ry=-3),
-        K(1, bh=(-96, 1.0), fh=(-45, 0.5), lean=-5, head=-10, ry=-1),
-        K(1, bh=(-94, 1.0), fh=(-50, 0.5), lean=-6, head=-12, ry=-2),
+        K(1, bh=(-95, 1.0), lean=-6, head=-12, ry=-2),
+        K(1, bh=(-92, 1.0), lean=-7, head=-14, ry=-3),
+        K(1, bh=(-96, 1.0), lean=-5, head=-10, ry=-1),
+        K(1, bh=(-92, 1.0), lean=-7, head=-14, ry=-3),
+        K(1, bh=(-96, 1.0), lean=-5, head=-10, ry=-1),
+        K(1, bh=(-92, 1.0), lean=-7, head=-14, ry=-3),
+        K(1, bh=(-96, 1.0), lean=-5, head=-10, ry=-1),
+        K(1, bh=(-94, 1.0), lean=-6, head=-12, ry=-2),
     ], dur=7),
     'derrota': dict(keys=[
         K(1, lean=-8, head=-10, rx=-3),
@@ -206,9 +206,9 @@ def alt_punches(n, base_lean=10, height=-6):
     for i in range(n):
         h = height + (i % 3 - 1) * 10
         if i % 2 == 0:
-            out.append(K(1, fh=(h, 1.12), bh=(-40, 0.45), lean=base_lean, rx=5, head=3))
+            out.append(K(1, fh=(h, 1.15), lean=base_lean, rx=5, head=3))
         else:
-            out.append(K(1, bh=(h + 4, 1.25), tw=1, fh=(-60, 0.5), lean=base_lean + 4, rx=7, head=4))
+            out.append(K(1, fh=(h - 20, 0.5), bh_off=(0.2, 0.0), lean=base_lean + 5, rx=7, head=4))
     return out
 
 
@@ -457,13 +457,113 @@ SPECIALS = {
     },
 }
 
+
+# ------------------------------------------------ terceras ultimates
+SPECIALS['pantoja']['ultimate_3'] = dict(keys=[      # COLECTIVAZO
+    K(1, ry=6, lean=6, head=6),
+    K(1, ry=10, lean=14, bf=(-6, 0), sy=0.96),
+] + [K(1, ry=4 + (i % 2) * 2, lean=-20, rx=12, bh=(160, 0.6), fh=(170, 0.6), bf=(8 + (i % 2) * 4, 0),
+       ff=(6, -3 if i % 2 else 0), sx=1.08) for i in range(8)] + [
+    K(1, ry=2, lean=-28, rx=14, bh=(170, 0.7), fh=(175, 0.7), bf=(12, 0), sx=1.12),
+    K(1, ry=2, lean=-28, rx=14, bh=(170, 0.7), fh=(175, 0.7), bf=(12, 0), sx=1.12),
+    K(1, ry=2, lean=-10, rx=6),
+    K(1),
+], dur=4)
+SPECIALS['parada']['ultimate_3'] = dict(keys=[       # CIEN PATADAS
+    K(1, ry=6, lean=-6),
+    K(1, ff=(4, -10), lean=-8),
+] + [(K(1, ff_abs=(46, -30 - 12 * (i % 3)), ffa=-30, lean=-14, rx=2) if i % 2 == 0 else
+      K(1, ff_abs=(22, -34), ffa=-10, lean=-10, rx=2)) for i in range(12)] + [
+    K(1, lean=-24, ff_abs=(40, -74), ffa=-62, head=10, rx=2),
+    K(1, lean=-25, ff_abs=(42, -76), ffa=-64, head=10, rx=2),
+    K(1, lean=-8, ff=(2, -4)),
+    K(1),
+], dur=3)
+_st = []
+for _k in range(3):
+    _st += [K(1, ry=-5, ff=(0, -10), fh=(-95, 1.0), head=-10),
+            K(1, ry=16, lean=10, bf=(-6, 0), ff=(6, 0), sx=1.05, sy=0.94, fh=(-60, 0.6)),
+            K(1, ry=12, lean=6, bf=(-6, 0), ff=(6, 0), fh=(-70, 0.7))]
+SPECIALS['nehuen']['ultimate_3'] = dict(keys=[       # LA BOMBONERA LATE
+    K(1, ry=4, lean=-6, fh=(-93, 1.0), head=-12),
+    K(1, ry=2, lean=-8, fh=(-97, 1.0), head=-14),
+] + _st + [
+    K(1, lean=-8, fh=(-95, 1.0), head=-12),
+    K(1),
+], dur=5)
+SPECIALS['luciano']['ultimate_3'] = dict(keys=[      # ALTO VOLTAJE
+    K(1, ry=4, lean=-4, fh=(-60, 0.6)),
+    K(1, ry=6, lean=-8, fh=(-95, 1.05), head=-14),
+] + [K(1, ry=6, lean=-8 - (i % 2), fh=(-93 - 4 * (i % 2), 1.05), head=-14 - 2 * (i % 2)) for i in range(6)] + [
+    K(1, lean=10, fh=(-10, 1.1), rx=4, head=4),
+    K(1, lean=11, fh=(-8, 1.12), rx=4, head=4),
+    K(1, lean=10, fh=(-10, 1.1), rx=4, head=4),
+    K(1, lean=2),
+    K(1),
+], dur=5)
+
+# ------------------------------------------------ NICO
+SPECIALS['nico'] = {
+    'especial_1': dict(keys=[                         # HOJA DE ARCE
+        K(1, lean=-6, fh=(-120, 0.6), rx=-2),
+        K(1, lean=-10, fh=(-150, 0.8), rx=-3),
+        K(1, lean=8, fh=(-30, 1.0), rx=4),
+        K(1, lean=12, fh=(0, 1.15), rx=6, head=4),
+        K(1, lean=12, fh=(2, 1.15), rx=6, head=4),
+        K(1, lean=6, fh=(-30, 0.7)),
+        K(1),
+    ], dur=4),
+    'especial_2': dict(keys=[                         # REINICIO FORZADO (rodillazo volador)
+        K(1, ry=12, lean=10, bf=(-4, 0), ff=(4, 0)),
+        K(1, ry=2, lrel=1, lean=6, ff=(14, -26), ffa=30, rx=4),
+        K(1, ry=-4, lrel=1, lean=2, ff=(16, -34), ffa=40, bf=(-6, -4), rx=6),
+        K(1, ry=-4, lrel=1, lean=2, ff=(16, -35), ffa=40, bf=(-6, -4), rx=6),
+        K(1, ry=-4, lrel=1, lean=2, ff=(16, -34), ffa=40, bf=(-6, -4), rx=6),
+        K(1, ry=-2, lrel=1, ff=(4, -10)),
+        K(1, ry=8, lean=6),
+        K(1),
+    ], dur=4),
+    'ultimate_1': dict(keys=[                         # PANTALLAZO AZUL
+        K(1, ry=6, lean=6, fh=(-70, 0.45), head=8),
+        K(1, ry=10, lean=10, fh=(-75, 0.4), head=12, sy=0.97),
+        K(1, ry=11, lean=11, fh=(-78, 0.4), head=13, sy=0.96),
+        K(1, ry=10, lean=10, fh=(-75, 0.4), head=12, sy=0.97),
+        K(1, ry=0, lean=-10, fh=(-100, 1.05), head=-14, sy=1.04),
+        K(1, ry=0, lean=-11, fh=(-97, 1.05), head=-15, sy=1.04),
+        K(1, ry=0, lean=-10, fh=(-100, 1.05), head=-14, sy=1.03),
+        K(1, ry=0, lean=-11, fh=(-97, 1.05), head=-15),
+        K(1, lean=-4, fh=(-60, 0.6)),
+        K(1),
+    ], dur=5),
+    'ultimate_2': dict(keys=[                         # DESPIDO INMEDIATO
+        K(1, ry=6, lean=8),
+        K(1, ry=8, lean=18, rx=8, bf=(-10, 0), sx=1.06),
+        K(1, fh=(-4, 1.15), lean=10, rx=5),
+        K(1, fh=(-40, 0.5), lean=6, rx=5),
+        K(1, lean=4, ff=(12, -28), ffa=30, rx=4),
+        K(1, lean=2, ff=(2, -6), rx=3),
+        K(1, fh=(20, 1.1), lean=16, rx=7),
+        K(1, fh=(-40, 0.5), lean=8, rx=4),
+        K(1, lean=-6, ff=(2, -8), rx=-2),
+        K(1, lean=-22, ff_abs=(46, -62), ffa=-50, head=8, rx=2),
+        K(1, lean=-23, ff_abs=(47, -63), ffa=-50, head=8, rx=2),
+        K(1, lean=-8, ff_abs=(24, -20)),
+        K(1, lean=-4, fh=(-95, 1.0), head=-10),
+        K(1),
+    ], dur=5),
+}
+
 ANIM_ORDER = ['idle', 'caminar', 'caminar_atras', 'saltar', 'saltar_adelante', 'agacharse',
               'bloquear', 'bloquear_agachado', 'presentacion', 'golpe', 'patada', 'golpe_fuerte', 'patada_fuerte', 'golpe_agachado',
               'patada_agachado', 'patada_aerea', 'recibir_golpe', 'caida', 'levantarse',
-              'victoria', 'derrota', 'especial_1', 'especial_2', 'ultimate_1', 'ultimate_2']
+              'victoria', 'derrota', 'especial_1', 'especial_2', 'ultimate_1', 'ultimate_2', 'ultimate_3']
 
 
 def get_anim(char, name):
     if name in SPECIALS.get(char, {}):
         return SPECIALS[char][name]
     return ANIMS[name]
+
+
+def has_anim(char, name):
+    return name in SPECIALS.get(char, {}) or name in ANIMS

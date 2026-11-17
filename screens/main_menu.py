@@ -17,7 +17,7 @@ class TitleScene(Scene):
         self.state = 'menu' if start_in_menu else 'title'
         self.menu = Menu(MAIN_ITEMS, C.WIDTH / 2, 380, 50, 26)
         self.sub = Menu(PLAY_ITEMS, C.WIDTH / 2, 420, 56, 24)
-        self.chars = [AnimPlayer(n, 'idle') for n in C.CHARACTERS]
+        self.chars = [AnimPlayer(n, 'idle') for n in C.CHARACTERS[:4]]
         self.logo_k = 1.0 if start_in_menu else 0.0
 
     def handle_event(self, e):
@@ -112,6 +112,11 @@ class TitleScene(Scene):
             if (t // 30) % 2 == 0:
                 ui.blit_center(surf, ui.text_outline('PRESIONÁ ENTER', 28, C.YELLOW), C.WIDTH / 2, 470)
             ui.blit_center(surf, ui.text('CRÉDITOS: ∞   -   1 O 2 JUGADORES', 12, (200, 200, 230)), C.WIDTH / 2, 530)
+            from screens.common import arcetech_logo
+            lg2 = arcetech_logo()
+            ui.blit_center(surf, lg2, C.WIDTH / 2, 610)
+            ui.blit_center(surf, ui.text('© 2026 ARCE TECH - TODOS LOS DERECHOS RESERVADOS', 10, (190, 230, 200)),
+                           C.WIDTH / 2, 660)
             help_bar(surf, 'ENTER  COMENZAR      F11  PANTALLA COMPLETA')
         elif self.state == 'menu':
             ui.panel(surf, (C.WIDTH / 2 - 260, 345, 520, 320), (5, 5, 25, 170), C.YELLOW, 2)

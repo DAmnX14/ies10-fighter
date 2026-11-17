@@ -15,8 +15,8 @@ LEVELS = [
     dict(react=4, block=0.85, aggro=0.80, special=0.30, anti=0.80, combo=0.85, ult=1.0),
 ]
 
-ANTI_AIR = {'parada': 'especial_2', 'nehuen': 'especial_2', 'luciano': 'especial_2', 'pantoja': None}
-ZONER = {'pantoja': 'especial_2', 'nehuen': 'especial_1', 'luciano': 'especial_1', 'parada': None}
+ANTI_AIR = {'nico': 'especial_2', 'parada': 'especial_2', 'nehuen': 'especial_2', 'luciano': 'especial_2', 'pantoja': None}
+ZONER = {'nico': 'especial_1', 'pantoja': 'especial_2', 'nehuen': 'especial_1', 'luciano': 'especial_1', 'parada': None}
 
 
 class AIController:
@@ -49,9 +49,9 @@ class AIController:
             return
         # ultimate
         if me.meter >= ULTIMATE_COST and random.random() < p['ult'] * 0.5:
-            if dist < 330 or me.name == 'nehuen' or (me.name == 'pantoja' and opp.on_ground):
-                down = random.random() < 0.5
-                self.plan = [({'abajo': down}, 1), ({'abajo': down, 'ultimate': True}, 2)]
+            if dist < 330 or me.name in ('nehuen', 'nico', 'luciano') or (me.name == 'pantoja' and opp.on_ground):
+                mod = random.choice([{}, {'abajo': True}, {fwd: True}])
+                self.plan = [(dict(mod), 1), (dict(mod, ultimate=True), 2)]
                 return
         # castigo: rival cayendo / recuperándose
         if opp.state in ('lying', 'getup') and dist > 160:

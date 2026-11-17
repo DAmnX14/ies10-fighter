@@ -295,9 +295,12 @@ VOICES = {   # voz espeak, tono, factor de remuestreo
     'pantoja': ('es-419+m7', 30, 0.88),
     'parada': ('es-419+m2', 55, 1.02),
     'nehuen': ('es-419+m4', 62, 1.06),
+    'nico': ('es-419+m5', 36, 0.92),
     'luciano': ('es-419+m1', 45, 0.96),
 }
 CHAR_LINES = {
+    'nico': {'especial_1': '¡Hoja de arce!', 'especial_2': '¡Reinicio forzado!',
+             'ultimate_1': '¡Pantallazo azul!', 'ultimate_2': '¡Despido inmediato!', 'nombre': 'Nico'},
     'pantoja': {'especial_1': '¡Panzazo!', 'especial_2': '¡Grito metalero!',
                 'ultimate_1': '¡Terremoto Pantoja!', 'ultimate_2': '¡Lluvia de cachetadas!',
                 'nombre': 'Pantoja'},
@@ -565,6 +568,18 @@ def song_intro():
 
 def main():
     os.makedirs(SND, exist_ok=True); os.makedirs(MUS, exist_ok=True)
+    CHAR_LINES['pantoja']['ultimate_3'] = '¡Colectivazo!'
+    CHAR_LINES['parada']['ultimate_3'] = '¡Cien patadas!'
+    CHAR_LINES['nehuen']['ultimate_3'] = '¡La Bombonera late!'
+    CHAR_LINES['luciano']['ultimate_3'] = '¡Alto voltaje!'
+    if '--voces' in sys.argv:          # sólo voces + sonidos nuevos (rápido)
+        n = int(SR * .7)
+        ray = norm(softclip(highpass(noise(n), 900) * expdec(n, .09) * 1.6
+                            + sweep(1800, 90, .7, 'saw', .35) * expdec(n, .12) * .7, 3), .95)
+        save('rayo', reverb(ray, .3, .06))
+        for k, x in voices().items():
+            save(k, x)
+        return
     print('efectos...', flush=True)
     for k, x in sfx().items():
         save(k, x)

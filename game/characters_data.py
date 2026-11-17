@@ -53,7 +53,7 @@ def normals():
 CHARACTERS = {
     'pantoja': dict(
         display='PANTOJA', color=(255, 70, 160), color2=(255, 200, 60),
-        title='EL TANQUE ROSA',
+        title='EL MARIDO DE PARADA',
         quote='¡Te paso por arriba como un colectivo!',
         win_quotes=['¡Volvé cuando sepas pelear, pibe!', '¡Esa panza es de acero, papá!',
                     '¡Metal hasta la médula! \\m/'],
@@ -82,7 +82,7 @@ CHARACTERS = {
                             lock_dist=95,
                             hits=[H((i, i), 'f_ha' if i % 2 == 0 else 'b_ha', 17, r=20, stun=30, bstun=10, kb=1,
                                     sfx='cachetada', stop=3, id=f's{i}', chip=0.05) for i in range(2, 12)]
-                            + [H((14, 15), 'b_ha', 120, r=22, stun=40, kb=8, kd=True, launch=-18,
+                            + [H((13, 15), 'b_ha', 120, r=34, off=(4, 14), stun=40, kb=8, kd=True, launch=-18,
                                  sfx='golpe_fuerte', fx='chispa_fuerte', stop=18, id='fin')],
                             events={0: [('voice', 'ultimate_2'), ('aura', True)], 2: [('vx', 9)],
                                     12: [('vx', 0)], 14: [('shake', 14, 20), ('flash', (255, 255, 255), 6),
@@ -91,7 +91,7 @@ CHARACTERS = {
     ),
     'parada': dict(
         display='PARADA', color=(40, 210, 110), color2=(190, 255, 120),
-        title='EL RAYO VERDE',
+        title='EL BESA PERRO',
         quote='¿Me viste? No. Nadie me ve.',
         win_quotes=['Fuiste lento hasta para caerte.', 'La campera ni se despeinó.',
                     'Velocidad, precisión y estilo. Anotalo.'],
@@ -138,7 +138,7 @@ CHARACTERS = {
     ),
     'nehuen': dict(
         display='NEHUEN', color=(60, 140, 255), color2=(255, 205, 50),
-        title='EL ROCKERO DEL PILUSO',
+        title='EL BOSTERO',
         quote='Este acorde te va a dejar sordo.',
         win_quotes=['Afinado y ganador. Como siempre.', 'Hasta mi piluso te ganaba.',
                     'Bis... ¡bis! ¿No? Bueno.'],
@@ -175,7 +175,7 @@ CHARACTERS = {
     ),
     'luciano': dict(
         display='LUCIANO', color=(255, 190, 30), color2=(170, 90, 255),
-        title='EL PRECEPTOR IMPLACABLE',
+        title='VOLTIO',
         quote='Firmame acá. Es tu acta de derrota.',
         win_quotes=['Quedás amonestado. Y derrotado.', 'Pasá por preceptoría a retirar tu dignidad.',
                     'Disciplina, pibe. Disciplina.'],
@@ -216,6 +216,83 @@ CHARACTERS = {
     ),
 }
 
+# ------------------------------------------------------------------ terceras ultimates
+CHARACTERS['pantoja']['moves']['ultimate_3'] = dict(
+    anim='ultimate_3', name='COLECTIVAZO', input='→+T', ult=True,
+    hits=[H((i, i + 1), 'pelvis', 38, r=26, off=(22, -28), stun=30, bstun=10, kb=2, sfx='golpe_fuerte',
+            stop=4, id=f'c{i}', chip=0.05) for i in (2, 4, 6, 8)]
+    + [H((10, 11), 'pelvis', 150, r=30, off=(22, -28), stun=40, kb=18, kd=True, launch=-16, sfx='ko_impacto',
+         fx='chispa_fuerte', stop=18, id='fin', chip=0.1)],
+    events={0: [('voice', 'ultimate_3'), ('aura', True)],
+            2: [('vx', 13), ('sfx', 'dash'), ('dust',), ('afterimage', True)], 6: [('dust',), ('sfx', 'dash')],
+            10: [('vx', 3), ('shake', 18, 24), ('flash', (255, 120, 200), 8), ('sfx', 'explosion')],
+            12: [('vx', 0), ('aura', False), ('afterimage', False)]})
+CHARACTERS['parada']['moves']['ultimate_3'] = dict(
+    anim='ultimate_3', name='CIEN PATADAS', input='→+T', ult=True, lock=True, lock_dist=120,
+    hits=[H((i, i), 'f_an', 21, r=26, stun=30, bstun=8, kb=1, sfx='patada_debil', stop=2, id=f'k{i}', chip=0.05)
+          for i in range(2, 14, 2)]
+    + [H((14, 15), 'f_an', 150, r=28, stun=40, kb=15, kd=True, launch=-18, sfx='patada_fuerte',
+         fx='chispa_fuerte', stop=18, id='fin')],
+    events={0: [('voice', 'ultimate_3'), ('aura', True)], 1: [('vx', 12), ('afterimage', True), ('sfx', 'dash')],
+            3: [('vx', 3)], 13: [('vx', 0)],
+            14: [('shake', 16, 20), ('flash', (150, 255, 170), 6), ('sfx', 'explosion')],
+            16: [('aura', False), ('afterimage', False)]})
+CHARACTERS['nehuen']['moves']['ultimate_3'] = dict(
+    anim='ultimate_3', name='LA BOMBONERA LATE', input='→+T', ult=True,
+    events={0: [('voice', 'ultimate_3'), ('aura', True)],
+            3: [('quake', 75, 700, False), ('sfx', 'terremoto'), ('shake', 14, 20), ('flash', (60, 120, 255), 5)],
+            6: [('quake', 75, 700, False), ('sfx', 'caida_suelo'), ('shake', 16, 20), ('flash', (255, 210, 40), 5)],
+            9: [('quake', 170, 850, True), ('sfx', 'explosion'), ('shake', 24, 40), ('flash', (60, 120, 255), 10)],
+            11: [('aura', False)]},
+    hold={3: 4, 6: 4, 9: 8})
+CHARACTERS['luciano']['moves']['ultimate_3'] = dict(
+    anim='ultimate_3', name='ALTO VOLTAJE', input='→+T', ult=True,
+    events={0: [('voice', 'ultimate_3'), ('aura', True), ('sfx', 'carga')],
+            2: [('strike', 'rayo', 80, False), ('sfx', 'rayo'), ('shake', 10, 12), ('flash', (255, 255, 200), 4)],
+            5: [('strike', 'rayo', 80, False), ('sfx', 'rayo'), ('shake', 10, 12), ('flash', (255, 255, 200), 4)],
+            8: [('strike', 'rayo', 170, True), ('sfx', 'rayo'), ('sfx', 'explosion'), ('shake', 22, 30),
+                ('flash', (255, 255, 255), 10)],
+            11: [('aura', False)]},
+    hold={8: 8})
+
+# ------------------------------------------------------------------ NICO (jefe final)
+CHARACTERS['nico'] = dict(
+    display='NICO', color=(160, 90, 255), color2=(60, 220, 120),
+    title='EL JEFE DE ARCETECH',
+    quote='Quedás despedido antes de empezar.',
+    win_quotes=['Tu rendimiento no cumple los objetivos.', 'Reunión terminada. Podés retirarte.',
+                'En ArceTech no se pierde. Se factura.'],
+    lose_quote='Esto... lo vamos a hablar en la próxima reunión.',
+    stats=dict(fuerza=8, velocidad=7, resistencia=8, alcance=7, ejecucion=8),
+    health=1100,
+    moves=dict(
+        especial_1=dict(anim='especial_1', name='HOJA DE ARCE', input='R',
+                        events={0: [('voice', 'especial_1')], 3: [('proj', 'hoja'), ('sfx', 'proyectil')]}),
+        especial_2=dict(anim='especial_2', name='REINICIO FORZADO', input='↓+R', air_hold=(5, 5, 6),
+                        hits=[H((1, 4), 'f_kn', 110, r=22, off=(4, 0), stun=26, bstun=14, kb=9, kd=True, launch=-15,
+                                sfx='golpe_fuerte', fx='chispa_fuerte', stop=10, chip=0.1)],
+                        events={0: [('voice', 'especial_2')], 1: [('vy', -15), ('vx', 9), ('sfx', 'aire_fuerte')]}),
+        ultimate_1=dict(anim='ultimate_1', name='PANTALLAZO AZUL', input='T', ult=True,
+                        events={0: [('voice', 'ultimate_1'), ('aura', True), ('sfx', 'carga')],
+                                4: [('flash', (30, 90, 255), 40), ('strike', None, 300, True), ('sfx', 'explosion'),
+                                    ('sfx', 'ko_impacto'), ('shake', 26, 40)],
+                                8: [('aura', False)]},
+                        hold={1: 6, 3: 6, 4: 16}),
+        ultimate_2=dict(anim='ultimate_2', name='DESPIDO INMEDIATO', input='↓+T', ult=True, lock=True,
+                        lock_dist=105,
+                        hits=[H((2, 2), 'f_ha', 55, r=26, stun=40, kb=1, id='1', sfx='golpe_fuerte', stop=6, chip=.05),
+                              H((4, 4), 'f_kn', 60, r=28, stun=40, kb=1, id='2', sfx='golpe_fuerte', stop=7, chip=.05),
+                              H((6, 6), 'f_ha', 60, r=28, stun=40, kb=1, id='3', sfx='golpe_fuerte', stop=7, chip=.05),
+                              H((9, 10), 'f_an', 170, r=30, stun=40, kb=26, kd=True, launch=-12, id='fin',
+                                sfx='ko_impacto', fx='chispa_fuerte', stop=20)],
+                        events={0: [('voice', 'ultimate_2'), ('aura', True)], 1: [('vx', 15), ('sfx', 'dash'),
+                                                                                 ('afterimage', True)],
+                                2: [('vx', 0)],
+                                9: [('shake', 18, 24), ('flash', (200, 150, 255), 8), ('sfx', 'explosion')],
+                                12: [('aura', False), ('afterimage', False)]}),
+    ),
+)
+
 PROJECTILES = {
     # tipo: efecto, velocidad, daño, origen, radio (px pantalla), etc.
     'onda_metal': dict(fx='onda_metal', speed=9, dmg=90, joint='head', off=(18, 4), r=48, stun=22, kd=False,
@@ -224,6 +301,8 @@ PROJECTILES = {
                   sfx='golpe_fuerte', chip=0.15),
     'credencial': dict(fx='credencial', speed=11, dmg=70, joint='b_ha', off=(8, 0), r=34, stun=18, kb=6,
                        life=80, boomerang=True, sfx='golpe_debil', chip=0.1),
+    'hoja': dict(fx='hoja', speed=12, dmg=85, joint='f_ha', off=(10, 0), r=38, stun=20, kb=8, life=110,
+                 sfx='golpe_fuerte', chip=0.15),
     'rayo_notas': dict(fx='rayo_notas', speed=0, dmg=26, joint='f_ha', off=(4, 0), r=60, stun=40, kb=1,
                        life=64, beam=True, interval=6, lock=True, sfx='golpe_debil', chip=0.03,
                        final=dict(dmg=90, kd=True, kb=14, launch=-14)),
@@ -238,7 +317,9 @@ def move_list(char):
     lst = [('Puñetazo', 'GOLPE'), ('Patada', 'PATADA'), ('Golpe fuerte', '→ + GOLPE'),
            ('Patada alta', '→ + PATADA'), ('Jab bajo', '↓ + GOLPE'), ('Barrida', '↓ + PATADA'),
            ('Patada aérea', 'en el aire GOLPE/PATADA'), ('Bloqueo', 'BLOQUEAR (↓ para bajo)')]
-    for k in ('especial_1', 'especial_2', 'ultimate_1', 'ultimate_2'):
+    for k in ('especial_1', 'especial_2', 'ultimate_1', 'ultimate_2', 'ultimate_3'):
+        if k not in c['moves']:
+            continue
         m = c['moves'][k]
         inp = m['input'].replace('R', 'ESPECIAL').replace('T', 'ULTIMATE')
         lst.append((m['name'], inp + (' (barra llena)' if m.get('ult') else '')))

@@ -87,6 +87,13 @@ def logo():
     return ui.text_gradient('IES 10 FIGHTER', 56, extrude=6)
 
 
+def arcetech_logo():
+    p = os.path.join(C.UI_DIR, 'arcetech.png')
+    if os.path.exists(p):
+        return assets.image(p)
+    return ui.text_outline('ARCE TECH', 20, (60, 220, 120))
+
+
 def help_bar(surf, txt):
     pygame.draw.rect(surf, (0, 0, 0), (0, C.HEIGHT - 38, C.WIDTH, 38))
     pygame.draw.line(surf, C.YELLOW, (0, C.HEIGHT - 38), (C.WIDTH, C.HEIGHT - 38), 2)

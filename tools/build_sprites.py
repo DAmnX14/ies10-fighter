@@ -8,10 +8,10 @@ import numpy as np, cv2
 from PIL import Image
 sys.path.insert(0, os.path.dirname(__file__))
 from rig import RigCharacter, CANVAS_W, CANVAS_H, ANCHOR_X, ANCHOR_Y, SS
-from anim_defs import ANIM_ORDER, get_anim
+from anim_defs import ANIM_ORDER, get_anim, has_anim
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-CHARS = ['pantoja', 'parada', 'nehuen', 'luciano']
+CHARS = ['pantoja', 'parada', 'nehuen', 'luciano', 'nico']
 JOINTS = ['f_ha', 'b_ha', 'f_an', 'b_an', 'f_toe', 'b_toe', 'head', 'neck', 'pelvis',
           'f_el', 'b_el', 'f_kn', 'b_kn']
 
@@ -55,13 +55,18 @@ def main():
                     height=round(rc.H / SS), animations={})
         sheet_rows = []
         for an in ANIM_ORDER:
+            if not has_anim(name, an):
+                continue
             kfs, spec = frames_for(name, an)
             frames, joints, boxes = [], [], []
             for kf in kfs:
                 p = rc.resolve(kf)
                 img, P = rc.render(p)
                 frames.append(img)
-                joints.append({j: [round(v, 1) for v in rc.to_native(P[j])] for j in JOINTS})
+                jd = {j: [round(v, 1) for v in rc.to_native(P[j])] for j in JOINTS}
+                if p.get('_swap'):
+                    jd['b_ha'], jd['b_el'] = jd['f_ha'], jd['f_el']
+                joints.append(jd)
                 ys, xs = np.where(img[..., 3] > 0)
                 boxes.append([int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1]
                              if len(xs) else [0, 0, 1, 1])

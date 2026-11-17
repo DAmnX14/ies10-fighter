@@ -11,7 +11,7 @@ from game.combat import Match
 from game.controls import InputState
 
 MOVES = ['golpe', 'patada', 'golpe_fuerte', 'patada_fuerte', 'golpe_agachado', 'patada_agachado',
-         'especial_1', 'especial_2', 'ultimate_1', 'ultimate_2']
+         'especial_1', 'especial_2', 'ultimate_1', 'ultimate_2', 'ultimate_3']
 
 
 def main():
@@ -20,7 +20,10 @@ def main():
     bad = []
     for c in C.CHARACTERS:
         row = []
+        from game.characters_data import CHARACTERS as _CD
         for mv in MOVES:
+            if mv == 'ultimate_3' and mv not in _CD[c]['moves']:
+                continue
             best = 0
             for dist in (150, 260, 420):
                 m = Match(g, c, 'pantoja' if c != 'pantoja' else 'luciano', 'versus')

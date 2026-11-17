@@ -77,12 +77,27 @@ def make_icon():
     return s
 
 
+def make_arcetech():
+    sys.path.insert(0, os.path.dirname(__file__))
+    from build_effects import maple_leaf_pts
+    txt = ui.text_outline('ARCE TECH', 20, (235, 255, 240), (5, 40, 20), 2, False)
+    tm = ui.text('TM', 7, (190, 230, 200))
+    s = pygame.Surface((54 + txt.get_width() + 22, 48), pygame.SRCALPHA)
+    pygame.draw.polygon(s, (5, 40, 20), maple_leaf_pts(24, 25, 23, 0))
+    pygame.draw.polygon(s, (40, 200, 100), maple_leaf_pts(24, 25, 20, 0))
+    pygame.draw.polygon(s, (120, 245, 150), maple_leaf_pts(22, 22, 9, 0))
+    s.blit(txt, (52, 24 - txt.get_height() // 2))
+    s.blit(tm, (54 + txt.get_width(), 8))
+    return s
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     pygame.image.save(make_logo(), os.path.join(OUT, 'logo.png'))
     pygame.image.save(make_icon(), os.path.join(OUT, 'icono.png'))
     vs = ui.text_gradient('VS', 130, (255, 255, 255), C.RED, extrude=10)
     pygame.image.save(vs, os.path.join(OUT, 'vs.png'))
+    pygame.image.save(make_arcetech(), os.path.join(OUT, 'arcetech.png'))
     print('interfaz generada')
 
 

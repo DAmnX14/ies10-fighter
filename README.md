@@ -1,7 +1,8 @@
 # IES 10 FIGHTER
 
 Juego de lucha 2D estilo arcade de los 90, hecho en **Python + Pygame**, con los cuatro
-luchadores del IES N.º 10: **PANTOJA, PARADA, NEHUEN y LUCIANO**, peleando en el aula.
+luchadores del IES N.º 10: **PANTOJA, PARADA, NEHUEN y LUCIANO**, más **NICO**, el jefe final.
+Dos escenarios: el **aula del IES 10** y **la plaza**. Una producción de **Arce Tech**.
 
 ![Logo](assets/interface/logo.png)
 
@@ -55,7 +56,7 @@ También funciona en Linux y macOS con los mismos pasos.
 | Barrida (derriba)          | ↓ + Patada                            |
 | Patada aérea               | Puñetazo o Patada en el aire          |
 | Especial 1 / Especial 2    | Especial  /  ↓ + Especial             |
-| Ultimate 1 / Ultimate 2    | Ultimate  /  ↓ + Ultimate (barra llena) |
+| Ultimate 1 / 2 / 3         | Ultimate  /  ↓ + Ultimate  /  → + Ultimate (barra llena) |
 | Bloqueo alto / bajo        | Bloquear  /  ↓ + Bloquear             |
 
 - Las barridas sólo se bloquean **agachado**; las patadas aéreas sólo **de pie**.
@@ -71,8 +72,8 @@ También funciona en Linux y macOS con los mismos pasos.
 |-------------------------------|-------------|
 | **JUGAR → 1 JUGADOR VS CPU**  | Elegís tu luchador y el rival; combate rápido contra la computadora. |
 | **JUGAR → ENTRENAMIENTO**     | Vida que se regenera y barra de ultimate infinita. **F1** cambia el comportamiento del rival (quieto / agachado / salta / bloquea todo / CPU), **F2** muestra las hitboxes, **F3** reinicia posiciones. |
-| **MODO ARCADE**               | Enfrentás a los otros tres luchadores, con dificultad creciente y un **JEFE FINAL**. Hay pantalla de “¿Continuar?” y final propio para cada personaje. |
-| **VERSUS**                    | Dos jugadores en el mismo teclado. |
+| **MODO ARCADE**               | Enfrentás a los otros luchadores con dificultad creciente y, al final, a **NICO, el jefe de ArceTech**, en la plaza. Hay pantalla de “¿Continuar?” y final propio para cada personaje. |
+| **VERSUS**                    | Dos jugadores en el mismo teclado. En la pantalla «VS» se elige el escenario con ← →. |
 | **PERSONAJES**                | Galería: todas las animaciones de cada luchador, estadísticas y lista de movimientos. |
 | **OPCIONES**                  | Volumen de música / efectos / voces, tiempo por ronda (30/60/99/∞), rondas (1, mejor de 3, mejor de 5), dificultad de la CPU (Fácil/Normal/Difícil/Extremo), pantalla completa, filtro CRT, intro y controles. |
 
@@ -85,19 +86,21 @@ agotado, empate, “¡Perfecto!”, contador de combos y pantalla **«PANTOJA WI
 
 | | Fuerza | Velocidad | Resistencia | Alcance | Ejecución | Estilo |
 |---|:-:|:-:|:-:|:-:|:-:|---|
-| **PANTOJA** – *El tanque rosa* | 9 | 4 | 9 | 5 | 5 | Pesado, mucha vida, golpes demoledores |
-| **PARADA** – *El rayo verde*   | 6 | 9 | 5 | 6 | 9 | Velocísimo, combos de impacto múltiple |
-| **NEHUEN** – *El rockero del piluso* | 6 | 6 | 6 | 9 | 6 | Gran alcance, ataques aéreos y a distancia |
-| **LUCIANO** – *El preceptor implacable* | 7 | 7 | 7 | 6 | 8 | Equilibrado, combos y remate brutal |
+| **PANTOJA** – *El Marido de Parada* | 9 | 4 | 9 | 5 | 5 | Pesado, mucha vida, golpes demoledores |
+| **PARADA** – *El Besa Perro* | 6 | 9 | 5 | 6 | 9 | Velocísimo, combos de impacto múltiple |
+| **NEHUEN** – *El Bostero* | 6 | 6 | 6 | 9 | 6 | Gran alcance, ataques aéreos y a distancia |
+| **LUCIANO** – *Voltio* | 7 | 7 | 7 | 6 | 8 | Equilibrado, combos y remate brutal |
+| **NICO** – *El Jefe de ArceTech* (jefe final) | 8 | 7 | 8 | 7 | 8 | Completo y peligroso: proyectil, rodillazo y ultimates de pantalla completa |
 
-### Especiales y Ultimates (8 ultimates distintas)
+### Especiales y Ultimates (14 ultimates distintas)
 
-| Personaje | Especial 1 | Especial 2 | Ultimate 1 | Ultimate 2 |
-|---|---|---|---|---|
-| Pantoja | **Panzazo** (embestida con la panza) | **Grito metalero** (onda sonora con cuernos) | **Terremoto Pantoja**: salto gigante y golpe al suelo que sacude toda el aula | **Lluvia de cachetadas**: 10 cachetadas + gancho final |
-| Parada | **Ráfaga esmeralda** (dash con puño) | **Patada huracán** (doble patada ascendente) | **Mil piñas**: ráfaga supersónica de 14 puñetazos + empujón final | **Tornado verde**: cruces relámpago a través del rival + patada al cielo |
-| Nehuen | **Acorde sónico** (proyectil de notas) | **Patada del piluso** (anti-aérea) | **Solo infinito**: rayo de notas musicales que atrapa al rival + explosión | **Meteoro piluso**: salto altísimo, voltereta y caída en picada explosiva |
-| Luciano | **Credencial voladora** (boomerang) | **Gancho preceptor** (uppercut) | **Combo disciplinario**: combo de 6 golpes que termina en uppercut | **Amonestación final**: carga de poder y un único puñetazo devastador |
+| Personaje | Especial 1 | Especial 2 | Ultimate 1 | Ultimate 2 | Ultimate 3 (→ + Ultimate) |
+|---|---|---|---|---|---|
+| Pantoja | **Panzazo** (embestida con la panza) | **Grito metalero** (onda sonora con cuernos) | **Terremoto Pantoja**: salto gigante y golpe al suelo que sacude toda el aula | **Lluvia de cachetadas**: 10 cachetadas + gancho final | **Colectivazo**: embestida que arrastra al rival por toda el aula |
+| Parada | **Ráfaga esmeralda** (dash con puño) | **Patada huracán** (doble patada ascendente) | **Mil piñas**: ráfaga supersónica de 14 puñetazos + empujón final | **Tornado verde**: cruces relámpago a través del rival + patada al cielo | **Cien patadas**: ráfaga de patadas + patada final al cielo |
+| Nehuen | **Acorde sónico** (proyectil de notas) | **Patada del piluso** (anti-aérea) | **Solo infinito**: rayo de notas musicales que atrapa al rival + explosión | **Meteoro piluso**: salto altísimo, voltereta y caída en picada explosiva | **La Bombonera late**: tres pisotones que hacen temblar el piso |
+| Luciano | **Credencial voladora** (boomerang) | **Gancho preceptor** (uppercut) | **Combo disciplinario**: combo de 6 golpes que termina en uppercut | **Amonestación final**: carga de poder y un único puñetazo devastador | **Alto voltaje**: tres rayos que caen sobre el rival |
+| Nico | **Hoja de arce** (proyectil) | **Reinicio forzado** (rodillazo volador) | **Pantallazo azul**: golpe a toda la pantalla | **Despido inmediato**: combo y patada que manda al rival a volar | — |
 
 Cada ultimate tiene: animación de preparación, “super flash” con pantalla congelada,
 recuadro cinematográfico con el retrato y el nombre del ataque, aura, animación de ataque,

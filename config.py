@@ -19,7 +19,15 @@ FONT_PATH = os.path.join(ASSETS, 'fonts', 'PressStart2P-Regular.ttf')
 BG_PATH = os.path.join(ASSETS, 'backgrounds', 'escenario.jpg')
 SETTINGS_PATH = os.path.join(BASE_DIR, 'settings.json')
 
-CHARACTERS = ['pantoja', 'parada', 'nehuen', 'luciano']
+CHARACTERS = ['pantoja', 'parada', 'nehuen', 'luciano', 'nico']
+BOSS = 'nico'
+
+# Escenarios: la imagen se escala con la misma proporción en X e Y (sin deformar)
+STAGES = {
+    'aula': dict(name='AULA DEL IES 10', file='escenario.jpg', height=860, ground_src=1330, indoor=True),
+    'plaza': dict(name='LA PLAZA', file='plaza.png', height=989, ground_src=700, indoor=False),
+}
+STAGE_ORDER = ['aula', 'plaza']
 
 # Estadio: la imagen se escala manteniendo proporción (sin deformar)
 STAGE_HEIGHT = 860

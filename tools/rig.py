@@ -15,8 +15,8 @@ import cv2
 from PIL import Image
 
 # ---------------------------------------------------------------- constantes
-CANVAS_W, CANVAS_H = 208, 176      # tamaño de cada fotograma (px nativos)
-ANCHOR_X, ANCHOR_Y = 96, 170       # punto del suelo bajo la pelvis
+CANVAS_W, CANVAS_H = 240, 176      # tamaño de cada fotograma (px nativos)
+ANCHOR_X, ANCHOR_Y = 112, 170       # punto del suelo bajo la pelvis
 SS = 4                             # supersampling interno
 
 # Esqueletos en coordenadas de la imagen fuente.
@@ -48,6 +48,14 @@ SKELETONS = {
         front_f=True,
         torso_poly=[(300, 930), (470, 915), (560, 960), (680, 990), (730, 1100), (745, 1250),
                     (720, 1340), (640, 1395), (420, 1405), (250, 1370), (225, 1250), (230, 1050)],
+    ),
+    'nico': dict(
+        src='nico.png', height=126,
+        pelvis=(235, 520), neck=(240, 300), head=(236, 215),
+        b_sh=(140, 345), b_el=(115, 440), b_ha=(235, 385),
+        f_sh=(320, 340), f_el=(340, 445), f_ha=(385, 345),
+        b_hip=(195, 535), b_kn=(150, 680), b_an=(110, 815), b_toe=(80, 855),
+        f_hip=(275, 535), f_kn=(315, 660), f_an=(325, 810), f_toe=(395, 850),
     ),
     'parada': dict(
         src='parada.jpg', height=126,
@@ -96,7 +104,8 @@ def segment(path, name):
     fg = (lab == big)
     # quitar restos grises del fondo pegados al contorno
     halo = ((mx - mn) < 22) & (mn > 150) & fg
-    er = cv2.erode(fg.astype(np.uint8), np.ones((15, 15), np.uint8)).astype(bool)
+    kk = max(3, int(15 * a.shape[0] / 2500)) | 1
+    er = cv2.erode(fg.astype(np.uint8), np.ones((kk, kk), np.uint8)).astype(bool)
     fg &= ~(halo & ~er)
     return a.astype(np.uint8), fg
 
@@ -205,6 +214,18 @@ class RigCharacter:
         self.parts = {}
         for i, b in enumerate(names):
             m = (self.label == i)
+            if b not in ('torso', 'head'):
+                # solape en articulaciones: cada parte incluye un disco de su cadena
+                # alrededor de sus articulaciones, para que no se abran huecos al rotar
+                chain = [n_ for n_ in names if n_[0] == b[0] and
+                         (n_.endswith(('_up', '_lo')) == b.endswith(('_up', '_lo'))) and n_ not in ('torso', 'head')]
+                cm = np.isin(self.label, [names.index(c_) for c_ in chain])
+                rad = BONES[b][2] * self.H * (1.3 if b[2:] in ('th', 'shin') else 1.05)
+                for jn in BONES[b][:2]:
+                    if jn.endswith('_toe') or jn.endswith('_ha'):
+                        continue
+                    jd = np.hypot(px - self.J[jn][0], py - self.J[jn][1])
+                    m = m | (cm & (jd < rad))
             layer = np.zeros_like(rgba)
             layer[m] = rgba[m]
             if b == 'torso':
@@ -218,6 +239,23 @@ class RigCharacter:
                     hullm = np.zeros((h, w), np.uint8); cv2.fillConvexPoly(hullm, hull, 1)
                 for ob in (('b_up', 'b_lo', 'f_up', 'f_lo') if sk.get('front_f') else ('b_up', 'b_lo')):
                     hole |= ((self.label == names.index(ob)) & (hullm > 0)).astype(np.uint8)
+                # piel de brazos/manos que quedó dentro del torso: se repinta con la ropa
+                L_ = layer[..., :3].astype(np.int16)
+                r_, g_, b_ = L_[..., 0], L_[..., 1], L_[..., 2]
+                op = layer[..., 3] > 0
+                skin = op & (r_ > 110) & (g_ > b_ + 10) & (r_ > g_ + 15) & (r_ - g_ < 110)
+                if self.torso_poly is not None:
+                    inner = cv2.erode(self.torso_poly.astype(np.uint8), np.ones((9, 9), np.uint8)) > 0
+                    skin = op & ((g_ >= b_ - 2) & (r_ > 60) | inner & ~((b_ > g_ + 15) & (r_ > 120)))
+                nd = np.hypot(px - self.J['neck'][0], py - self.J['neck'][1])
+                skin &= nd > 0.10 * self.H
+                if not sk.get('front_f'):
+                    hd = np.hypot(px - self.J['b_ha'][0], py - self.J['b_ha'][1])
+                    skin |= op & (hd < 0.075 * self.H)
+                if skin.sum() > 20:
+                    skin = (cv2.dilate(skin.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0) & op
+                    layer[skin] = 0
+                    hole |= skin.astype(np.uint8)
                 if hole.any():
                     hole = cv2.dilate(hole, np.ones((3, 3), np.uint8))
                     known = layer[..., 3] > 0
@@ -230,10 +268,10 @@ class RigCharacter:
                 # parche de cadera: duplica la parte alta de los muslos en el torso
                 hipd = seg_dist(px, py, self.J['b_hip'], self.J['f_hip'])
                 for ob in ('b_th', 'f_th'):
-                    sel = (self.label == names.index(ob)) & (hipd < 0.075 * self.H)
+                    sel = (self.label == names.index(ob)) & (hipd < 0.10 * self.H)
                     layer[sel] = rgba[sel]
                 # hombreras: la parte alta de cada brazo se duplica en el torso
-                for sd in 'bf':
+                for sd in ('b' if sk.get('front_f') else 'bf'):
                     shd = np.hypot(px - self.J[sd + '_sh'][0], py - self.J[sd + '_sh'][1])
                     sel = (self.label == names.index(sd + '_up')) & (shd < 0.045 * self.H)
                     layer[sel] = rgba[sel]
@@ -263,6 +301,7 @@ class RigCharacter:
                           for s in 'bf'}
         self.rest_ankle_u = {s: mul(sub(J[s + '_an'], self.anchor), 1 / self.u) for s in 'bf'}
         self.palette = None
+        self.weak_back = not sk.get('front_f')
         self.order = list(DRAW_ORDER)
         if sk.get('front_f'):
             for b in ('f_up', 'f_lo'):
@@ -296,6 +335,19 @@ class RigCharacter:
                 p[k[0] + 'fx'], p[k[0] + 'fy'] = v
             else:
                 p[k] = v
+        if self.weak_back:
+            # El brazo trasero está dibujado plegado sobre el pecho y se deforma al
+            # extenderlo: los golpes/gestos amplios los hace el brazo delantero.
+            br, fr = self.rest_hand['b'], self.rest_hand['f']
+            dbx, dby = p['bhx'] - br[0], p['bhy'] - br[1]
+            db = math.hypot(dbx, dby)
+            df = math.hypot(p['fhx'] - fr[0], p['fhy'] - fr[1])
+            if db > 0.45 and db >= df:
+                p['fhx'], p['fhy'] = p['bhx'], p['bhy']
+                p['_swap'] = True
+                p['tw'] = 0.0
+            if db > 0.26:
+                p['bhx'], p['bhy'] = br[0] + dbx / db * 0.26, br[1] + dby / db * 0.26
         return p
 
     def solve(self, p):
@@ -304,7 +356,21 @@ class RigCharacter:
         self._scale = {}
         R = p['rot']
         pel0 = J['pelvis']
-        pel = add(pel0, (p['rx'] * u, p['ry'] * u))
+        ry = p['ry']
+        if p['lrel'] < 0.5 and ry > 0:
+            # no doblar las piernas más de lo que el dibujo soporta
+            for _ in range(40):
+                pel_t = add(pel0, (p['rx'] * u, ry * u))
+                ok = True
+                for s in 'bf':
+                    hip = add(pel_t, rot(sub(J[s + '_hip'], pel0), R))
+                    tg = add(J[s + '_an'], (p[s + 'fx'] * u, p[s + 'fy'] * u))
+                    if length(sub(tg, hip)) < 0.70 * self.leglen[s] and p[s + 'fy'] > -8:
+                        ok = False
+                if ok or ry <= 0:
+                    break
+                ry -= 0.75
+        pel = add(pel0, (p['rx'] * u, ry * u))
 
         def body(pt, extra=0.0):   # transforma punto de reposo rígido con pelvis
             return add(pel, rot(sub(pt, pel0), R + extra))
@@ -399,7 +465,27 @@ class RigCharacter:
         else:
             out[mask, :3] = rgb[mask].astype(np.uint8)
         out[mask, 3] = 255
+        if quantize and self.palette is not None:
+            out = self._finish(out)
         return out, P
+
+    def _finish(self, out):
+        """Cierra huecos pequeños entre partes y repasa el contorno oscuro."""
+        mask = (out[..., 3] > 0).astype(np.uint8)
+        closed = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+        # sólo huecos realmente encerrados o rendijas finas
+        new = (closed > 0) & (mask == 0)
+        if new.any():
+            fill = cv2.inpaint(out[..., :3].copy(), new.astype(np.uint8) * 255, 2, cv2.INPAINT_TELEA)
+            d = ((fill[new].astype(np.float32)[:, None, :] - self.palette[None]) ** 2).sum(2)
+            out[new, :3] = self.palette[np.argmin(d, 1)].astype(np.uint8)
+            out[new, 3] = 255
+            mask = closed
+        edge = (mask > 0) & (cv2.erode(mask, np.ones((3, 3), np.uint8)) == 0)
+        lum = out[..., :3].astype(np.float32).sum(2)
+        dark = self.palette[np.argmin(self.palette.sum(1))].astype(np.uint8)
+        out[edge & (lum > 150)] = np.append(dark, 255)
+        return out
 
     def _draw_guitar(self, canvas, P, ox, oy):
         g = guitar_sprite()

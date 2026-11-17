@@ -1,7 +1,7 @@
 """Genera documentation/sprites_documentation.md a partir de los metadatos reales."""
 import os, json
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-CH = ['pantoja', 'parada', 'nehuen', 'luciano']
+CH = ['pantoja', 'parada', 'nehuen', 'luciano', 'nico']
 DESC = {
     'idle': 'Posición de combate en reposo (respiración)', 'caminar': 'Caminar hacia adelante',
     'caminar_atras': 'Retroceder', 'saltar': 'Salto vertical (impulso, ascenso, recogido, caída, aterrizaje)',
@@ -11,7 +11,7 @@ DESC = {
     'patada_fuerte': 'Patada alta potente', 'golpe_agachado': 'Puñetazo agachado', 'patada_agachado': 'Barrida',
     'patada_aerea': 'Patada en el aire', 'recibir_golpe': 'Reacción al impacto', 'caida': 'Caída al suelo (derribo)',
     'levantarse': 'Levantarse', 'victoria': 'Celebración de victoria', 'derrota': 'Animación de derrota',
-    'especial_1': 'Ataque especial 1', 'especial_2': 'Ataque especial 2', 'ultimate_1': 'Ultimate 1', 'ultimate_2': 'Ultimate 2',
+    'especial_1': 'Ataque especial 1', 'especial_2': 'Ataque especial 2', 'ultimate_1': 'Ultimate 1', 'ultimate_2': 'Ultimate 2', 'ultimate_3': 'Ultimate 3',
 }
 
 
@@ -23,17 +23,17 @@ def main():
          '## Formato de los spritesheets', '',
          'Cada animación de cada personaje es **una tira horizontal PNG con fondo transparente**:',
          '', '`assets/characters/<personaje>/<personaje>_<animación>.png`', '',
-         '- Todos los cuadros miden **208 × 176 px** (resolución nativa pixel-art).',
-         '- El cuadro *i* se recorta en el rectángulo `x = i * 208, y = 0, ancho = 208, alto = 176`.',
-         '- El **ancla** (punto del suelo bajo la pelvis del personaje) está en **(96, 170)** de cada cuadro;',
+         '- Todos los cuadros miden **240 × 176 px** (resolución nativa pixel-art).',
+         '- El cuadro *i* se recorta en el rectángulo `x = i * 240, y = 0, ancho = 240, alto = 176`.',
+         '- El **ancla** (punto del suelo bajo la pelvis del personaje) está en **(112, 170)** de cada cuadro;',
          '  el juego coloca ese punto sobre la posición del luchador.',
-         '- En el juego los sprites se dibujan a escala **x3** (vecino más cercano) → 624 × 528 px.',
+         '- En el juego los sprites se dibujan a escala **x3** (vecino más cercano) → 720 × 528 px.',
          '- Los personajes miran hacia la **derecha**; para mirar a la izquierda se espejan horizontalmente.',
          '- `<personaje>_spritesheet_completo.png` reúne todas las animaciones (una fila por animación,',
          '  en el orden de la tabla) como vista previa.',
          '- `<personaje>_retrato.png` (72 × 72) es el retrato para menús y HUD.', '',
          '### Metadatos (`<personaje>_meta.json`)', '',
-         '```json', '{', '  "frame_w": 208, "frame_h": 176, "anchor": [96, 170],', '  "animations": {',
+         '```json', '{', '  "frame_w": 240, "frame_h": 176, "anchor": [112, 170],', '  "animations": {',
          '    "golpe": {', '      "file": "pantoja_golpe.png", "frames": 5,',
          '      "dur": 3,            // ticks (a 60 fps) por cuadro',
          '      "loop": false,', '      "joints": [ {"f_ha": [x, y], "b_ha": ..., "f_an": ..., ...}, ... ],',

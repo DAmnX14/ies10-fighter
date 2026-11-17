@@ -15,7 +15,7 @@ ANIM_NAMES = {
     'golpe_agachado': 'GOLPE AGACHADO', 'patada_agachado': 'BARRIDA', 'patada_aerea': 'PATADA AÉREA',
     'recibir_golpe': 'RECIBIR GOLPE', 'caida': 'CAÍDA', 'levantarse': 'LEVANTARSE', 'victoria': 'VICTORIA',
     'derrota': 'DERROTA', 'especial_1': 'ESPECIAL 1', 'especial_2': 'ESPECIAL 2', 'ultimate_1': 'ULTIMATE 1',
-    'ultimate_2': 'ULTIMATE 2',
+    'ultimate_2': 'ULTIMATE 2', 'ultimate_3': 'ULTIMATE 3',
 }
 
 
@@ -33,6 +33,8 @@ class GalleryScene(Scene):
         return C.CHARACTERS[self.ci]
 
     def reset_player(self):
+        self.anims = list(assets.character(self.name()).meta['animations'].keys())
+        self.ai %= len(self.anims)
         self.player = AnimPlayer(self.name(), self.anims[self.ai], True)
         an = self.anims[self.ai]
         if an.startswith('especial') or an.startswith('ultimate'):
@@ -41,10 +43,10 @@ class GalleryScene(Scene):
     def handle_event(self, e):
         a = nav(e)
         if a == 'left':
-            self.ci = (self.ci - 1) % 4; self.audio.play('menu_mover'); self.reset_player()
+            self.ci = (self.ci - 1) % len(C.CHARACTERS); self.audio.play('menu_mover'); self.reset_player()
             self.audio.announce(f'loc_{self.name()}')
         elif a == 'right':
-            self.ci = (self.ci + 1) % 4; self.audio.play('menu_mover'); self.reset_player()
+            self.ci = (self.ci + 1) % len(C.CHARACTERS); self.audio.play('menu_mover'); self.reset_player()
             self.audio.announce(f'loc_{self.name()}')
         elif a == 'up':
             self.ai = (self.ai - 1) % len(self.anims); self.audio.play('menu_mover'); self.reset_player()
@@ -94,7 +96,7 @@ class GalleryScene(Scene):
         surf.blit(ui.text(f'VIDA: {d["health"]}', 11, C.CYAN), (px + 420, 222))
         surf.blit(ui.text('MOVIMIENTOS', 13, C.YELLOW), (px + 24, 352))
         for j, (mname, inp) in enumerate(move_list(n)):
-            y = 378 + j * 22
+            y = 376 + j * 20
             col = C.YELLOW if j >= 8 else C.WHITE
             surf.blit(ui.text(mname, 10, col), (px + 24, y))
             t = ui.text(inp, 9, (170, 220, 255))

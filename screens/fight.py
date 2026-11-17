@@ -128,7 +128,7 @@ class FightScene(Scene):
             ui.blit_center(surf, ui.text_gradient(f.data['display'], 28, (255, 255, 255), f.color, extrude=3),
                            x + w / 2, 105)
             for j, (name, inp) in enumerate(move_list(f.name)):
-                y = 150 + j * 38
+                y = 146 + j * 36
                 col = C.YELLOW if j >= 8 else C.WHITE
                 surf.blit(ui.text(name, 11, col), (x + 20, y))
                 surf.blit(ui.text(inp, 10, (170, 220, 255)), (x + 20, y + 16))

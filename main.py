@@ -35,6 +35,7 @@ class Game:
         assets.preload_all()
         self.transition = Transition()
         self.scene = None
+        self.stage_id = 'aula'
         self.running = True
         self.tick = 0
 
@@ -43,6 +44,7 @@ class Game:
         self.screen.fill((8, 6, 20))
         ui.blit_center(self.screen, ui.text_gradient('IES 10 FIGHTER', 44, extrude=5), C.WIDTH / 2, C.HEIGHT / 2 - 30)
         ui.blit_center(self.screen, ui.text('CARGANDO...', 16, C.WHITE), C.WIDTH / 2, C.HEIGHT / 2 + 50)
+        ui.blit_center(self.screen, ui.text('ARCE TECH', 14, (60, 220, 120)), C.WIDTH / 2, C.HEIGHT - 60)
         pygame.display.flip()
 
     def change(self, factory, instant=False):

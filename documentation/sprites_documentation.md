@@ -6,11 +6,11 @@ Cada animación de cada personaje es **una tira horizontal PNG con fondo transpa
 
 `assets/characters/<personaje>/<personaje>_<animación>.png`
 
-- Todos los cuadros miden **208 × 176 px** (resolución nativa pixel-art).
-- El cuadro *i* se recorta en el rectángulo `x = i * 208, y = 0, ancho = 208, alto = 176`.
-- El **ancla** (punto del suelo bajo la pelvis del personaje) está en **(96, 170)** de cada cuadro;
+- Todos los cuadros miden **240 × 176 px** (resolución nativa pixel-art).
+- El cuadro *i* se recorta en el rectángulo `x = i * 240, y = 0, ancho = 240, alto = 176`.
+- El **ancla** (punto del suelo bajo la pelvis del personaje) está en **(112, 170)** de cada cuadro;
   el juego coloca ese punto sobre la posición del luchador.
-- En el juego los sprites se dibujan a escala **x3** (vecino más cercano) → 624 × 528 px.
+- En el juego los sprites se dibujan a escala **x3** (vecino más cercano) → 720 × 528 px.
 - Los personajes miran hacia la **derecha**; para mirar a la izquierda se espejan horizontalmente.
 - `<personaje>_spritesheet_completo.png` reúne todas las animaciones (una fila por animación,
   en el orden de la tabla) como vista previa.
@@ -20,7 +20,7 @@ Cada animación de cada personaje es **una tira horizontal PNG con fondo transpa
 
 ```json
 {
-  "frame_w": 208, "frame_h": 176, "anchor": [96, 170],
+  "frame_w": 240, "frame_h": 176, "anchor": [112, 170],
   "animations": {
     "golpe": {
       "file": "pantoja_golpe.png", "frames": 5,
@@ -52,9 +52,9 @@ ubicar las **hitboxes** exactamente donde está el puño o el pie en ese cuadro,
 
 Para regenerar: `python tools/build_sprites.py` (o `python tools/build_sprites.py nehuen` para uno solo).
 
-## PANTOJA — El Tanque Rosa
+## PANTOJA — El Marido De Parada
 
-Altura nativa: 114 px · 25 animaciones · 187 cuadros
+Altura nativa: 114 px · 26 animaciones · 201 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -83,10 +83,11 @@ Altura nativa: 114 px · 25 animaciones · 187 cuadros
 | `especial_2` | `pantoja_especial_2.png` | 9 | 5 | no | Ataque especial 2 — **Grito Metalero** |
 | `ultimate_1` | `pantoja_ultimate_1.png` | 16 | 5 | no | Ultimate 1 — **Terremoto Pantoja** |
 | `ultimate_2` | `pantoja_ultimate_2.png` | 18 | 4 | no | Ultimate 2 — **Lluvia De Cachetadas** |
+| `ultimate_3` | `pantoja_ultimate_3.png` | 14 | 4 | no | Ultimate 3 — **Colectivazo** |
 
-## PARADA — El Rayo Verde
+## PARADA — El Besa Perro
 
-Altura nativa: 126 px · 25 animaciones · 190 cuadros
+Altura nativa: 126 px · 26 animaciones · 208 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -115,10 +116,11 @@ Altura nativa: 126 px · 25 animaciones · 190 cuadros
 | `especial_2` | `parada_especial_2.png` | 10 | 4 | no | Ataque especial 2 — **Patada Huracán** |
 | `ultimate_1` | `parada_ultimate_1.png` | 21 | 3 | no | Ultimate 1 — **Mil Piñas** |
 | `ultimate_2` | `parada_ultimate_2.png` | 16 | 4 | no | Ultimate 2 — **Tornado Verde** |
+| `ultimate_3` | `parada_ultimate_3.png` | 18 | 3 | no | Ultimate 3 — **Cien Patadas** |
 
-## NEHUEN — El Rockero Del Piluso
+## NEHUEN — El Bostero
 
-Altura nativa: 128 px · 25 animaciones · 183 cuadros
+Altura nativa: 128 px · 26 animaciones · 196 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -147,10 +149,11 @@ Altura nativa: 128 px · 25 animaciones · 183 cuadros
 | `especial_2` | `nehuen_especial_2.png` | 9 | 4 | no | Ataque especial 2 — **Patada Del Piluso** |
 | `ultimate_1` | `nehuen_ultimate_1.png` | 16 | 4 | no | Ultimate 1 — **Solo Infinito** |
 | `ultimate_2` | `nehuen_ultimate_2.png` | 15 | 5 | no | Ultimate 2 — **Meteoro Piluso** |
+| `ultimate_3` | `nehuen_ultimate_3.png` | 13 | 5 | no | Ultimate 3 — **La Bombonera Late** |
 
-## LUCIANO — El Preceptor Implacable
+## LUCIANO — Voltio
 
-Altura nativa: 126 px · 25 animaciones · 186 cuadros
+Altura nativa: 126 px · 26 animaciones · 199 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -179,6 +182,39 @@ Altura nativa: 126 px · 25 animaciones · 186 cuadros
 | `especial_2` | `luciano_especial_2.png` | 9 | 4 | no | Ataque especial 2 — **Gancho Preceptor** |
 | `ultimate_1` | `luciano_ultimate_1.png` | 18 | 4 | no | Ultimate 1 — **Combo Disciplinario** |
 | `ultimate_2` | `luciano_ultimate_2.png` | 16 | 5 | no | Ultimate 2 — **Amonestación Final** |
+| `ultimate_3` | `luciano_ultimate_3.png` | 13 | 5 | no | Ultimate 3 — **Alto Voltaje** |
+
+## NICO — El Jefe De Arcetech
+
+Altura nativa: 126 px · 25 animaciones · 174 cuadros
+
+| Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
+|---|---|:-:|:-:|:-:|---|
+| `idle` | `nico_idle.png` | 8 | 7 | sí | Posición de combate en reposo (respiración) |
+| `caminar` | `nico_caminar.png` | 8 | 5 | sí | Caminar hacia adelante |
+| `caminar_atras` | `nico_caminar_atras.png` | 8 | 6 | sí | Retroceder |
+| `saltar` | `nico_saltar.png` | 7 | 6 | no | Salto vertical (impulso, ascenso, recogido, caída, aterrizaje) |
+| `saltar_adelante` | `nico_saltar_adelante.png` | 8 | 6 | no | Salto hacia adelante con voltereta |
+| `agacharse` | `nico_agacharse.png` | 3 | 3 | no | Agacharse (transición + posición) |
+| `bloquear` | `nico_bloquear.png` | 3 | 3 | no | Defensa de pie |
+| `bloquear_agachado` | `nico_bloquear_agachado.png` | 2 | 3 | no | Defensa agachado |
+| `presentacion` | `nico_presentacion.png` | 12 | 6 | no | Animación de presentación |
+| `golpe` | `nico_golpe.png` | 5 | 3 | no | Puñetazo rápido |
+| `patada` | `nico_patada.png` | 6 | 3 | no | Patada rápida |
+| `golpe_fuerte` | `nico_golpe_fuerte.png` | 7 | 4 | no | Golpe potente (cross con torsión) |
+| `patada_fuerte` | `nico_patada_fuerte.png` | 8 | 4 | no | Patada alta potente |
+| `golpe_agachado` | `nico_golpe_agachado.png` | 4 | 3 | no | Puñetazo agachado |
+| `patada_agachado` | `nico_patada_agachado.png` | 6 | 4 | no | Barrida |
+| `patada_aerea` | `nico_patada_aerea.png` | 4 | 4 | no | Patada en el aire |
+| `recibir_golpe` | `nico_recibir_golpe.png` | 4 | 4 | no | Reacción al impacto |
+| `caida` | `nico_caida.png` | 8 | 5 | no | Caída al suelo (derribo) |
+| `levantarse` | `nico_levantarse.png` | 6 | 5 | no | Levantarse |
+| `victoria` | `nico_victoria.png` | 10 | 7 | no | Celebración de victoria |
+| `derrota` | `nico_derrota.png` | 8 | 8 | no | Animación de derrota |
+| `especial_1` | `nico_especial_1.png` | 7 | 4 | no | Ataque especial 1 — **Hoja De Arce** |
+| `especial_2` | `nico_especial_2.png` | 8 | 4 | no | Ataque especial 2 — **Reinicio Forzado** |
+| `ultimate_1` | `nico_ultimate_1.png` | 10 | 5 | no | Ultimate 1 — **Pantallazo Azul** |
+| `ultimate_2` | `nico_ultimate_2.png` | 14 | 5 | no | Ultimate 2 — **Despido Inmediato** |
 
 ## Efectos especiales (`assets/effects/`)
 
@@ -186,6 +222,8 @@ Mismo formato: tira horizontal, cuadros de tamaño uniforme (indicado abajo), es
 
 | Efecto | Archivo | Cuadro | Cuadros | Uso |
 |---|---|:-:|:-:|---|
+| `rayo` | `rayo.png` | 48×176 | 4 |  |
+| `hoja` | `hoja.png` | 30×30 | 6 |  |
 | `chispa_golpe` | `chispa_golpe.png` | 40×40 | 7 | Impacto de golpe rápido |
 | `chispa_fuerte` | `chispa_fuerte.png` | 64×64 | 8 | Impacto de golpe fuerte / especial |
 | `chispa_bloqueo` | `chispa_bloqueo.png` | 36×36 | 6 | Golpe bloqueado |

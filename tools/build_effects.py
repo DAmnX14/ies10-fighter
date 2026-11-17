@@ -257,8 +257,45 @@ def flash_star():
     save('destello', [im], 4)
 
 
+def lightning():
+    frames = []
+    for i in range(4):
+        im, d = new(48, 176)
+        r = np.random.default_rng(20 + i)
+        for width, col in ((7, (255, 230, 60, 255)), (3, (255, 255, 255, 255))):
+            x = 24; pts = [(x, 0)]
+            rr = np.random.default_rng(20 + i)
+            for y in range(16, 177, 16):
+                x = int(np.clip(x + rr.integers(-13, 14), 8, 40)); pts.append((x, y))
+            d.line(pts, fill=col, width=width, joint='curve')
+        for k in range(3):
+            y0 = int(r.integers(30, 130)); x0 = int(r.integers(14, 34)); s_ = 1 if k % 2 else -1
+            d.line([(x0, y0), (x0 + 12 * s_, y0 + 14), (x0 + 8 * s_, y0 + 26)], fill=(255, 240, 120, 255), width=2)
+        frames.append(outline(im, (90, 60, 160, 255)))
+    save('rayo', frames, 2, True)
+
+
+def maple_leaf_pts(cx, cy, s, ang):
+    half = [(0, -1.0), (0.15, -0.65), (0.33, -0.72), (0.27, -0.25), (0.55, -0.5), (0.62, -0.33), (0.95, -0.38),
+            (0.82, -0.08), (0.95, 0.02), (0.52, 0.38), (0.58, 0.55), (0.08, 0.48), (0.08, 0.95)]
+    pts = half + [(-x, y) for x, y in reversed(half)]
+    c, sn = math.cos(ang), math.sin(ang)
+    return [(cx + (x * c - y * sn) * s, cy + (x * sn + y * c) * s) for x, y in pts]
+
+
+def leaf():
+    frames = []
+    for i in range(6):
+        im, d = new(30, 30)
+        d.polygon(maple_leaf_pts(15, 15, 12, i * math.pi / 3), fill=(50, 210, 110, 255))
+        d.polygon(maple_leaf_pts(15, 15, 6, i * math.pi / 3), fill=(150, 255, 170, 255))
+        frames.append(outline(im, (10, 60, 30, 255)))
+    save('hoja', frames, 2, True)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
+    lightning(); leaf()
     spark(40, 7, [(255, 230, 90, 255), (255, 255, 255, 255), (255, 255, 255, 255)], 'chispa_golpe')
     spark(64, 8, [(255, 90, 40, 255), (255, 220, 80, 255), (255, 255, 255, 255)], 'chispa_fuerte', 10)
     spark(36, 6, [(80, 170, 255, 255), (200, 240, 255, 255), (255, 255, 255, 255)], 'chispa_bloqueo', 6)

@@ -8,6 +8,8 @@ from game.characters_data import CHARACTERS
 from screens.common import Scene, nav, menu_background, help_bar, AnimPlayer
 
 ENDINGS = {
+    'nico': ['Nico derrotó a toda la plantilla.', 'Nadie pidió aumento ese año.', '',
+             'ArceTech abrió una sucursal', 'en el aula del IES 10.', 'El jefe siempre gana.'],
     'pantoja': ['Pantoja derrotó a todos en el aula.', 'Desde ese día, nadie volvió a reírse',
                 'de su remera rosa.', '', 'El kiosco del IES 10 le regaló', 'alfajores de por vida.'],
     'parada': ['Parada fue tan rápido', 'que terminó el torneo antes', 'de que sonara el timbre.', '',
@@ -23,9 +25,10 @@ class ArcadeRun:
     def __init__(self, game, char):
         self.game = game
         self.char = char
-        others = [c for c in C.CHARACTERS if c != char]
+        others = [c for c in C.CHARACTERS if c != char and c != C.BOSS]
         random.shuffle(others)
-        self.ladder = others
+        # NICO, el jefe de ArceTech, siempre es el último rival
+        self.ladder = others + ([C.BOSS] if char != C.BOSS else [])
         self.stage = 0
         self.base = game.settings['difficulty']
         self.continues = 0
@@ -33,7 +36,9 @@ class ArcadeRun:
 
     def level(self):
         # combate 1: dificultad elegida; 2: +1; jefe final: +1 más (máximo EXTREMO)
-        return min(3, self.base + min(self.stage, 2))
+        if self.stage == len(self.ladder) - 1:
+            return min(3, self.base + 2)
+        return min(3, self.base + min(self.stage, 1))
 
     def next_fight(self):
         g = self.game
@@ -45,6 +50,8 @@ class ArcadeRun:
         opp = self.ladder[self.stage]
         sub = 'JEFE FINAL' if self.stage == len(self.ladder) - 1 else f'COMBATE {self.stage + 1} DE {len(self.ladder)}'
         lvl = self.level()
+        last = self.stage == len(self.ladder) - 1
+        g.stage_id = 'plaza' if (last or self.stage % 2 == 1) else 'aula'
 
         def launch():
             start_fight(g, self.char, opp, 'arcade', lvl, on_finish=self.fight_over)
@@ -99,7 +106,8 @@ class LadderScreen(Scene):
         ui.blit_center(surf, ui.text_gradient('CAMINO AL CAMPEONATO', 36, extrude=5), C.WIDTH / 2, 70)
         n = len(self.run.ladder)
         for i, opp in enumerate(self.run.ladder):
-            x = 380 + i * 260
+            sp = 260 if n <= 3 else 215
+            x = (380 if n <= 3 else 420) + i * sp
             y = 330
             d = CHARACTERS[opp]
             done = i < self.run.stage
@@ -183,7 +191,7 @@ class EndingScreen(Scene):
         game.audio.music('musica_victoria')
         self.anim = AnimPlayer(run.char, 'victoria', True)
         self.lines = ENDINGS[run.char]
-        self.credits = ['IES 10 FIGHTER', '', 'LUCHADORES', 'PANTOJA - PARADA - NEHUEN - LUCIANO', '',
+        self.credits = ['IES 10 FIGHTER', '', 'LUCHADORES', 'PANTOJA - PARADA - NEHUEN - LUCIANO - NICO', '', 'UNA PRODUCCIÓN DE', 'ARCE TECH', '',
                         'ESCENARIO', 'AULA DEL IES N.º 10', '', 'PROGRAMACIÓN', 'PYTHON + PYGAME', '',
                         'SPRITES', 'RIG 2D GENERADO A PARTIR DE LAS ILUSTRACIONES ORIGINALES', '',
                         'MÚSICA Y SONIDO', 'SÍNTESIS ORIGINAL (VER audio_credits.md)', '',

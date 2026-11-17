@@ -112,10 +112,14 @@ class IntroScene(Scene):
         if t < T_PANTOJA:
             surf.fill((0, 0, 0))
             a = min(255, t * 6) if t < 110 else max(0, 255 - (t - 110) * 7)
-            img = ui.text_outline('EL IES N.º 10 PRESENTA', 26, (230, 230, 255))
+            from screens.common import arcetech_logo
+            lg0 = pygame.transform.scale(arcetech_logo(), (arcetech_logo().get_width() * 2, arcetech_logo().get_height() * 2))
+            lg0.set_alpha(min(255, t * 6) if t < 110 else max(0, 255 - (t - 110) * 7))
+            ui.blit_center(surf, lg0, C.WIDTH / 2, C.HEIGHT / 2 - 110)
+            img = ui.text_outline('ARCE TECH PRESENTA', 26, (230, 255, 235))
             img.set_alpha(a)
             ui.blit_center(surf, img, C.WIDTH / 2, C.HEIGHT / 2)
-            img2 = ui.text('UNA PRODUCCIÓN DE LOS ALUMNOS', 12, (150, 150, 190))
+            img2 = ui.text('UN JUEGO DEL IES N.º 10', 12, (150, 150, 190))
             img2.set_alpha(a)
             ui.blit_center(surf, img2, C.WIDTH / 2, C.HEIGHT / 2 + 50)
         elif t < T_PARADA:
@@ -123,13 +127,13 @@ class IntroScene(Scene):
             k = min(1.0, (t - T_PANTOJA) / 14)
             x = -200 + 520 * k
             self.pan.draw(surf, x, 690, 1, 5, glow=(255, 70, 160))
-            self.name_slam(surf, 'PANTOJA', 'EL TANQUE ROSA', (255, 70, 160), T_PANTOJA, 1)
+            self.name_slam(surf, 'PANTOJA', 'EL MARIDO DE PARADA', (255, 70, 160), T_PANTOJA, 1)
         elif t < T_EYES:
             self.speed_bg(surf, (40, 210, 110), -1)
             k = min(1.0, (t - T_PARADA) / 14)
             x = C.WIDTH + 200 - 520 * k
             self.par.draw(surf, x, 690, -1, 5, glow=(40, 210, 110))
-            self.name_slam(surf, 'PARADA', 'EL RAYO VERDE', (40, 210, 110), T_PARADA, -1)
+            self.name_slam(surf, 'PARADA', 'EL BESA PERRO', (40, 210, 110), T_PARADA, -1)
         elif t < T_STAGE:
             self.draw_eyes(surf, t - T_EYES)
         elif t < T_LOGO:
@@ -224,5 +228,5 @@ class IntroScene(Scene):
         for sp in self.sparks:
             pygame.draw.rect(surf, sp[5], (sp[0], sp[1], 5, 5))
         if lt > 70:
-            c = ui.text('© 2026 ALUMNOS DEL IES N.º 10', 12, (180, 180, 210))
+            c = ui.text('© 2026 ARCE TECH - IES N.º 10', 12, (180, 180, 210))
             ui.blit_center(surf, c, cx, C.HEIGHT - 70)

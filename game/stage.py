@@ -6,14 +6,19 @@ import config as C
 
 
 class Stage:
-    def __init__(self):
-        raw = pygame.image.load(C.BG_PATH).convert()
-        k = C.STAGE_HEIGHT / raw.get_height()          # misma escala en X e Y: no se deforma
+    def __init__(self, stage_id='aula'):
+        import os
+        cfg = C.STAGES.get(stage_id, C.STAGES['aula'])
+        self.id = stage_id
+        self.name = cfg['name']
+        self.indoor = cfg['indoor']
+        raw = pygame.image.load(os.path.join(C.ASSETS, 'backgrounds', cfg['file'])).convert()
+        k = cfg['height'] / raw.get_height()           # misma escala en X e Y: no se deforma
         self.k = k
         self.w = int(raw.get_width() * k)
-        self.h = C.STAGE_HEIGHT
+        self.h = cfg['height']
         self.bg = pygame.transform.smoothscale(raw, (self.w, self.h))
-        self.ground_y = int(C.GROUND_SRC_Y * k)
+        self.ground_y = int(cfg['ground_src'] * k)
         self.left = 150
         self.right = self.w - 150
         self.t = 0
@@ -78,16 +83,23 @@ class Stage:
         for m in self.motes:
             m[3] += 0.02
             m[0] += math.sin(m[3]) * 0.3
-            m[1] -= m[2]
-            if m[1] < 60:
-                m[1] = self.ground_y; m[0] = random.uniform(0, self.w)
+            if self.indoor:
+                m[1] -= m[2]
+                if m[1] < 60:
+                    m[1] = self.ground_y; m[0] = random.uniform(0, self.w)
+            else:                      # hojas que caen
+                m[1] += m[2] * 3 + 0.4
+                m[0] += 0.6
+                if m[1] > self.ground_y + 40:
+                    m[1] = 40; m[0] = random.uniform(0, self.w)
 
     def draw_back(self, surf, cam):
         ox, oy = cam.to_screen(0, 0)
         surf.blit(self.bg, (ox, oy))
-        surf.blit(self.shaft, (ox, oy), special_flags=pygame.BLEND_RGB_ADD)
+        if self.indoor:
+            surf.blit(self.shaft, (ox, oy), special_flags=pygame.BLEND_RGB_ADD)
         # destello de tubo fluorescente
-        if self.flicker > 0 and (self.flicker // 2) % 2 == 0:
+        if self.indoor and self.flicker > 0 and (self.flicker // 2) % 2 == 0:
             s = pygame.Surface((C.WIDTH, int(C.HEIGHT * 0.55)), pygame.SRCALPHA)
             s.fill((0, 0, 0, 55))
             surf.blit(s, (0, 0))
@@ -95,9 +107,14 @@ class Stage:
             x, y = cam.to_screen(m[0], m[1])
             if -5 < x < C.WIDTH + 5:
                 a = 120 + int(80 * math.sin(m[3] * 3))
-                pygame.draw.rect(surf, (255, 250, 220), (x, y, 2, 2)) if a > 140 else None
+                if not self.indoor:
+                    col = ((70, 190, 80), (230, 150, 40), (40, 150, 70))[int(m[2] * 30) % 3]
+                    pygame.draw.rect(surf, col, (x, y, 5, 3))
+                elif a > 140:
+                    pygame.draw.rect(surf, (255, 250, 220), (x, y, 2, 2))
         px, py = cam.to_screen(cam.x + C.WIDTH / 2, self.ground_y)
-        surf.blit(self.pool, (px - 450, py - 120), special_flags=pygame.BLEND_RGB_ADD)
+        if self.indoor:
+            surf.blit(self.pool, (px - 450, py - 120), special_flags=pygame.BLEND_RGB_ADD)
         if self.dim > 0.01:
             s = pygame.Surface((C.WIDTH, C.HEIGHT), pygame.SRCALPHA)
             s.fill((0, 0, 10, int(200 * self.dim)))

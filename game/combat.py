@@ -111,7 +111,7 @@ class Match:
         self.settings = game.settings
         self.mode = mode
         self.training = mode == 'training'
-        self.stage = Stage()
+        self.stage = Stage(getattr(game, 'stage_id', 'aula'))
         self.camera = Camera(self.stage.w, self.stage.h)
         self.fx = FXManager()
         self.p1 = Fighter(c1, 1, self)
@@ -198,7 +198,20 @@ class Match:
         self.fx.add(SpriteFX(name, x, y, f.facing, follow=f, offset=((x - f.x) * f.facing, y - f.y),
                              loops=3, scale=1.3), front=True)
 
-    def quake(self, att, dmg, rng):
+    def strike(self, att, fx, dmg, final):
+        """Golpe a distancia sobre la posición del rival (rayo, pantallazo...)."""
+        opp = att.opponent()
+        if fx:
+            self.fx.add(SpriteFX(fx, opp.x, self.stage.ground_y - 262, 1, loops=2))
+            self.fx.add(Ring(opp.x, self.stage.ground_y - 20, att.color, 10, 220, 16, 8))
+            self.fx.burst(opp.x, opp.y - 120, (255, 255, 200), 18, 12, 6, 0.3)
+        if opp.invuln > 0 or opp.ko or opp.state in ('lying', 'getup'):
+            return
+        hit = dict(dmg=dmg, stun=34, bstun=16, kb=14 if final else 2, kd=final, launch=-16 if final else 0,
+                   h='mid', sfx='golpe_fuerte', fx='chispa_fuerte', stop=14 if final else 6, chip=0.2)
+        self.apply_hit(att, opp, hit, opp.x, opp.y - 180)
+
+    def quake(self, att, dmg, rng, final=True):
         opp = att.opponent()
         for k, d in enumerate((120, 330, 540, 750)):
             for s in (-1, 1):
@@ -207,8 +220,8 @@ class Match:
         self.fx.add(Ring(att.x, self.stage.ground_y - 10, (255, 150, 200), 30, 700, 30, 14))
         self.fx.burst(att.x, self.stage.ground_y - 20, (150, 110, 80), 50, 18, 9, 0.7)
         if opp.on_ground and abs(opp.x - att.x) < rng and opp.invuln <= 0 and opp.state not in ('lying', 'getup'):
-            hit = dict(dmg=dmg, stun=30, bstun=20, kb=12, kd=True, launch=-22, h='mid', sfx='golpe_fuerte',
-                       fx='chispa_fuerte', stop=14, chip=0)
+            hit = dict(dmg=dmg, stun=34, bstun=20, kb=12 if final else 0, kd=final, launch=-22 if final else 0,
+                       h='mid', sfx='golpe_fuerte', fx='chispa_fuerte', stop=14 if final else 8, chip=0)
             self.apply_hit(att, opp, hit, opp.x, opp.y - 60, force=True)
 
     def blast(self, att, dmg, radius):
@@ -279,6 +292,8 @@ class Match:
             return
         dfn.combo_dmg += dmg
         dfn.take_hit(hit, att, dmg, False, locked=bool(lock))
+        if att.move is not None and not att.move.get('ult') and not proj and att.on_ground:
+            att.vx *= 0.25
         stop = hit.get('stop', 6)
         att.hitstop = dfn.hitstop = stop
         if att.move is None or not att.move.get('ult'):

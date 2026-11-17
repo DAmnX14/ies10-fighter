@@ -139,3 +139,9 @@ ningún sonido ni música de terceros.
 | `parada_voz_ultimate_1.ogg` | Parada: ultimate 1 |
 | `parada_voz_ultimate_2.ogg` | Parada: ultimate 2 |
 | `parada_voz_victoria.ogg` | Parada: victoria |
+
+## Versión 1.1
+
+Se agregaron, generados con el mismo método (`python tools/build_audio.py --voces`): `rayo.ogg` (ultimate «Alto voltaje»), las voces `*_voz_ultimate_3.ogg` de Pantoja, Parada, Nehuen y Luciano, y todas las voces de **Nico** (`nico_voz_*.ogg`, `loc_nico.ogg`, `loc_nico_gana.ogg`).
+
+La imagen `assets/backgrounds/plaza.png` y la ilustración `assets/source/nico.png` fueron provistas por el autor del proyecto.

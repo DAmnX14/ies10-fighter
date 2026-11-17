@@ -23,7 +23,14 @@ class VersusScreen(Scene):
         self.started = False
 
     def handle_event(self, e):
-        if nav(e) == 'ok' and self.t > 40:
+        a = nav(e)
+        if a in ('left', 'right') and self.on_done is None and not self.started:
+            order = C.STAGE_ORDER
+            cur = getattr(self.game, 'stage_id', 'aula')
+            self.game.stage_id = order[(order.index(cur) + (1 if a == 'right' else -1)) % len(order)]
+            self.audio.play('menu_mover')
+            self.t = min(self.t, 120)          # da tiempo para elegir
+        if a == 'ok' and self.t > 40:
             self.go()
 
     def go(self):
@@ -92,7 +99,11 @@ class VersusScreen(Scene):
             ui.blit_center(surf, vs, C.WIDTH / 2, C.HEIGHT / 2 - 40)
         if self.subtitle:
             ui.blit_center(surf, ui.text_outline(self.subtitle, 18, C.YELLOW), C.WIDTH / 2, 40)
-        ui.blit_center(surf, ui.text_outline('ESCENARIO: AULA DEL IES 10', 14, C.CYAN), C.WIDTH / 2, C.HEIGHT - 40)
+        sname = C.STAGES[getattr(self.game, 'stage_id', 'aula')]['name']
+        lab = f'← ESCENARIO: {sname} →' if self.on_done is None else f'ESCENARIO: {sname}'
+        ui.blit_center(surf, ui.text_outline(lab, 14, C.CYAN), C.WIDTH / 2, C.HEIGHT - 40)
+        if self.on_done is None:
+            ui.blit_center(surf, ui.text('← → CAMBIAR ESCENARIO   ENTER PELEAR', 9, C.WHITE), C.WIDTH / 2, C.HEIGHT - 16)
         if t > 55 and t < 64:
             s = pygame.Surface((C.WIDTH, C.HEIGHT)); s.fill((255, 255, 255)); s.set_alpha(255 - (t - 55) * 28)
             surf.blit(s, (0, 0))

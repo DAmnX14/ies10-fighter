@@ -29,7 +29,7 @@ class Fighter:
         self.moves = normals()
         self.moves.update(self.data['moves'])
         self.color = self.data['color']
-        self.push_w = {'pantoja': 78, 'parada': 64, 'nehuen': 62, 'luciano': 64}.get(name, 64)
+        self.push_w = {'pantoja': 78, 'parada': 64, 'nehuen': 62, 'luciano': 64, 'nico': 64}.get(name, 64)
         self.reset_round()
         self.wins = 0
 
@@ -128,7 +128,12 @@ class Fighter:
         # --- ultimate
         if inp.take('ultimate'):
             if self.meter >= ULTIMATE_COST or self.match.infinite_meter:
-                key = 'ultimate_2' if h['abajo'] else 'ultimate_1'
+                if h['abajo']:
+                    key = 'ultimate_2'
+                elif h[fwd] and 'ultimate_3' in self.moves:
+                    key = 'ultimate_3'
+                else:
+                    key = 'ultimate_1'
                 self.start_ultimate(key)
                 return
             else:
@@ -251,7 +256,9 @@ class Fighter:
             elif k == 'fx':
                 M.spawn_fx_at_joint(self, e[1], e[2])
             elif k == 'quake':
-                M.quake(self, e[1], e[2])
+                M.quake(self, e[1], e[2], e[3] if len(e) > 3 else True)
+            elif k == 'strike':
+                M.strike(self, e[1], e[2], e[3])
             elif k == 'blast':
                 M.blast(self, e[1], e[2])
 
@@ -342,7 +349,7 @@ class Fighter:
             self.meter = min(ULTIMATE_COST, self.meter + 2)
             return
         self.health -= dmg
-        self.flash = 4
+        self.flash = 3
         self.meter = min(ULTIMATE_COST, self.meter + 4)
         self.move = None
         self.aura = False
@@ -566,7 +573,7 @@ class Fighter:
         sx, sy = cam.to_screen(self.x, self.y)
         if self.flash > 0:
             img = img.copy()
-            img.fill((255, 255, 255, 0), special_flags=pygame.BLEND_RGB_MAX)
+            img.fill((120, 120, 120, 0), special_flags=pygame.BLEND_RGB_ADD)
         elif self.block_flash > 0:
             img = img.copy()
             img.fill((70, 90, 160, 0), special_flags=pygame.BLEND_RGB_ADD)

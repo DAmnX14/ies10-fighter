@@ -48,15 +48,19 @@ class CharacterSelect(Scene):
         cx = C.WIDTH / 2
         x0 = cx - TILE - GAP / 2
         y0 = 205
-        return pygame.Rect(x0 + (i % 2) * (TILE + GAP), y0 + (i // 2) * (TILE + GAP), TILE, TILE)
+        if i < 3:                                    # fila de arriba: 3 retratos
+            x0 = cx - 1.5 * TILE - GAP
+            return pygame.Rect(x0 + i * (TILE + GAP), y0, TILE, TILE)
+        return pygame.Rect(x0 + (i - 3) * (TILE + GAP), y0 + TILE + GAP, TILE, TILE)
 
     def move(self, cur, dx, dy):
         if cur.ready:
             return
-        r, c = cur.idx // 2, cur.idx % 2
-        c = (c + dx) % 2
-        r = (r + dy) % 2
-        cur.idx = r * 2 + c
+        n = len(C.CHARACTERS)
+        if dx:
+            cur.idx = (cur.idx + dx) % n
+        if dy:
+            cur.idx = {0: 3, 1: 3, 2: 4, 3: 0, 4: 2}.get(cur.idx, 0)
         self.audio.play('menu_mover')
         side = 1 if cur is self.c1 else 2
         self.side_anim[side] = AnimPlayer(C.CHARACTERS[cur.idx])
@@ -79,7 +83,7 @@ class CharacterSelect(Scene):
                                    CHARACTERS[name]['color']])
         if self.mode in ('cpu', 'training') and cur is self.c1:
             self.stage = 2
-            self.c2.idx = (self.c1.idx + 1) % 4
+            self.c2.idx = (self.c1.idx + 1) % len(C.CHARACTERS)
             self.side_anim[2] = AnimPlayer(C.CHARACTERS[self.c2.idx])
 
     def cancel(self, cur):
@@ -276,7 +280,7 @@ class CharacterSelect(Scene):
         x = C.WIDTH - 230
         ui.panel(surf, (x - 190, 220, 380, 330), (0, 0, 0, 160), C.YELLOW, 2)
         ui.blit_center(surf, ui.text_outline('MODO ARCADE', 18, C.YELLOW), x, 250)
-        lines = ['Vencé a los otros', 'tres luchadores', 'controlados por la CPU.', '',
+        lines = ['Vencé a los luchadores', 'del IES 10 y enfrentá', 'al JEFE FINAL: NICO.', '',
                  'La dificultad sube', 'en cada combate.', '', '¡Convertite en el', 'CAMPEÓN DEL IES 10!']
         for i, l in enumerate(lines):
             ui.blit_center(surf, ui.text(l, 11, C.WHITE), x, 290 + i * 26)
