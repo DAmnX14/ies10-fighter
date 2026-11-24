@@ -59,6 +59,19 @@ def _key_ok(keys, k):
 
 
 class KeyboardControllerSafe(KeyboardController):
+    """Jugador humano: teclado, mando o ambos según OPCIONES → ENTRADA."""
+
     def read(self, keys):
-        m = self.settings.controls(self.player)
-        return {a: any(_key_ok(keys, k) for k in m[a]) for a in C.ACTIONS}
+        from game import gamepad
+        mgr = gamepad.manager()
+        mode = mgr.mode(self.player) if mgr else 'teclado'
+        if mode != 'mando':
+            m = self.settings.controls(self.player)
+            out = {a: any(_key_ok(keys, k) for k in m[a]) for a in C.ACTIONS}
+        else:
+            out = {a: False for a in C.ACTIONS}
+        if mgr is not None and mode != 'teclado':
+            pad = mgr.read(self.player)
+            for a in C.ACTIONS:
+                out[a] = out[a] or pad[a]
+        return out

@@ -47,6 +47,15 @@ class FightScene(Scene):
     def handle_event(self, e):
         if e.type != pygame.KEYDOWN:
             return
+        if getattr(e, 'pad', None) == 'start':
+            if not self.paused:
+                self.open_pause()
+            elif self.show_moves:
+                self.show_moves = False
+            else:
+                self.paused = False
+                pygame.mixer.music.unpause()
+            return
         if self.paused:
             if self.show_moves:
                 if nav(e) in ('ok', 'back'):
@@ -78,6 +87,8 @@ class FightScene(Scene):
                     from screens.main_menu import TitleScene
                     self.game.change(lambda: TitleScene(self.game, True))
             return
+        if getattr(e, 'player', None):
+            return                # botones del mando durante la pelea: se leen por tick
         if e.key in (pygame.K_ESCAPE, pygame.K_p, pygame.K_PAUSE):
             self.open_pause()
             return

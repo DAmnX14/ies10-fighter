@@ -83,7 +83,10 @@ BONES = {
     'f_foot': ('f_an', 'f_toe', 0.04),
 }
 DRAW_ORDER = ['f_up', 'f_lo', 'b_th', 'b_shin', 'b_foot', 'f_th', 'f_shin',
-              'f_foot', 'torso', 'head', 'b_up', 'b_lo']
+              'f_foot', 'torso', 'b_up', 'b_lo', 'head']
+HEAD_SCALE = 1.10          # cabeza un poco más grande: la cara se lee mejor a resolución nativa
+ARM_STRETCH = 1.08         # estiramiento máximo de un brazo (más se deforma el dibujo)
+LEG_BEND_MIN = 0.52        # flexión máxima de rodilla (fracción del largo de la pierna)
 
 
 # --------------------------------------------------------------- segmentado
@@ -208,6 +211,22 @@ class RigCharacter:
         for ob in ('b_th', 'f_th'):
             k = names.index(ob)
             lab[(lab == k) & (py < hip_y)] = 0
+        # ---- cabeza completa: la cara entera (incluidos nariz, boca y mentón) pertenece
+        # a la cabeza. Antes la parte baja de la cara quedaba asignada al antebrazo
+        # trasero y "viajaba" con el brazo al golpear o patear.
+        hx, hy = self.J['head']; nx, ny = self.J['neck']
+        hl = math.hypot(nx - hx, ny - hy)
+        cx_, cy_ = (hx + nx) / 2, (hy + ny) / 2 - 0.12 * hl
+        ell = (((px - cx_) / (0.56 * hl)) ** 2 + ((py - cy_) / (0.78 * hl)) ** 2) <= 1.0
+        ell &= py < ny - 0.02 * hl
+        self.hand_hole = np.zeros((h, w), bool)
+        for hs in ('b', 'f'):
+            hxx, hyy = self.J[hs + '_ha']
+            disc = np.hypot(px - hxx, py - hyy) < 0.06 * self.H
+            self.hand_hole |= disc & ell
+        head_i = names.index('head')
+        lab = np.where(fgs & ell & ~self.hand_hole, head_i, lab)
+        self.head_ell = ell
         self.label = lab
 
         rgba = np.dstack([small, (fgs * 255).astype(np.uint8)])
@@ -275,6 +294,17 @@ class RigCharacter:
                     shd = np.hypot(px - self.J[sd + '_sh'][0], py - self.J[sd + '_sh'][1])
                     sel = (self.label == names.index(sd + '_up')) & (shd < 0.045 * self.H)
                     layer[sel] = rgba[sel]
+            if b == 'head' and self.hand_hole.any():
+                # el puño tapaba la cara en el dibujo original: se reconstruye la cara
+                hull = cv2.convexHull(cv2.findNonZero(m.astype(np.uint8)))
+                hullm = np.zeros((h, w), np.uint8); cv2.fillConvexPoly(hullm, hull, 1)
+                sel = self.hand_hole & (hullm > 0) & (layer[..., 3] == 0)
+                if sel.any():
+                    known = layer[..., 3] > 0
+                    src_rgb = layer[..., :3].copy()
+                    fill = cv2.inpaint(src_rgb, (~known).astype(np.uint8) * 255, 7, cv2.INPAINT_TELEA)
+                    layer[sel, :3] = fill[sel]
+                    layer[sel, 3] = 255
             ys_, xs_ = np.where(layer[..., 3] > 0)
             if len(xs_) == 0:
                 continue
@@ -306,7 +336,8 @@ class RigCharacter:
         if sk.get('front_f'):
             for b in ('f_up', 'f_lo'):
                 self.order.remove(b)
-            self.order += ['f_up', 'f_lo']
+            self.order.remove('head')
+            self.order += ['f_up', 'f_lo', 'head']
 
     # ------------------------------------------------------------ pose
     def default_params(self):
@@ -365,7 +396,7 @@ class RigCharacter:
                 for s in 'bf':
                     hip = add(pel_t, rot(sub(J[s + '_hip'], pel0), R))
                     tg = add(J[s + '_an'], (p[s + 'fx'] * u, p[s + 'fy'] * u))
-                    if length(sub(tg, hip)) < 0.70 * self.leglen[s] and p[s + 'fy'] > -8:
+                    if length(sub(tg, hip)) < LEG_BEND_MIN * self.leglen[s] and p[s + 'fy'] > -8:
                         ok = False
                 if ok or ry <= 0:
                     break
@@ -393,7 +424,14 @@ class RigCharacter:
             tgt_local = mul((p[s + 'hx'], p[s + 'hy']), self.armlen[s])
             T = add(sh, rot(tgt_local, R + lean))
             L1, L2 = self.L[s + '_up'], self.L[s + '_lo']
-            k = min(1.4, max(1.0, length(sub(T, sh)) / ((L1 + L2) * 0.985)))
+            reach = (L1 + L2) * 0.985
+            dT = length(sub(T, sh))
+            if dT > reach * ARM_STRETCH:
+                # el hombro acompaña el golpe (protracción) en lugar de deformar el brazo
+                ex = min(dT - reach * ARM_STRETCH, 0.22 * reach)
+                sh = add(sh, mul(sub(T, sh), ex / dT))
+                P[s + '_sh'] = sh
+            k = min(ARM_STRETCH, max(1.0, length(sub(T, sh)) / reach))
             E, Tn = ik2(sh, T, L1 * k, L2 * k, self.arm_sign[s])
             P[s + '_el'], P[s + '_ha'] = E, Tn
             self._scale[s + '_up'] = self._scale[s + '_lo'] = k
@@ -422,6 +460,7 @@ class RigCharacter:
         ox = ANCHOR_X * SS - self.anchor[0]
         oy = ANCHOR_Y * SS - self.anchor[1]
         canvas = np.zeros((Hh, W, 4), np.float32)
+        headm = np.zeros((Hh, W), np.float32)
         for b in self.order:
             if b == 'b_up' and p.get('prop') == 'guitar':
                 self._draw_guitar(canvas, P, ox, oy)
@@ -436,7 +475,7 @@ class RigCharacter:
             Rs_inv = np.array([[math.cos(rs), math.sin(rs)], [-math.sin(rs), math.cos(rs)]])
             Rd = np.array([[math.cos(rd), -math.sin(rd)], [math.sin(rd), math.cos(rd)]])
             M = np.zeros((2, 3))
-            M[:, :2] = Rd @ np.diag([k, 1.0]) @ Rs_inv
+            M[:, :2] = Rd @ (np.diag([HEAD_SCALE, HEAD_SCALE]) if b == 'head' else np.diag([k, 1.0])) @ Rs_inv
             t = np.array([cx - src_p[0], cy - src_p[1]])
             M[:, 2] = M[:, :2] @ t + np.array([dst_p[0] + ox, dst_p[1] + oy])
             warped = cv2.warpAffine(crop, M, (W, Hh), flags=cv2.INTER_NEAREST,
@@ -444,10 +483,15 @@ class RigCharacter:
             a = warped[..., 3:4].astype(np.float32) / 255
             canvas[..., :3] = canvas[..., :3] * (1 - a) + warped[..., :3] * a
             canvas[..., 3:4] = canvas[..., 3:4] * (1 - a) + a
+            if b == 'head':
+                headm = np.maximum(headm * (1 - a[..., 0]), a[..., 0])
+            else:
+                headm = headm * (1 - a[..., 0])
         if p.get('sx', 1) != 1 or p.get('sy', 1) != 1:
             ax, ay = ANCHOR_X * SS, ANCHOR_Y * SS
             M = np.array([[p['sx'], 0, ax - ax * p['sx']], [0, p['sy'], ay - ay * p['sy']]])
             canvas = cv2.warpAffine(canvas, M, (W, Hh), flags=cv2.INTER_NEAREST)
+            headm = cv2.warpAffine(headm, M, (W, Hh), flags=cv2.INTER_NEAREST)
         # reducción a nativo
         prem = canvas.copy()
         prem[..., :3] *= prem[..., 3:4]
@@ -456,6 +500,14 @@ class RigCharacter:
         rgb = np.where(al[..., None] > 1e-4, small[..., :3] / np.maximum(al[..., None], 1e-4), 0)
         out = np.zeros((CANVAS_H, CANVAS_W, 4), np.uint8)
         mask = al > 0.45
+        # nitidez de la cara: realza ojos, cejas y boca que se pierden al reducir
+        hm = cv2.resize(headm, (CANVAS_W, CANVAS_H), interpolation=cv2.INTER_AREA) > 0.5
+        hm = cv2.erode(hm.astype(np.uint8), np.ones((2, 2), np.uint8)) > 0
+        if hm.any():
+            blur = cv2.GaussianBlur(rgb.astype(np.float32), (0, 0), 0.9)
+            sharp = rgb + 0.9 * (rgb - blur)
+            rgb = np.where(hm[..., None], sharp, rgb)
+        self._headmask = hm & mask
         rgb = np.clip(rgb, 0, 255)
         if quantize and self.palette is not None:
             px = rgb[mask].astype(np.float32)
@@ -481,6 +533,12 @@ class RigCharacter:
             out[new, :3] = self.palette[np.argmin(d, 1)].astype(np.uint8)
             out[new, 3] = 255
             mask = closed
+        # quitar píxeles sueltos (restos de partes rotadas que quedan flotando)
+        n_, cc, st, _ = cv2.connectedComponentsWithStats((mask > 0).astype(np.uint8), connectivity=8)
+        for c_ in range(1, n_):
+            if st[c_, cv2.CC_STAT_AREA] < 8:
+                out[cc == c_] = 0
+                mask[cc == c_] = 0
         edge = (mask > 0) & (cv2.erode(mask, np.ones((3, 3), np.uint8)) == 0)
         lum = out[..., :3].astype(np.float32).sum(2)
         dark = self.palette[np.argmin(self.palette.sum(1))].astype(np.uint8)
@@ -507,7 +565,15 @@ class RigCharacter:
         img, _ = self.render(self.default_params(), quantize=False)
         px = img[img[..., 3] > 0, :3].astype(np.float32)
         crit = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 50, 0.5)
+        cv2.setRNGSeed(1234)
         _, _, centers = cv2.kmeans(px, k, None, crit, 4, cv2.KMEANS_PP_CENTERS)
+        # colores propios para la cara (piel, ojos, cejas, boca): con la paleta
+        # general la cara quedaba con 3-4 tonos y se veía "borrada"
+        hm = getattr(self, '_headmask', None)
+        if hm is not None and hm.sum() > 40:
+            hp = img[hm, :3].astype(np.float32)
+            _, _, hc = cv2.kmeans(hp, min(16, len(hp) // 4), None, crit, 4, cv2.KMEANS_PP_CENTERS)
+            centers = np.concatenate([centers, hc])
         self.palette = centers.astype(np.float32)
 
     def to_native(self, pt):

@@ -101,6 +101,16 @@ class CharacterSelect(Scene):
         k = e.key
         p1 = self.game.settings.controls(1)
         p2 = self.game.settings.controls(2)
+        pad = getattr(e, 'pad', None)
+        pl = getattr(e, 'player', None)
+        if pl and pad in ('ok', 'start', 'back'):
+            ctl = p1 if pl == 1 else p2
+            act = 'patada' if pad == 'back' else 'golpe'
+            if not ctl.get(act):
+                return
+            k = ctl[act][0]
+        elif pl and not pad:
+            return
 
         def is_(keys, act):
             return k in keys[act]

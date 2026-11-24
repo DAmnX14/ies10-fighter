@@ -31,6 +31,8 @@ class Game:
         from game import assets
         from game.ui import Transition
         self.audio = Audio(self.settings)
+        from game import gamepad
+        self.pads = gamepad.manager(self.settings)
         self.loading_screen()
         assets.preload_all()
         self.transition = Transition()
@@ -76,8 +78,15 @@ class Game:
                     self.running = False
                 elif e.type == pygame.KEYDOWN and e.key == pygame.K_F11:
                     self.toggle_fullscreen()
+                elif self.pads.handle_device_event(e):
+                    pass
                 elif not self.transition.active:
                     self.scene.handle_event(e)
+                    if not getattr(self.scene, 'capture_pad', False):
+                        for se in self.pads.translate(e):
+                            if self.transition.active:
+                                break
+                            self.scene.handle_event(se)
             self.step()
             pygame.display.flip()
             self.clock.tick(C.FPS)

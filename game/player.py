@@ -54,6 +54,7 @@ class Fighter:
         self.mtick = 0
         self.hits_done = set()
         self.stun = 0
+        self.stun_total = 1
         self.hitstop = 0
         self.invuln = 0
         self.air_attack_used = False
@@ -365,8 +366,9 @@ class Fighter:
         if locked:
             self.state = 'locked'
             self.locked_by = attacker
-            self.set_anim('recibir_golpe', random.choice((0, 1)))
+            self.set_anim('recibir_golpe', 0)
             self.stun = hit['stun']
+            self.stun_total = max(1, self.stun)
             if hit.get('kd'):
                 self.locked_by = None
                 self.knockdown(d * hit['kb'], hit.get('launch', 0) or -10)
@@ -376,10 +378,61 @@ class Fighter:
             return
         self.state = 'hitstun'
         self.stun = hit['stun']
+        self.stun_total = max(1, self.stun)
         self.vx = d * hit['kb']
-        self.set_anim('recibir_golpe', 0 if hit['dmg'] < 70 else 1)
+        self.set_anim('recibir_golpe', 0)
         if random.random() < 0.35:
             M.audio.grunt(self.name, 'dolor')
+
+    def hurt_frame(self):
+        """Cuadro de la reacción al golpe según el avance del aturdimiento: el impacto
+        se ve enseguida, la postura de dolor se mantiene y al final se recupera la guardia
+        (antes la animación terminaba a los pocos ticks y el resto del aturdimiento el
+        luchador quedaba quieto como si no lo hubieran golpeado)."""
+        if self.anim != 'recibir_golpe':
+            self.set_anim('recibir_golpe', 0)
+        n = self.anim_info()['frames']
+        k = 1.0 - max(0, self.stun) / max(1, self.stun_total)
+        if k < 0.18:
+            f = 0
+        elif k < 0.62:
+            f = 1
+        elif k < 0.85:
+            f = 2
+        else:
+            f = 3
+        self.frame = min(n - 1, f)
+
+    def lock_distance(self, victim):
+        """Distancia a la que se sostiene al rival durante una ultimate con agarre.
+        Se calcula con el alcance real de los golpes de la animación para que los dos
+        sprites no se encimen y todos los golpes sigan conectando."""
+        m = self.move
+        base = m.get('lock_dist', 100)
+        if m.get('passthrough') or not m.get('hits'):
+            return base
+        key = (self.move_key, victim.name)
+        cache = self.__dict__.setdefault('_lock_cache', {})
+        if key not in cache:
+            nfr = self.spr.info(m['anim'])['frames']
+            reach = None
+            for h in m['hits']:
+                best = None
+                for fr in range(h['f'][0], min(h['f'][1], nfr - 1) + 1):
+                    jx, _ = self.spr.joint(m['anim'], fr, h['j'])
+                    r = (jx + h['off'][0] - self.spr.ax) * C.SCALE
+                    best = r if best is None else max(best, r)
+                if best is not None:
+                    reach = best if reach is None else min(reach, best)
+            vfront = None
+            vi = victim.spr.info('recibir_golpe')
+            for fr in range(vi['frames']):
+                x0, _, x1, _ = victim.spr.bbox('recibir_golpe', fr)
+                f = (x1 - (x1 - x0) * 0.14 - victim.spr.ax) * C.SCALE
+                vfront = f if vfront is None else min(vfront, f)
+            d = base if reach is None else reach + (vfront or 0) - 14
+            cache[key] = max(base, min(d, base + 140))
+        return cache[key]
 
     def facing_to(self, other):
         return 1 if other.x >= self.x else -1
@@ -444,7 +497,7 @@ class Fighter:
             self.update_move()
         elif st == 'hitstun':
             self.stun -= 1
-            self.step_anim(loop=False)
+            self.hurt_frame()
             self.vx *= 0.85
             if self.stun <= 0:
                 self.state = 'idle'; self.set_anim('idle'); self.combo_reset()
@@ -456,9 +509,9 @@ class Fighter:
         elif st == 'locked':
             att = self.locked_by
             self.stun -= 1
-            self.step_anim(loop=False)
+            self.hurt_frame()
             if att is not None and att.move is not None and att.move.get('lock'):
-                tx = att.x + att.facing * att.move.get('lock_dist', 100)
+                tx = att.x + att.facing * att.lock_distance(self)
                 self.x += (tx - self.x) * 0.35
                 self.facing = -att.facing
                 self.vx = 0

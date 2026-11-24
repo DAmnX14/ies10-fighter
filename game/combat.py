@@ -390,6 +390,9 @@ class Match:
             return
         if a.state == 'lying' or b.state == 'lying':
             return
+        # durante un agarre de ultimate la posición la maneja el agarre
+        if a.state == 'locked' or b.state == 'locked':
+            return
         # si uno está muy por encima del otro (saltándolo), no se empujan
         if abs(a.y - b.y) > 260:
             return

@@ -64,6 +64,9 @@ DEFAULT_SETTINGS = {
     'crt': True,
     'show_intro': True,
     'controls': {str(k): v for k, v in DEFAULT_CONTROLS.items()},
+    'input_mode': {'1': 'ambos', '2': 'ambos'},      # ambos / teclado / mando
+    'pad_slot': {'1': 'auto', '2': 'auto'},           # auto / 0 / 1
+    'pad_controls': {},                               # botones del mando por jugador
 }
 
 

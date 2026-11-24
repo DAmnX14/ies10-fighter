@@ -64,6 +64,28 @@ También funciona en Linux y macOS con los mismos pasos.
 - **F11**: pantalla completa.
 - Todos los controles se pueden cambiar en **OPCIONES → CONTROLES JUGADOR 1 / 2**.
 
+### Joystick / mando
+
+Se puede jugar con mando (Xbox, PlayStation o genérico USB), con teclado o con los dos a la vez.
+En **OPCIONES → ENTRADA JUGADOR 1 / 2** cada jugador elige **TECLADO + MANDO**, **SÓLO TECLADO**
+o **SÓLO MANDO**. Los mandos se reparten solos: el primero que se conecta es del jugador 1 y
+el segundo del jugador 2 (si el jugador 1 elige *sólo teclado*, el primer mando pasa al jugador 2).
+Se pueden conectar y desconectar en cualquier momento.
+
+| Acción          | Mando (Xbox)      | Mando (PlayStation) |
+|-----------------|-------------------|---------------------|
+| Moverse / saltar / agacharse | Cruceta o stick izquierdo | Cruceta o stick izquierdo |
+| Puñetazo        | X                 | □                   |
+| Patada          | A                 | ✕                   |
+| Especial        | Y                 | △                   |
+| Ultimate        | RB o RT           | R1 o R2             |
+| Bloquear        | B o LB            | ○ o L1              |
+| Pausa           | START             | OPTIONS             |
+
+En los menús: cruceta/stick para moverse, **A (✕)** o **START** para aceptar y **B (○)** para volver.
+Los botones del mando también se reasignan en **OPCIONES → CONTROLES JUGADOR 1 / 2**
+(elegís la acción, ENTER, y apretás el botón del mando).
+
 ---
 
 ## 3. Modos de juego
@@ -73,7 +95,7 @@ También funciona en Linux y macOS con los mismos pasos.
 | **JUGAR → 1 JUGADOR VS CPU**  | Elegís tu luchador y el rival; combate rápido contra la computadora. |
 | **JUGAR → ENTRENAMIENTO**     | Vida que se regenera y barra de ultimate infinita. **F1** cambia el comportamiento del rival (quieto / agachado / salta / bloquea todo / CPU), **F2** muestra las hitboxes, **F3** reinicia posiciones. |
 | **MODO ARCADE**               | Enfrentás a los otros luchadores con dificultad creciente y, al final, a **NICO, el jefe de ArceTech**, en la plaza. Hay pantalla de “¿Continuar?” y final propio para cada personaje. |
-| **VERSUS**                    | Dos jugadores en el mismo teclado. En la pantalla «VS» se elige el escenario con ← →. |
+| **VERSUS**                    | Dos jugadores en el mismo teclado, con mandos o mezclando teclado y mando. En la pantalla «VS» se elige el escenario con ← →. |
 | **PERSONAJES**                | Galería: todas las animaciones de cada luchador, estadísticas y lista de movimientos. |
 | **OPCIONES**                  | Volumen de música / efectos / voces, tiempo por ronda (30/60/99/∞), rondas (1, mejor de 3, mejor de 5), dificultad de la CPU (Fácil/Normal/Difícil/Extremo), pantalla completa, filtro CRT, intro y controles. |
 

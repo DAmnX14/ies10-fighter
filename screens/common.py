@@ -34,6 +34,11 @@ BACK = (pygame.K_ESCAPE, pygame.K_BACKSPACE)
 def nav(e):
     if e.type != pygame.KEYDOWN:
         return None
+    pad = getattr(e, 'pad', None)
+    if pad:
+        return 'ok' if pad == 'start' else pad
+    if getattr(e, 'player', None):
+        return None          # botón del mando sin significado en menús
     k = e.key
     if k in UP:
         return 'up'
