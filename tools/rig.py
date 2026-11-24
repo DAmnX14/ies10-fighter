@@ -461,7 +461,10 @@ class RigCharacter:
             elif k in ('bf_abs', 'ff_abs'):  # tobillo absoluto (u) desde ancla
                 s = k[0]
                 p[s + 'fx'] = v[0] - self.rest_ankle_u[s][0]
-                p[s + 'fy'] = v[1] - self.rest_ankle_u[s][1]
+                # el tobillo nunca más bajo que estando parado: si no, el pie se metía
+                # en el piso y todo el cuadro se subía para compensar (en la barrida el
+                # luchador "se paraba" 10-20 px; cada personaje tiene otra altura de tobillo)
+                p[s + 'fy'] = min(v[1] - self.rest_ankle_u[s][1], 0.0)
             elif k in ('bf', 'ff'):          # tobillo desplazado (u)
                 p[k[0] + 'fx'], p[k[0] + 'fy'] = v
             else:
@@ -489,15 +492,33 @@ class RigCharacter:
         pel0 = J['pelvis']
         ry = p['ry']
         if p['lrel'] < 0.5 and ry > 0:
-            # no doblar las piernas más de lo que el dibujo soporta
-            for _ in range(40):
+            # no doblar las piernas más de lo que el dibujo soporta. Antes se subía todo el
+            # cuerpo (y en personajes de guardia abierta el agachado "saltaba" a parado en
+            # algún cuadro); ahora el pie apoyado se abre hacia afuera lo necesario y la
+            # altura del cuerpo se mantiene estable entre cuadros.
+            pel_t = add(pel0, (p['rx'] * u, ry * u))
+            for s in 'bf':
+                if p[s + 'fy'] <= -1:
+                    continue                     # pierna en el aire: puede doblarse más
+                hip = add(pel_t, rot(sub(J[s + '_hip'], pel0), R))
+                tg = add(J[s + '_an'], (p[s + 'fx'] * u, p[s + 'fy'] * u))
+                need = LEG_BEND_MIN * self.leglen[s]
+                d = sub(tg, hip)
+                if length(d) >= need:
+                    continue
+                out = -1 if s == 'b' else 1      # hacia afuera: pie trasero atrás, delantero adelante
+                dy = d[1]
+                if abs(dy) < need:
+                    dx_need = (need * need - dy * dy) ** 0.5
+                    shift = (dx_need - abs(d[0])) if d[0] * out >= 0 else (dx_need + abs(d[0]))
+                    p[s + 'fx'] += out * min(shift, 0.6 * self.leglen[s]) / u
+            for _ in range(40):                  # si aun así no alcanza (muy raro), se sube un poco
                 pel_t = add(pel0, (p['rx'] * u, ry * u))
                 ok = True
                 for s in 'bf':
                     hip = add(pel_t, rot(sub(J[s + '_hip'], pel0), R))
                     tg = add(J[s + '_an'], (p[s + 'fx'] * u, p[s + 'fy'] * u))
-                    # sólo cuentan las piernas apoyadas: la que está en el aire puede doblarse más
-                    if length(sub(tg, hip)) < LEG_BEND_MIN * self.leglen[s] and p[s + 'fy'] > -1:
+                    if length(sub(tg, hip)) < LEG_BEND_MIN * self.leglen[s] * 0.97 and p[s + 'fy'] > -1:
                         ok = False
                 if ok or ry <= 0:
                     break

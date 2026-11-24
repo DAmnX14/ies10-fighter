@@ -12,6 +12,7 @@ from anim_defs import ANIM_ORDER, get_anim, has_anim
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 CHARS = ['pantoja', 'parada', 'nehuen', 'luciano', 'nico', 'angel', 'facu', 'pedro', 'emi', 'denis']
+KNEE_SINK = 18      # px nativos que una rodilla/pierna apoyada puede «pisar» el suelo
 PORTRAIT = 144      # retrato a 144 px: se reduce suave o se amplía x2/x3 sin deformar los píxeles
 JOINTS = ['f_ha', 'b_ha', 'f_an', 'b_an', 'f_toe', 'b_toe', 'head', 'neck', 'pelvis',
           'f_el', 'b_el', 'f_kn', 'b_kn']
@@ -46,17 +47,21 @@ def render_grounded(rc, kf):
         if not len(ys):
             break
         low = ys.max()
+        if low > ANCHOR_Y + 1 and not airborne and low <= ANCHOR_Y + 1 + KNEE_SINK:
+            # pose apoyada (agachado, barrida): lo que baja del suelo es la rodilla o la
+            # pierna apoyada en el piso. Se aplana contra el suelo en vez de levantar todo
+            # el cuerpo (antes el luchador se veía parado al agacharse).
+            img = img.copy()
+            img[ANCHOR_Y + 1:] = 0
+            break
         if low > ANCHOR_Y + 1:                                   # se hunde
             exc = (low - ANCHOR_Y) / u_px
             if low >= CANVAS_H - 1:
                 exc = max(exc, 4.0)                              # cortado: no se ve cuánto sobra
             kf['ry'] = kf.get('ry', 0) - exc
             continue
-        if not airborne and low < ANCHOR_Y - 1:                 # flota
-            ank = [rc.to_native(P[s_ + '_an'])[1] for s_ in 'bf'] + [rc.to_native(P[s_ + '_toe'])[1] for s_ in 'bf']
-            if max(ank) >= ANCHOR_Y - 16:                        # hay un pie que debería estar apoyado
-                kf['ry'] = kf.get('ry', 0) + (ANCHOR_Y - low) / u_px
-                continue
+        # si flota, NO se cambia la pose (bajar la pelvis deformaba caminar/agacharse):
+        # se corrige abajo desplazando el cuadro entero
         break
     # red de seguridad: si la pose no alcanzó, se alinea el cuadro entero (sprite y
     # articulaciones) para que el punto más bajo quede exactamente sobre el suelo

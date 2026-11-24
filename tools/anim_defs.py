@@ -142,8 +142,8 @@ ANIMS = {
         K(1, ry=26, bf=(-8, 0), ff_abs=(40, -3), ffa=-5, lean=8, rx=-2),
         K(1, ry=28, bf=(-10, 0), ff_abs=(56, -3), ffa=-10, lean=10, rx=-4),
         K(1, ry=28, bf=(-10, 0), ff_abs=(56, -3), ffa=-10, lean=10, rx=-4),
-        K(1, ry=24, bf=(-6, 0), ff_abs=(30, -3), lean=7),
-        K(1, ry=20, bf=(-5, 0), ff=(5, 0), lean=7),
+        K(1, ry=26, bf=(-8, 0), ff=(14, 0), lean=8),        # recoge la pierna sin pararse
+        K(1, ry=24, bf=(-6, 0), ff=(7, 0), lean=7),
     ], dur=4),
     'patada_aerea': dict(keys=[
         K(1, lrel=1, ry=-8, bf=(6, -22), ff=(-4, -26)),
@@ -612,8 +612,26 @@ CROUCH_ANIMS = ('agacharse', 'bloquear_agachado', 'golpe_agachado', 'patada_agac
 CROUCH_FIX = {'parada': dict(max_ry=20, bf=(-12, 0), ff=(10, 0), lean_add=3)}
 
 
+CROUCH_RY = 26          # altura única del agachado: todas las acciones agachadas a la misma altura
+CROUCH_FEET = ((-7, 0), (7, 0))
+
+
 def _fix_crouch(char, name, a):
     fx = CROUCH_FIX.get(char)
+    if name in CROUCH_ANIMS and 'keys' in a and not fx:
+        # antes «agacharse» bajaba a 28 y golpe/bloqueo/barrida agachados a 20-22:
+        # al pegar o cubrirse agachado el luchador se "paraba" de golpe 10-30 px
+        keys = []
+        for kf, n in a['keys']:
+            kf = dict(kf)
+            if kf.get('ry', 0) >= 16:
+                kf['ry'] = max(kf['ry'], CROUCH_RY)
+                if kf.get('bf') in (None, (-5, 0), (-4, 0), (-6, 0)):
+                    kf['bf'] = CROUCH_FEET[0]
+                if 'ff_abs' not in kf and kf.get('ff') in (None, (5, 0), (4, 0)):
+                    kf['ff'] = CROUCH_FEET[1]
+            keys.append((kf, n))
+        return dict(a, keys=keys)
     if not fx or name not in CROUCH_ANIMS or 'keys' not in a:
         return a
     keys = []
