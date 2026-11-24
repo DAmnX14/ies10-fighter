@@ -74,34 +74,37 @@ class VersusScreen(Scene):
             y2 = (i * 53 - t * 9) % C.HEIGHT
             pygame.draw.line(surf, d2['color'], (C.WIDTH / 2 + 200 + off, y2), (C.WIDTH + off, y2), 1)
         # retratos grandes
-        p1 = pygame.transform.scale(assets.character(self.c1).portrait, (300, 300))
-        p2 = pygame.transform.flip(pygame.transform.scale(assets.character(self.c2).portrait, (300, 300)), True, False)
-        surf.blit(p1, (40 - off, 60))
-        surf.blit(p2, (C.WIDTH - 340 + off, 60))
-        # cuerpos
-        self.a1.draw(surf, 480 - off, 700, 1, 3)
-        self.a2.draw(surf, C.WIDTH - 480 + off, 700, -1, 3)
-        # nombres
-        n1 = ui.text_gradient(d1['display'], 40, (255, 255, 255), d1['color'], extrude=5)
-        n2 = ui.text_gradient(d2['display'], 40, (255, 255, 255), d2['color'], extrude=5)
-        surf.blit(n1, (40 - off, 380))
-        surf.blit(n2, (C.WIDTH - 40 - n2.get_width() + off, 380))
-        q1 = ui.text_outline('«' + d1['quote'] + '»', 11, C.WHITE)
-        q2 = ui.text_outline('«' + d2['quote'] + '»', 11, C.WHITE)
-        surf.blit(q1, (40 - off, 440))
-        surf.blit(q2, (C.WIDTH - 40 - q2.get_width() + off, 440))
+        # columnas laterales: retrato, nombre y frase (ancho 280) — los cuerpos van al centro
+        COLW = 280
+        p1 = pygame.transform.scale(assets.character(self.c1).portrait, (COLW, COLW))
+        p2 = pygame.transform.flip(pygame.transform.scale(assets.character(self.c2).portrait, (COLW, COLW)), True, False)
+        surf.blit(p1, (30 - off, 70))
+        surf.blit(p2, (C.WIDTH - 30 - COLW + off, 70))
+        # cuerpos, a escala 2, entre las columnas y debajo del «VS»
+        self.a1.draw(surf, 450 - off, 650, 1, 2)
+        self.a2.draw(surf, C.WIDTH - 450 + off, 650, -1, 2)
+        # nombres y frases
+        n1 = ui.text_gradient(d1['display'], 36, (255, 255, 255), d1['color'], extrude=5)
+        n2 = ui.text_gradient(d2['display'], 36, (255, 255, 255), d2['color'], extrude=5)
+        surf.blit(n1, (30 - off, 362))
+        surf.blit(n2, (C.WIDTH - 30 - n2.get_width() + off, 362))
+        from screens.character_select import wrap
+        for side, d, base in ((1, d1, 30 - off), (2, d2, C.WIDTH - 30 + off)):
+            for li, ln in enumerate(wrap('«' + d['quote'] + '»', 11, COLW)):
+                q = ui.text_outline(ln, 11, C.WHITE)
+                surf.blit(q, (base if side == 1 else base - q.get_width(), 420 + li * 18))
         # VS
         if t > 55:
             kk = min(1.0, (t - 55) / 8)
             vs = ui.text_gradient('VS', 130, (255, 255, 255), C.RED, extrude=10)
-            sc = 3 - 2 * kk + 0.04 * math.sin(t * 0.3)
+            sc = 0.5 + 0.5 * kk + 0.03 * math.sin(t * 0.3)
             vs = pygame.transform.scale(vs, (int(vs.get_width() * sc), int(vs.get_height() * sc)))
-            ui.blit_center(surf, vs, C.WIDTH / 2, C.HEIGHT / 2 - 40)
+            ui.blit_center(surf, vs, C.WIDTH / 2, 230)
         if self.subtitle:
             ui.blit_center(surf, ui.text_outline(self.subtitle, 18, C.YELLOW), C.WIDTH / 2, 40)
         sname = C.STAGES[getattr(self.game, 'stage_id', 'aula')]['name']
         lab = f'← ESCENARIO: {sname} →' if self.on_done is None else f'ESCENARIO: {sname}'
-        ui.blit_center(surf, ui.text_outline(lab, 14, C.CYAN), C.WIDTH / 2, C.HEIGHT - 40)
+        ui.blit_center(surf, ui.text_outline(lab, 14, C.CYAN), C.WIDTH / 2, C.HEIGHT - 44)
         if self.on_done is None:
             ui.blit_center(surf, ui.text('← → CAMBIAR ESCENARIO   ENTER PELEAR', 9, C.WHITE), C.WIDTH / 2, C.HEIGHT - 16)
         if t > 55 and t < 64:

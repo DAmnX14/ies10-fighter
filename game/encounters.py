@@ -198,7 +198,7 @@ class Encounter:
         k = self.kind
         if k == 'amor' and u % 9 == 0:
             x = mid + random.uniform(-90, 90)
-            m.fx.add(FloatSprite('corazon', x, p1.y - random.uniform(300, 420), -1.4, 80, random.choice((0.7, 0.9, 1.1))))
+            m.fx.add(FloatSprite('corazon', x, p1.y - random.uniform(420, 470), -0.8, 60, random.choice((0.7, 0.9, 1.1))))
         if k == 'amor' and u == 70:
             self.speak(self._by('parada'), 'amor')
         if k == 'abrazo':
@@ -224,12 +224,13 @@ class Encounter:
                 m.camera.shake(5, 10)
             if u == 80:
                 self.speak(self._by('nehuen'), 'rival')
+            # las cargadas aparecen al costado de cada uno (del lado de afuera), sin tapar nada
             if u == 40:
-                m.fx.add(FloatText(p1.x, p1.y - 380, '¡BOSTERO!' if p1.name == 'denis' else '¡GALLINA!',
-                                   p1.color, 22, 70))
+                m.fx.add(FloatText(p1.x - 200, p1.y - 250, '¡BOSTERO!' if p1.name == 'denis' else '¡GALLINA!',
+                                   p1.color, 20, 70))
             if u == 100:
-                m.fx.add(FloatText(p2.x, p2.y - 380, '¡BOSTERO!' if p2.name == 'denis' else '¡GALLINA!',
-                                   p2.color, 22, 70))
+                m.fx.add(FloatText(p2.x + 200, p2.y - 250, '¡BOSTERO!' if p2.name == 'denis' else '¡GALLINA!',
+                                   p2.color, 20, 70))
         if k == 'odio':
             hater = self._by(self.who)
             if u % 8 == 0:
@@ -238,4 +239,5 @@ class Encounter:
             if u == 85:
                 self.speak(self._by('parada'), 'odio')
                 pa = self._by('parada')
-                m.fx.add(FloatText(pa.x, pa.y - 390, '¿Y AHORA QUÉ HICE?', pa.color, 16, 80))
+                side = -1 if pa is p1 else 1
+                m.fx.add(FloatText(pa.x + side * 230, pa.y - 250, '¿Y AHORA QUÉ HICE?', pa.color, 14, 80))

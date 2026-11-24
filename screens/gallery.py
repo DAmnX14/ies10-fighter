@@ -75,7 +75,7 @@ class GalleryScene(Scene):
             pygame.draw.ellipse(glow, d['color'] + (7,), (i * 11, i * 14, 440 - i * 22, 560 - i * 28))
         surf.blit(glow, (x - 220, 110))
         pygame.draw.ellipse(surf, (0, 0, 0), (x - 120, 636, 240, 30))
-        self.player.draw(surf, x, 652, 1, 4)
+        self.player.draw(surf, x, 652, 1, 3)          # escala 3: no llega a la fila de retratos
         an = self.anims[self.ai]
         info = assets.character(n).info(an)
         ui.panel(surf, (60, 92, 480, 44), (0, 0, 0, 180), d['color'], 2)
@@ -103,7 +103,8 @@ class GalleryScene(Scene):
             surf.blit(t, (px + 570 - t.get_width(), y + 1))
         # selector inferior
         for i, c in enumerate(C.CHARACTERS):
-            r = pygame.Rect(66 + i * 62, 146, 52, 52)
+            # 10 retratos dentro del ancho del panel izquierdo (no se meten debajo de la ficha)
+            r = pygame.Rect(64 + i * 48, 148, 42, 42)
             pygame.draw.rect(surf, C.YELLOW if i == self.ci else (40, 40, 60), r.inflate(6, 6))
-            surf.blit(pygame.transform.scale(assets.character(c).portrait, (52, 52)), r.topleft)
+            surf.blit(pygame.transform.scale(assets.character(c).portrait, (42, 42)), r.topleft)
         help_bar(surf, '← → PERSONAJE      ▲▼ ANIMACIÓN      ENTER GRITO      ESC VOLVER')

@@ -29,8 +29,10 @@ class Fighter:
         self.moves = normals()
         self.moves.update(self.data['moves'])
         self.color = self.data['color']
-        self.push_w = {'pantoja': 78, 'parada': 64, 'nehuen': 62, 'luciano': 64, 'nico': 64, 'angel': 72, 'facu': 60,
-                       'pedro': 66, 'emi': 64, 'denis': 64}.get(name, 64)
+        # medio ancho de "cuerpo" para que los dos luchadores no se superpongan: se mide
+        # en el sprite de reposo (sin contar los puños de la guardia)
+        x0, _, x1, _ = self.spr.bbox('idle', 0)
+        self.push_w = max(64, int((x1 - x0) * 0.40 * C.SCALE))
         self.reset_round()
         self.wins = 0
 
@@ -431,7 +433,7 @@ class Fighter:
                 x0, _, x1, _ = victim.spr.bbox('recibir_golpe', fr)
                 f = (x1 - (x1 - x0) * 0.14 - victim.spr.ax) * C.SCALE
                 vfront = f if vfront is None else min(vfront, f)
-            d = base if reach is None else reach + (vfront or 0) - 14
+            d = base if reach is None else reach + (vfront or 0) + 4   # sin encimarse
             cache[key] = max(base, min(d, base + 140))
         return cache[key]
 

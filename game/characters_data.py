@@ -100,7 +100,7 @@ CHARACTERS = {
         health=950,
         moves=dict(
             especial_1=dict(anim='especial_1', name='RÁFAGA ESMERALDA', input='R',
-                            hits=[H((2, 4), 'f_ha', 100, r=18, stun=22, bstun=14, kb=12, sfx='golpe_fuerte',
+                            hits=[H((2, 4), 'f_ha', 100, r=18, off=(12, 0), stun=22, bstun=14, kb=12, sfx='golpe_fuerte',
                                     fx='chispa_fuerte', stop=9, chip=0.1)],
                             events={0: [('voice', 'especial_1')], 2: [('vx', 15), ('sfx', 'dash'), ('dust',),
                                                                      ('afterimage', True)],

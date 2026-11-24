@@ -692,18 +692,17 @@ class Match:
         t = b['t']
         k = min(1.0, t / 8)
         img = ui.text_gradient(b['txt'], b['size'], (255, 255, 255), b['color'], extrude=6)
-        sc = 2.2 - 1.2 * k
-        if t > b['ticks'] - 10:
-            sc = 1 + (t - (b['ticks'] - 10)) * 0.08
+        sc = 0.5 + 0.5 * k          # crece hasta su tamaño final: nunca invade el HUD ni a los luchadores
         w, h = int(img.get_width() * sc), int(img.get_height() * sc)
         im = pygame.transform.scale(img, (w, h))
         if t > b['ticks'] - 10:
             im.set_alpha(int(255 * (b['ticks'] - t) / 10))
-        ui.blit_center(surf, im, C.WIDTH / 2, C.HEIGHT / 2 - 40)
+        # los carteles van en la franja entre el HUD y las cabezas de los luchadores
+        ui.blit_center(surf, im, C.WIDTH / 2, 122 + img.get_height() / 2)
 
     def draw_hud(self, surf):
         t = self.tick
-        bw, bh, y = 500, 30, 34
+        bw, bh, y = 460, 30, 34          # las barras terminan antes del reloj (no se tocan)
         for f in (self.p1, self.p2):
             left = f.side == 1
             x = 120 if left else C.WIDTH - 120 - bw
@@ -735,7 +734,7 @@ class Match:
                 pygame.draw.rect(surf, (255, 250, 180), (x, y + 3, wh, 5))
             # nombre
             nm = ui.text_outline(f.data['display'], 18, C.WHITE)
-            surf.blit(nm, (x if left else x + bw - nm.get_width(), y + bh + 8))
+            surf.blit(nm, (x if left else x + bw - nm.get_width(), y + bh + 10))
             # rondas ganadas
             for i in range(self.rounds_to_win if not self.training else 0):
                 cx = (x + bw - 20 - i * 34) if left else (x + 20 + i * 34)

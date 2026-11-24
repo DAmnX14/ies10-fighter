@@ -159,3 +159,5 @@ Generado con `python tools/build_audio_v2.py` (síntesis original, sin muestras 
   `musica_aula` (pelea en el aula), `musica_plaza` (pelea en la plaza), `musica_menu` y `musica_seleccion`.
 
 Las ilustraciones `assets/source/angel.jpg`, `facu.jpg`, `pedro.jpg`, `emi.jpg` y `denis.jpg` fueron provistas por el autor del proyecto.
+
+Las ilustraciones de Angel, Facu, Pedro, Emi y Denis se reemplazaron en la versión 1.3.1 por skins nuevas provistas por el autor del proyecto.

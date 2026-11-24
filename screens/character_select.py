@@ -12,6 +12,29 @@ STAT_LABELS = [('fuerza', 'FUERZA'), ('velocidad', 'VELOCIDAD'), ('resistencia',
 TILE = 104          # 10 luchadores: grilla de 5 x 2
 GAP = 10
 COLS = 5
+SIDE_W = 320        # ancho de las columnas laterales (nombre, estadísticas, frase)
+SIDE_PAD = 20
+
+
+def fit(img, w):
+    """Achica una imagen de texto para que no pase de w píxeles."""
+    if img.get_width() <= w:
+        return img
+    k = w / img.get_width()
+    return pygame.transform.smoothscale(img, (int(img.get_width() * k), int(img.get_height() * k)))
+
+
+def wrap(txt, size, w):
+    words, lines, cur = txt.split(), [], ''
+    for wd in words:
+        t = (cur + ' ' + wd).strip()
+        if ui.text(t, size, C.WHITE).get_width() <= w or not cur:
+            cur = t
+        else:
+            lines.append(cur); cur = wd
+    if cur:
+        lines.append(cur)
+    return lines
 
 
 class Cursor:
@@ -216,7 +239,7 @@ class CharacterSelect(Scene):
                 continue
             name = C.CHARACTERS[cur.idx]
             d = CHARACTERS[name]
-            x = 230 if side == 1 else C.WIDTH - 230
+            x = SIDE_PAD + SIDE_W / 2 if side == 1 else C.WIDTH - SIDE_PAD - SIDE_W / 2
             # foco de color
             glow = pygame.Surface((420, 500), pygame.SRCALPHA)
             for i in range(20):
@@ -226,24 +249,31 @@ class CharacterSelect(Scene):
             self.side_anim[side].draw(surf, x, 668, 1 if side == 1 else -1, 2,
                                       glow=(255, 255, 255) if cur.flash and (cur.flash // 3) % 2 else None)
             # nombre y estadísticas
+            # columna lateral (no se mete en la grilla del centro)
+            col_x0 = SIDE_PAD if side == 1 else C.WIDTH - SIDE_PAD - SIDE_W
+            x = col_x0 + SIDE_W / 2
             nm = ui.text_gradient(d['display'], 34, (255, 255, 255), d['color'], extrude=4)
-            ui.blit_center(surf, nm, x, 175)
-            ui.blit_center(surf, ui.text_outline(d['title'], 12, C.YELLOW), x, 210)
-            sx = 40 if side == 1 else C.WIDTH - 40 - 300
-            panel_y = 236
-            ui.panel(surf, (sx, panel_y, 300, 132), (0, 0, 0, 150), d['color'], 2)
+            ui.blit_center(surf, nm, x, 168)
+            ui.blit_center(surf, fit(ui.text_outline(d['title'], 11, C.YELLOW), SIDE_W), x, 200)
+            sx = col_x0
+            panel_y = 218
+            ui.panel(surf, (sx, panel_y, SIDE_W, 128), (0, 0, 0, 150), d['color'], 2)
             for i, (k, lab) in enumerate(STAT_LABELS):
-                yy = panel_y + 12 + i * 24
+                yy = panel_y + 11 + i * 23
                 surf.blit(ui.text(lab, 10, C.WHITE), (sx + 10, yy + 2))
-                ui.stat_bar(surf, sx + 140, yy, 148, 14, d['stats'][k], 10, d['color'])
+                ui.stat_bar(surf, sx + 140, yy, SIDE_W - 152, 14, d['stats'][k], 10, d['color'])
             if self.bubble[side]:
-                q = ui.text_outline('«' + self.bubble[side][0] + '»', 9, C.WHITE)
-                bx = max(10, min(C.WIDTH - q.get_width() - 10, x - q.get_width() / 2))
-                ui.panel(surf, (bx - 8, 380, q.get_width() + 16, 36), (0, 0, 0, 210), d['color'], 2)
-                surf.blit(q, (bx, 388))
+                lines = wrap('«' + self.bubble[side][0] + '»', 9, SIDE_W - 20)
+                bh = 10 + 14 * len(lines)
+                ui.panel(surf, (sx, 354, SIDE_W, bh), (0, 0, 0, 210), d['color'], 2)
+                for li, ln in enumerate(lines):
+                    q = ui.text_outline(ln, 9, C.WHITE)
+                    surf.blit(q, (x - q.get_width() / 2, 360 + li * 14))
             if cur.ready:
+                # «¡LISTO!» debajo de la grilla, del lado de cada jugador (no tapa al luchador)
                 lab = ui.text_gradient('¡LISTO!', 26, (255, 255, 255), C.YELLOW, extrude=3)
-                ui.blit_center(surf, lab, x, 440 + math.sin(t * 0.2) * 4)
+                lx = C.WIDTH / 2 - 150 if side == 1 else C.WIDTH / 2 + 150
+                ui.blit_center(surf, lab, lx, 470 + math.sin(t * 0.2) * 4)
         # grilla de retratos
         for i, n in enumerate(C.CHARACTERS):
             r = self.tile_rect(i)
@@ -279,22 +309,23 @@ class CharacterSelect(Scene):
         if self.done_t:
             k = min(1.0, self.done_t / 30)
             s = ui.text_gradient('¡A PELEAR!', 60, (255, 255, 255), C.RED, extrude=6)
-            ui.blit_center(surf, s, C.WIDTH / 2, 560 - (1 - k) * 100)
+            ui.blit_center(surf, s, C.WIDTH / 2, 570 - (1 - k) * 60)
         if self.mode == 'versus':
             help_bar(surf, 'J1: A D W S + F ELEGIR / G CANCELAR      J2: FLECHAS + 1 ELEGIR / 2 CANCELAR      ESC VOLVER')
         else:
             help_bar(surf, 'FLECHAS / WASD  MOVER      ENTER / F  ELEGIR      G  CANCELAR      ESC  VOLVER')
 
     def draw_unknown(self, surf):
-        x = C.WIDTH - 230
+        x = C.WIDTH - SIDE_PAD - SIDE_W / 2
         q = ui.text_gradient('?', 160, (90, 90, 120), (40, 40, 60), extrude=6)
         ui.blit_center(surf, q, x, 420 + math.sin(self.t * 0.05) * 8)
 
     def draw_arcade_preview(self, surf):
-        x = C.WIDTH - 230
-        ui.panel(surf, (x - 190, 220, 380, 330), (0, 0, 0, 160), C.YELLOW, 2)
-        ui.blit_center(surf, ui.text_outline('MODO ARCADE', 18, C.YELLOW), x, 250)
-        lines = ['Vencé a los luchadores', 'del IES 10 y enfrentá', 'al JEFE FINAL: NICO.', '',
+        x0 = C.WIDTH - SIDE_PAD - SIDE_W
+        x = x0 + SIDE_W / 2
+        ui.panel(surf, (x0, 160, SIDE_W, 300), (0, 0, 0, 160), C.YELLOW, 2)
+        ui.blit_center(surf, ui.text_outline('MODO ARCADE', 18, C.YELLOW), x, 190)
+        lines = ['Vencé a 5 luchadores', 'del IES 10 y enfrentá', 'al JEFE FINAL: NICO.', '',
                  'La dificultad sube', 'en cada combate.', '', '¡Convertite en el', 'CAMPEÓN DEL IES 10!']
         for i, l in enumerate(lines):
-            ui.blit_center(surf, ui.text(l, 11, C.WHITE), x, 290 + i * 26)
+            ui.blit_center(surf, ui.text(l, 11, C.WHITE), x, 228 + i * 25)
