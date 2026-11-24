@@ -16,7 +16,8 @@ class FightScene(Scene):
         self.mode = mode
         self.on_finish = on_finish
         self.audio = game.audio
-        self.audio.music('musica_combate')
+        st = C.STAGES.get(getattr(game, 'stage_id', 'aula'), {})
+        self.audio.music(st.get('music', 'musica_combate'))   # cada escenario tiene su tema
         self.ctrl = {1: KeyboardControllerSafe(game.settings, 1)}
         ai2 = None
         if mode == 'versus':
@@ -46,6 +47,11 @@ class FightScene(Scene):
 
     def handle_event(self, e):
         if e.type != pygame.KEYDOWN:
+            return
+        m = self.match
+        if not self.paused and m.state == 'encounter' and m.encounter is not None and \
+                (nav(e) == 'ok' or getattr(e, 'pad', None) in ('ok', 'start') or e.key == pygame.K_ESCAPE):
+            m.encounter.skip()          # saltear la escena previa
             return
         if getattr(e, 'pad', None) == 'start':
             if not self.paused:

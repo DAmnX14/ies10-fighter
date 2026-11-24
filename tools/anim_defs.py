@@ -553,10 +553,57 @@ SPECIALS['nico'] = {
     ], dur=5),
 }
 
+# ------------------------------------------------------------ encuentros antes de pelear
+def _sway(n, fn):
+    return [(fn(i / n), 1) for i in range(n)]
+
+
+ANIMS['enamorado'] = dict(keys=[                     # manos juntas en el pecho, cabeza ladeada, suspiro
+    K(1, fh=(-70, 0.32), lean=-2, head=10),
+    K(1, fh=(-72, 0.30), lean=-4, head=14, ry=1),
+    K(1, fh=(-74, 0.30), lean=-5, head=16, ry=2, sy=1.01),
+    K(1, fh=(-72, 0.30), lean=-4, head=14, ry=1),
+], dur=10, loop=True)
+ANIMS['abrazo'] = dict(keys=[                        # brazos hacia adelante rodeando al otro
+    K(1, fh=(-30, 0.7), lean=6, head=4),
+    K(1, fh=(-18, 0.82), lean=12, head=8, rx=3),
+    K(1, fh=(-14, 0.86), lean=14, head=10, rx=4),
+    K(1, fh=(-16, 0.84), lean=13, head=9, rx=4, ry=1),
+], dur=8, loop=False)
+ANIMS['saludo'] = dict(keys=[                        # mano tendida + saludo con la mano
+    K(1, fh=(-20, 0.75), lean=4, head=-4),
+    K(1, fh=(-6, 0.95), lean=6, head=-6, rx=2),
+    K(1, fh=(-8, 0.95), lean=6, head=-6, rx=2, ry=1),
+    K(1, fh=(-90, 1.0), lean=-2, head=-8),
+    K(1, fh=(-84, 1.0), lean=-2, head=-8),
+    K(1, fh=(-92, 1.0), lean=-2, head=-8),
+    K(1, fh=(-84, 1.0), lean=-2, head=-8),
+], dur=7, loop=False)
+ANIMS['provocar'] = dict(keys=[                      # cara a cara, puño adelante, sacando pecho
+    K(1, fh=(-40, 0.8), lean=10, head=6, rx=3),
+    K(1, fh=(-30, 0.9), lean=14, head=8, rx=5),
+    K(1, fh=(-34, 0.88), lean=13, head=8, rx=5, ry=1),
+    K(1, fh=(-28, 0.92), lean=15, head=9, rx=6),
+], dur=6, loop=True)
+ANIMS['enojado'] = dict(keys=[                       # puños abajo, temblando de bronca
+    K(1, fh=(70, 0.55), lean=6, head=8, ry=3, sx=1.02),
+    K(1, fh=(72, 0.56), lean=7, head=9, ry=3, rx=1, sx=1.02),
+    K(1, fh=(70, 0.55), lean=6, head=8, ry=3, rx=-1, sx=1.02),
+    K(1, fh=(72, 0.56), lean=7, head=9, ry=4, sx=1.03),
+], dur=3, loop=True)
+ANIMS['confundido'] = dict(keys=[                    # "¿y ahora qué hice?": hombros arriba, brazos abiertos
+    K(1, fh=(20, 0.7), lean=-4, head=-8, ry=-1),
+    K(1, fh=(-10, 0.85), lean=-6, head=-14, ry=-2),
+    K(1, fh=(-12, 0.86), lean=-6, head=-16, ry=-2),
+    K(1, fh=(-10, 0.85), lean=-5, head=-12, ry=-1),
+], dur=9, loop=False)
+
+
 ANIM_ORDER = ['idle', 'caminar', 'caminar_atras', 'saltar', 'saltar_adelante', 'agacharse',
               'bloquear', 'bloquear_agachado', 'presentacion', 'golpe', 'patada', 'golpe_fuerte', 'patada_fuerte', 'golpe_agachado',
               'patada_agachado', 'patada_aerea', 'recibir_golpe', 'caida', 'levantarse',
-              'victoria', 'derrota', 'especial_1', 'especial_2', 'ultimate_1', 'ultimate_2', 'ultimate_3']
+              'victoria', 'derrota', 'especial_1', 'especial_2', 'ultimate_1', 'ultimate_2', 'ultimate_3',
+              'enamorado', 'abrazo', 'saludo', 'provocar', 'enojado', 'confundido']
 
 
 # Ajustes de postura agachada por personaje: Parada tiene la pierna trasera muy
@@ -590,3 +637,125 @@ def get_anim(char, name):
 
 def has_anim(char, name):
     return name in SPECIALS.get(char, {}) or name in ANIMS
+
+
+# ================================================================== PERSONAJES NUEVOS
+def _throw_up():                      # lanzar algo hacia arriba/adelante con las dos manos (paloma)
+    return dict(keys=[
+        K(1, ry=6, lean=6, fh=(60, 0.5), head=8),
+        K(1, ry=8, lean=10, fh=(80, 0.45), bh_off=(0.1, 0.1), head=10),
+        K(1, ry=2, lean=-4, fh=(-40, 0.9), head=-8),
+        K(1, ry=0, lean=-8, fh=(-60, 1.05), head=-12),
+        K(1, ry=0, lean=-8, fh=(-62, 1.05), head=-12),
+        K(1, ry=2, lean=-2, fh=(-40, 0.7)),
+        K(1),
+    ], dur=4)
+
+
+def _beam():                          # carga y rayo sostenido con el brazo adelante (prompt)
+    return dict(keys=[
+        K(1, ry=4, lean=-4, fh=(-60, 0.6), head=-6),
+        K(1, ry=8, lean=-10, fh=(-100, 1.0), head=-14, sy=0.98),
+        K(1, ry=8, lean=-11, fh=(-104, 1.0), head=-15),
+        K(1, ry=6, lean=6, fh=(-30, 0.8), rx=2),
+    ] + [K(1, ry=6, lean=10 + (i % 2), fh=(-6 + (i % 2) * 2, 1.06), rx=4, head=4, bf=(-6, 0)) for i in range(9)] + [
+        K(1, ry=4, lean=4, fh=(-40, 0.7), rx=2),
+        K(1),
+    ], dur=5)
+
+
+def _meditate(n_hold=4, burst=True):  # meditación: manos juntas, se eleva la energía
+    keys = [
+        K(1, ry=8, lean=2, fh=(-80, 0.42), head=10),
+        K(1, ry=14, lean=0, fh=(-88, 0.38), head=14, bf=(-5, 0), ff=(5, 0)),
+    ] + [K(1, ry=14 + (i % 2), lean=0, fh=(-88, 0.38), head=14, bf=(-5, 0), ff=(5, 0)) for i in range(n_hold)]
+    if burst:
+        keys += [
+            K(1, ry=-2, lean=-8, fh=(-60, 1.05), bh=(-120, 0.8), head=-14, sy=1.04),
+            K(1, ry=-2, lean=-9, fh=(-62, 1.05), bh=(-122, 0.8), head=-15, sy=1.04),
+            K(1, ry=2, lean=-2, fh=(-40, 0.6)),
+            K(1),
+        ]
+    return dict(keys=keys, dur=5)
+
+
+def _surrender_punch():               # "bandera blanca": se rinde... y pega con todo
+    return dict(keys=[
+        K(1, ry=2, lean=-4, fh=(-92, 1.0), head=6),
+        K(1, ry=2, lean=-6, fh=(-95, 1.02), head=10, sx=0.99),
+        K(1, ry=4, lean=-4, fh=(-90, 1.0), head=8),
+        K(1, ry=2, lean=-6, fh=(-95, 1.02), head=12),
+        K(1, ry=4, lean=-4, fh=(-90, 1.0), head=8),
+        K(1, ry=6, lean=4, fh=(-60, 0.6), head=-6),
+        K(1, ry=8, lean=-10, fh=(-80, 0.32), rx=-3, bf=(-4, 0)),
+        K(1, ry=6, lean=-12, fh=(-82, 0.3), rx=-4, bf=(-4, 0)),
+        K(1, ry=4, lean=24, fh=(-4, 1.08), rx=14, bf=(-12, 0), ff=(8, 0), head=8, sx=1.06),
+        K(1, ry=4, lean=26, fh=(-2, 1.08), rx=15, bf=(-12, 0), ff=(8, 0), head=8, sx=1.08),
+        K(1, ry=4, lean=26, fh=(-2, 1.08), rx=15, bf=(-12, 0), ff=(8, 0), head=8),
+        K(1, ry=4, lean=26, fh=(-2, 1.08), rx=15, bf=(-12, 0), ff=(8, 0), head=8),
+        K(1, ry=4, lean=16, fh=(-20, 0.8), rx=10, bf=(-8, 0), ff=(6, 0)),
+        K(1, ry=2, lean=4, fh=(-60, 0.6), rx=4),
+        K(1, ry=2, lean=-2, fh=(-90, 1.0), head=-10, rx=3),
+        K(1),
+    ], dur=5)
+
+
+def _ball_kick():                     # patear una pelota (proyectil desde el pie)
+    return dict(keys=[
+        K(1, ry=4, lean=4, ff=(-6, -4), fh=(-60, 0.55)),
+        K(1, ry=6, lean=8, ff=(-12, -10), ffa=20, fh=(-40, 0.6)),
+        K(1, ry=2, lean=-6, ff_abs=(30, -18), ffa=-20, fh=(-70, 0.5)),
+        K(1, ry=2, lean=-12, ff_abs=(44, -30), ffa=-40, fh=(-80, 0.5), rx=2),
+        K(1, ry=2, lean=-12, ff_abs=(46, -32), ffa=-42, fh=(-80, 0.5), rx=2),
+        K(1, ry=2, lean=-6, ff_abs=(28, -14), fh=(-60, 0.55)),
+        K(1, ry=2, lean=-2, ff=(2, -2)),
+        K(1),
+    ], dur=4)
+
+
+def _mega_kick():                     # golazo: carga larga, carrera y patada enorme
+    return dict(keys=[
+        K(1, ry=6, lean=6, head=-6, fh=(-60, 0.55)),
+        K(1, ry=12, lean=10, head=8, bf=(-6, 0), ff=(6, 0), fh=(-40, 0.5)),
+        K(1, ry=12, lean=10, head=8, bf=(-6, 0), ff=(6, 0), fh=(-42, 0.5)),
+        K(1, ry=4, lean=14, rx=6, ff=(10, -6), bf=(-8, 0), fh=(-30, 0.6)),
+        K(1, ry=4, lean=16, rx=10, ff=(-10, -6), bf=(6, 0), fh=(-20, 0.6)),
+        K(1, ry=6, lean=10, rx=10, ff=(-16, -14), ffa=25, fh=(-40, 0.6)),
+        K(1, ry=2, lean=-14, rx=12, ff_abs=(46, -36), ffa=-45, fh=(-85, 0.55), head=6),
+        K(1, ry=2, lean=-18, rx=12, ff_abs=(50, -44), ffa=-55, fh=(-88, 0.55), head=8),
+        K(1, ry=2, lean=-18, rx=12, ff_abs=(50, -44), ffa=-55, fh=(-88, 0.55), head=8),
+        K(1, ry=2, lean=-10, rx=8, ff_abs=(30, -16)),
+        K(1, ry=2, lean=-6, fh=(-95, 1.0), head=-10, rx=4),
+        K(1, ry=2, lean=-7, fh=(-97, 1.0), head=-12, rx=4),
+        K(1, ry=2, lean=-2, rx=2),
+        K(1),
+    ], dur=4)
+
+
+for _c in ('angel', 'facu', 'pedro', 'emi', 'denis'):
+    SPECIALS[_c] = {}
+# ANGEL — programador
+SPECIALS['angel']['especial_1'] = SPECIALS['nico']['especial_1']          # BUG EN PRODUCCIÓN
+SPECIALS['angel']['especial_2'] = SPECIALS['luciano']['especial_2']       # DEPLOY FORZADO
+SPECIALS['angel']['ultimate_1'] = SPECIALS['luciano']['ultimate_1']       # BUCLE INFINITO
+SPECIALS['angel']['ultimate_2'] = SPECIALS['luciano']['ultimate_3']       # STACK OVERFLOW
+# FACU — fanático de la IA con gato naranja
+SPECIALS['facu']['especial_1'] = SPECIALS['nico']['especial_1']           # MICHI NARANJA
+SPECIALS['facu']['especial_2'] = SPECIALS['parada']['especial_1']         # ZARPAZO GATUNO
+SPECIALS['facu']['ultimate_1'] = _beam()                                  # PROMPT DEFINITIVO
+SPECIALS['facu']['ultimate_2'] = SPECIALS['luciano']['ultimate_3']        # LLUVIA DE MICHIS
+# PEDRO — el pacifista
+SPECIALS['pedro']['especial_1'] = _throw_up()                             # PALOMA DE LA PAZ
+SPECIALS['pedro']['especial_2'] = _meditate(2)                            # ONDA ZEN
+SPECIALS['pedro']['ultimate_1'] = _meditate(6)                            # PAZ INTERIOR
+SPECIALS['pedro']['ultimate_2'] = _surrender_punch()                      # BANDERA BLANCA
+# EMI — el estudiante
+SPECIALS['emi']['especial_1'] = SPECIALS['nico']['especial_1']            # AVIÓN DE PAPEL
+SPECIALS['emi']['especial_2'] = SPECIALS['luciano']['especial_2']         # MOCHILAZO
+SPECIALS['emi']['ultimate_1'] = SPECIALS['luciano']['ultimate_1']         # PRUEBA SORPRESA
+SPECIALS['emi']['ultimate_2'] = SPECIALS['luciano']['ultimate_3']         # TABLA DEL NUEVE
+# DENIS — hincha de River
+SPECIALS['denis']['especial_1'] = _ball_kick()                            # PELOTAZO
+SPECIALS['denis']['especial_2'] = SPECIALS['parada']['especial_1']        # BANDA ROJA
+SPECIALS['denis']['ultimate_1'] = SPECIALS['nehuen']['ultimate_3']        # EL MONUMENTAL RUGE
+SPECIALS['denis']['ultimate_2'] = _mega_kick()                            # GOLAZO DE MEDIA CANCHA

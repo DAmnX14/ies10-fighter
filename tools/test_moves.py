@@ -22,7 +22,7 @@ def main():
         row = []
         from game.characters_data import CHARACTERS as _CD
         for mv in MOVES:
-            if mv == 'ultimate_3' and mv not in _CD[c]['moves']:
+            if mv.startswith(('especial', 'ultimate')) and mv not in _CD[c]['moves']:
                 continue
             best = 0
             for dist in (150, 260, 420):

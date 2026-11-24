@@ -134,5 +134,125 @@
   "frames": 1,
   "dur": 4,
   "loop": false
+ },
+ "codigo": {
+  "file": "codigo.png",
+  "w": 44,
+  "h": 30,
+  "frames": 4,
+  "dur": 3,
+  "loop": true
+ },
+ "gato": {
+  "file": "gato.png",
+  "w": 40,
+  "h": 28,
+  "frames": 4,
+  "dur": 3,
+  "loop": true
+ },
+ "gatos": {
+  "file": "gatos.png",
+  "w": 48,
+  "h": 176,
+  "frames": 4,
+  "dur": 2,
+  "loop": true
+ },
+ "paloma": {
+  "file": "paloma.png",
+  "w": 36,
+  "h": 28,
+  "frames": 4,
+  "dur": 3,
+  "loop": true
+ },
+ "avion": {
+  "file": "avion.png",
+  "w": 32,
+  "h": 20,
+  "frames": 4,
+  "dur": 3,
+  "loop": true
+ },
+ "pelota": {
+  "file": "pelota.png",
+  "w": 26,
+  "h": 26,
+  "frames": 4,
+  "dur": 2,
+  "loop": true
+ },
+ "pelota_gigante": {
+  "file": "pelota_gigante.png",
+  "w": 72,
+  "h": 72,
+  "frames": 4,
+  "dur": 2,
+  "loop": true
+ },
+ "rayo_ia": {
+  "file": "rayo_ia.png",
+  "w": 96,
+  "h": 64,
+  "frames": 4,
+  "dur": 3,
+  "loop": true
+ },
+ "lluvia_codigo": {
+  "file": "lluvia_codigo.png",
+  "w": 48,
+  "h": 176,
+  "frames": 4,
+  "dur": 2,
+  "loop": true
+ },
+ "numeros": {
+  "file": "numeros.png",
+  "w": 48,
+  "h": 176,
+  "frames": 4,
+  "dur": 2,
+  "loop": true
+ },
+ "luz": {
+  "file": "luz.png",
+  "w": 48,
+  "h": 176,
+  "frames": 4,
+  "dur": 2,
+  "loop": true
+ },
+ "papelitos": {
+  "file": "papelitos.png",
+  "w": 96,
+  "h": 176,
+  "frames": 4,
+  "dur": 2,
+  "loop": true
+ },
+ "corazon": {
+  "file": "corazon.png",
+  "w": 24,
+  "h": 24,
+  "frames": 4,
+  "dur": 4,
+  "loop": true
+ },
+ "enojo": {
+  "file": "enojo.png",
+  "w": 24,
+  "h": 24,
+  "frames": 4,
+  "dur": 3,
+  "loop": true
+ },
+ "brillo": {
+  "file": "brillo.png",
+  "w": 32,
+  "h": 32,
+  "frames": 4,
+  "dur": 4,
+  "loop": true
  }
 }

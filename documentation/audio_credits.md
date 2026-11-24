@@ -145,3 +145,17 @@ ningún sonido ni música de terceros.
 Se agregaron, generados con el mismo método (`python tools/build_audio.py --voces`): `rayo.ogg` (ultimate «Alto voltaje»), las voces `*_voz_ultimate_3.ogg` de Pantoja, Parada, Nehuen y Luciano, y todas las voces de **Nico** (`nico_voz_*.ogg`, `loc_nico.ogg`, `loc_nico_gana.ogg`).
 
 La imagen `assets/backgrounds/plaza.png` y la ilustración `assets/source/nico.png` fueron provistas por el autor del proyecto.
+
+## Versión 1.3
+
+Generado con `python tools/build_audio_v2.py` (síntesis original, sin muestras de otros juegos):
+
+- **Golpes nuevos** más contundentes estilo arcade de los 90: `golpe_debil`, `golpe_fuerte`, `patada_debil`, `patada_fuerte`.
+- **Efectos nuevos**: `maullido` (gato de Facu), `aleteo` (paloma de Pedro), `campana` (onda zen), `tiza` (Emi),
+  `hinchada` (Denis), `corazones`, `amistad`, `bronca` y `rival` (encuentros antes de pelear).
+- **Voces** de Angel, Facu, Pedro, Emi y Denis (`<nombre>_voz_*.ogg`, `loc_<nombre>.ogg`, `loc_<nombre>_gana.ogg`)
+  y las frases de los encuentros (`*_voz_amor`, `*_voz_abrazo`, `*_voz_saludo`, `*_voz_rival`, `*_voz_odio`).
+- **Música** con síntesis FM de 2 operadores (sonido de placa arcade de 16 bits), composiciones originales:
+  `musica_aula` (pelea en el aula), `musica_plaza` (pelea en la plaza), `musica_menu` y `musica_seleccion`.
+
+Las ilustraciones `assets/source/angel.jpg`, `facu.jpg`, `pedro.jpg`, `emi.jpg` y `denis.jpg` fueron provistas por el autor del proyecto.

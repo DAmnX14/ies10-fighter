@@ -1,7 +1,8 @@
 # IES 10 FIGHTER
 
-Juego de lucha 2D estilo arcade de los 90, hecho en **Python + Pygame**, con los cuatro
-luchadores del IES N.º 10: **PANTOJA, PARADA, NEHUEN y LUCIANO**, más **NICO**, el jefe final.
+Juego de lucha 2D estilo arcade de los 90, hecho en **Python + Pygame**, con diez
+luchadores del IES N.º 10: **PANTOJA, PARADA, NEHUEN, LUCIANO, ANGEL, FACU, PEDRO, EMI y DENIS**,
+más **NICO**, el jefe final.
 Dos escenarios: el **aula del IES 10** y **la plaza**. Una producción de **Arce Tech**.
 
 ![Logo](assets/interface/logo.png)
@@ -94,7 +95,7 @@ Los botones del mando también se reasignan en **OPCIONES → CONTROLES JUGADOR 
 |-------------------------------|-------------|
 | **JUGAR → 1 JUGADOR VS CPU**  | Elegís tu luchador y el rival; combate rápido contra la computadora. |
 | **JUGAR → ENTRENAMIENTO**     | Vida que se regenera y barra de ultimate infinita. **F1** cambia el comportamiento del rival (quieto / agachado / salta / bloquea todo / CPU), **F2** muestra las hitboxes, **F3** reinicia posiciones. |
-| **MODO ARCADE**               | Enfrentás a los otros luchadores con dificultad creciente y, al final, a **NICO, el jefe de ArceTech**, en la plaza. Hay pantalla de “¿Continuar?” y final propio para cada personaje. |
+| **MODO ARCADE**               | Enfrentás a 5 luchadores al azar con dificultad creciente y, al final, a **NICO, el jefe de ArceTech**, en la plaza. Hay pantalla de “¿Continuar?” y final propio para cada personaje. |
 | **VERSUS**                    | Dos jugadores en el mismo teclado, con mandos o mezclando teclado y mando. En la pantalla «VS» se elige el escenario con ← →. |
 | **PERSONAJES**                | Galería: todas las animaciones de cada luchador, estadísticas y lista de movimientos. |
 | **OPCIONES**                  | Volumen de música / efectos / voces, tiempo por ronda (30/60/99/∞), rondas (1, mejor de 3, mejor de 5), dificultad de la CPU (Fácil/Normal/Difícil/Extremo), pantalla completa, filtro CRT, intro y controles. |
@@ -113,6 +114,11 @@ agotado, empate, “¡Perfecto!”, contador de combos y pantalla **«PANTOJA WI
 | **NEHUEN** – *El Bostero* | 6 | 6 | 6 | 9 | 6 | Gran alcance, ataques aéreos y a distancia |
 | **LUCIANO** – *Voltio* | 7 | 7 | 7 | 6 | 8 | Equilibrado, combos y remate brutal |
 | **NICO** – *El Jefe de ArceTech* (jefe final) | 8 | 7 | 8 | 7 | 8 | Completo y peligroso: proyectil, rodillazo y ultimates de pantalla completa |
+| **ANGEL** – *El Compilador Humano* (programador) | 8 | 5 | 8 | 6 | 7 | Robusto: código como proyectil, combo en bucle y lluvia de código |
+| **FACU** – *El Domador de la IA* (y su gato naranja) | 5 | 8 | 5 | 9 | 8 | A distancia: gato proyectil, rayo de IA y lluvia de michis |
+| **PEDRO** – *El Hombre de la Paz* | 6 | 6 | 9 | 7 | 7 | Defensivo: paloma, onda zen y una bandera blanca muy engañosa |
+| **EMI** – *El Alumno Ejemplar* | 6 | 8 | 6 | 7 | 8 | Veloz y técnico: avión de papel, mochilazo y prueba sorpresa |
+| **DENIS** – *El Millonario* (hincha de River) | 8 | 7 | 6 | 8 | 6 | Ofensivo: pelotazos, la banda roja y el golazo de media cancha |
 
 ### Especiales y Ultimates (14 ultimates distintas)
 
@@ -123,6 +129,26 @@ agotado, empate, “¡Perfecto!”, contador de combos y pantalla **«PANTOJA WI
 | Nehuen | **Acorde sónico** (proyectil de notas) | **Patada del piluso** (anti-aérea) | **Solo infinito**: rayo de notas musicales que atrapa al rival + explosión | **Meteoro piluso**: salto altísimo, voltereta y caída en picada explosiva | **La Bombonera late**: tres pisotones que hacen temblar el piso |
 | Luciano | **Credencial voladora** (boomerang) | **Gancho preceptor** (uppercut) | **Combo disciplinario**: combo de 6 golpes que termina en uppercut | **Amonestación final**: carga de poder y un único puñetazo devastador | **Alto voltaje**: tres rayos que caen sobre el rival |
 | Nico | **Hoja de arce** (proyectil) | **Reinicio forzado** (rodillazo volador) | **Pantallazo azul**: golpe a toda la pantalla | **Despido inmediato**: combo y patada que manda al rival a volar | — |
+| Angel | **Bug en producción** (proyectil de código) | **Deploy forzado** (uppercut) | **Bucle infinito**: combo de 6 golpes en loop | **Stack overflow**: tres columnas de código caen sobre el rival | — |
+| Facu | **Michi naranja** (su gato corre hacia el rival) | **Zarpazo gatuno** (dash con zarpazo) | **Prompt definitivo**: rayo de IA que atrapa al rival | **Lluvia de michis**: gatos naranjas caen del cielo | — |
+| Pedro | **Paloma de la paz** (proyectil) | **Onda zen** (onda alrededor) | **Paz interior**: medita y cae una columna de luz | **Bandera blanca**: se rinde... y pega un puñetazo devastador | — |
+| Emi | **Avión de papel** (proyectil) | **Mochilazo** (uppercut) | **Prueba sorpresa**: combo de 6 golpes | **Tabla del nueve**: lluvia de números sobre el rival | — |
+| Denis | **Pelotazo** (pelota de fútbol) | **Banda roja** (embestida que derriba) | **El Monumental ruge**: la hinchada hace temblar el piso | **Golazo de media cancha**: patea una pelota gigante | — |
+
+### Encuentros antes de pelear
+
+Antes de la primera ronda, algunas parejas tienen su propia escena (se saltea con ACEPTAR / START):
+
+- **Parada y Pantoja**: son pareja → se acercan enamorados, con corazones.
+- **Nico y Angel**: se dan un abrazo antes de pelear.
+- **Pedro con Emi, Nico o Luciano**: saludo de amistad bien amigable.
+- **Denis y Nehuen** (River – Boca): cara a cara, rayos y cargadas: **¡SUPERCLÁSICO!**
+- **Angel, Facu, Pedro, Emi o Denis contra Parada**: todos lo odian → **¡TODOS CONTRA PARADA!**
+
+### Música
+
+Cada escenario tiene su propio tema de pelea (aula y plaza), más temas nuevos para el menú y la
+selección de personajes, con sonido FM de placa arcade de 16 bits. Todo es composición original.
 
 Cada ultimate tiene: animación de preparación, “super flash” con pantalla congelada,
 recuadro cinematográfico con el retrato y el nombre del ataque, aura, animación de ataque,
@@ -176,7 +202,7 @@ IES10_FIGHTER/
   poses extremas pueden verse uniones algo duras en hombros o caderas.
 - **Sonido y música**: el entorno donde se creó el juego no tenía acceso a Freesound,
   OpenGameArt, Pixabay ni Kenney, así que **todo el audio es original**, sintetizado por
-  `tools/build_audio.py` (golpes, efectos, 6 temas chiptune) y las voces con el
+  `tools/build_audio.py` (golpes, efectos, temas chiptune) y `tools/build_audio_v2.py` (golpes nuevos, efectos de los personajes nuevos, voces de los encuentros y la música FM de cada escenario) y las voces con el
   sintetizador libre **eSpeak NG** (suenan robóticas, al estilo de los locutores arcade).
   Si querés reemplazar cualquier sonido, poné un archivo `.ogg` o `.wav` con **el mismo
   nombre** en `assets/sounds/` o `assets/music/` (ver `documentation/audio_credits.md`).
@@ -186,9 +212,11 @@ IES10_FIGHTER/
 
 ```
 pip install -r requirements.txt
-python tools/build_sprites.py     # spritesheets de los 4 personajes (~6 min)
+python tools/build_sprites.py     # spritesheets de los 10 personajes (~12 min)
+python tools/build_sprites.py emi # o sólo uno
 python tools/build_effects.py     # efectos especiales
 python tools/build_interface.py   # logo e ícono
-python tools/build_audio.py       # efectos, voces y música
+python tools/build_audio.py       # efectos, voces y música originales
+python tools/build_audio_v2.py    # golpes nuevos, voces nuevas y música por escenario
 python tools/test_headless.py     # prueba automática + capturas
 ```

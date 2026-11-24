@@ -11,7 +11,7 @@ from rig import RigCharacter, CANVAS_W, CANVAS_H, ANCHOR_X, ANCHOR_Y, SS
 from anim_defs import ANIM_ORDER, get_anim, has_anim
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-CHARS = ['pantoja', 'parada', 'nehuen', 'luciano', 'nico']
+CHARS = ['pantoja', 'parada', 'nehuen', 'luciano', 'nico', 'angel', 'facu', 'pedro', 'emi', 'denis']
 JOINTS = ['f_ha', 'b_ha', 'f_an', 'b_an', 'f_toe', 'b_toe', 'head', 'neck', 'pelvis',
           'f_el', 'b_el', 'f_kn', 'b_kn']
 
@@ -52,12 +52,24 @@ def render_grounded(rc, kf):
 
 
 def portrait(rc, src_dir, name):
+    """Retrato cuadrado encuadrado sobre la cabeza real (pelo + cara + mentón), así
+    todas las caras quedan centradas y del mismo tamaño en los recuadros."""
     from rig import segment, SKELETONS
     sk = SKELETONS[name]
     img, fg = segment(f'{src_dir}/{sk["src"]}', name)
     hx, hy = sk['head']; nx, ny = sk['neck']
-    size = int((ny - hy) * 1.55)
-    cx, cy = int((hx + nx) / 2), int((hy + ny) / 2 + size * 0.06)
+    hl = math.hypot(nx - hx, ny - hy)
+    yy, xx = np.mgrid[0:fg.shape[0], 0:fg.shape[1]]
+    ecx, ecy = (hx + nx) / 2, (hy + ny) / 2 - 0.12 * hl
+    ell = (((xx - ecx) / (0.62 * hl)) ** 2 + ((yy - ecy) / (0.85 * hl)) ** 2 <= 1) & fg & (yy < ny + 0.05 * hl)
+    ys, xs = np.where(ell)
+    if len(xs) > 50:
+        x0b, x1b, y0b, y1b = np.percentile(xs, 1), np.percentile(xs, 99), ys.min(), np.percentile(ys, 99)
+        size = int(max(x1b - x0b, y1b - y0b) * 1.22)
+        cx, cy = int((x0b + x1b) / 2), int((y0b + y1b) / 2 + size * 0.04)
+    else:
+        size = int((ny - hy) * 1.55)
+        cx, cy = int((hx + nx) / 2), int((hy + ny) / 2 + size * 0.06)
     x0, y0 = cx - size // 2, cy - size // 2
     pad = size
     imgp = cv2.copyMakeBorder(img, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=0)

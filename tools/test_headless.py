@@ -58,7 +58,8 @@ def main():
     from screens.fight import FightScene
     from game.ai import AIController
     stats = {}
-    pairs = [('pantoja', 'parada'), ('nehuen', 'luciano'), ('parada', 'nico'), ('nico', 'pantoja')]
+    pairs = [('pantoja', 'parada'), ('nehuen', 'luciano'), ('parada', 'nico'), ('nico', 'pantoja'),
+             ('angel', 'facu'), ('pedro', 'emi'), ('denis', 'nehuen'), ('facu', 'parada')]
     for idx, (a, b) in enumerate(pairs):
         done = {}
         g.stage_id = 'plaza' if idx % 2 else 'aula'

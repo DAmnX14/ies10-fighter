@@ -1,4 +1,4 @@
-"""Modo Arcade: el jugador enfrenta a los otros tres luchadores con dificultad creciente."""
+"""Modo Arcade: el jugador enfrenta a 5 rivales al azar y al jefe final, con dificultad creciente."""
 import math
 import random
 import pygame
@@ -16,6 +16,16 @@ ENDINGS = {
                'Su campera verde es ahora', 'una leyenda del recreo.'],
     'nehuen': ['Nehuen celebró con un solo', 'de guitarra que se escuchó', 'en todo Fraile Pintado.', '',
                'Su piluso ahora cuelga', 'en el salón de la fama del IES 10.'],
+    'angel': ['Angel compiló el torneo entero', 'sin un solo warning.', '',
+              'Ahora el sistema de notas del IES 10', 'corre con su código.', 'Nadie entiende cómo, pero anda.'],
+    'facu': ['Facu y su gato naranja', 'ganaron el torneo.', '',
+             'La IA escribió la crónica del combate', 'y el gato se durmió encima del teclado.', 'Final perfecto.'],
+    'pedro': ['Pedro ganó sin levantar la voz.', 'Al final, todos se dieron la mano.', '',
+              'Desde ese día, en el IES 10', 'los recreos son en paz.', 'Bueno... casi siempre.'],
+    'emi': ['Emi aprobó el torneo con diez.', 'Los profes le pidieron los apuntes.', '',
+            'Ahora da clases de apoyo', 'de "cómo no perder una pelea".', 'Cupo lleno.'],
+    'denis': ['Denis levantó la copa', 'y la dio la vuelta olímpica por el aula.', '',
+              'Nehuen no habló por una semana.', 'El aula quedó pintada', 'de rojo y blanco.'],
     'luciano': ['Luciano labró el acta final:', '"Todos los rivales: amonestados."', '', 'La preceptoría nunca',
                 'volvió a ser la misma.', 'El orden fue restaurado.'],
 }
@@ -27,6 +37,7 @@ class ArcadeRun:
         self.char = char
         others = [c for c in C.CHARACTERS if c != char and c != C.BOSS]
         random.shuffle(others)
+        others = others[:5]          # con 10 luchadores: 5 rivales al azar + el jefe
         # NICO, el jefe de ArceTech, siempre es el último rival
         self.ladder = others + ([C.BOSS] if char != C.BOSS else [])
         self.stage = 0

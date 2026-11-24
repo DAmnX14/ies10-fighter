@@ -9,8 +9,9 @@ from screens.common import Scene, menu_background, help_bar, AnimPlayer
 
 STAT_LABELS = [('fuerza', 'FUERZA'), ('velocidad', 'VELOCIDAD'), ('resistencia', 'RESISTENCIA'),
                ('alcance', 'ALCANCE'), ('ejecucion', 'EJECUCIÓN')]
-TILE = 150
-GAP = 14
+TILE = 104          # 10 luchadores: grilla de 5 x 2
+GAP = 10
+COLS = 5
 
 
 class Cursor:
@@ -45,13 +46,13 @@ class CharacterSelect(Scene):
 
     # ------------------------------------------------------------- input
     def tile_rect(self, i):
-        cx = C.WIDTH / 2
-        x0 = cx - TILE - GAP / 2
-        y0 = 205
-        if i < 3:                                    # fila de arriba: 3 retratos
-            x0 = cx - 1.5 * TILE - GAP
-            return pygame.Rect(x0 + i * (TILE + GAP), y0, TILE, TILE)
-        return pygame.Rect(x0 + (i - 3) * (TILE + GAP), y0 + TILE + GAP, TILE, TILE)
+        n = len(C.CHARACTERS)
+        rows = (n + COLS - 1) // COLS
+        row, col = divmod(i, COLS)
+        in_row = min(COLS, n - row * COLS)
+        x0 = C.WIDTH / 2 - (in_row * TILE + (in_row - 1) * GAP) / 2
+        y0 = 200 + (2 - rows) * (TILE + GAP) / 2
+        return pygame.Rect(int(x0 + col * (TILE + GAP)), int(y0 + row * (TILE + GAP + 6)), TILE, TILE)
 
     def move(self, cur, dx, dy):
         if cur.ready:
@@ -60,7 +61,10 @@ class CharacterSelect(Scene):
         if dx:
             cur.idx = (cur.idx + dx) % n
         if dy:
-            cur.idx = {0: 3, 1: 3, 2: 4, 3: 0, 4: 2}.get(cur.idx, 0)
+            row, col = divmod(cur.idx, COLS)
+            rows = (n + COLS - 1) // COLS
+            row = (row + dy) % rows
+            cur.idx = min(n - 1, row * COLS + col)
         self.audio.play('menu_mover')
         side = 1 if cur is self.c1 else 2
         self.side_anim[side] = AnimPlayer(C.CHARACTERS[cur.idx])
@@ -250,8 +254,8 @@ class CharacterSelect(Scene):
             surf.blit(bg, r.topleft)
             por = pygame.transform.scale(assets.character(n).portrait, (TILE, TILE))
             surf.blit(por, r.topleft)
-            lab = ui.text_outline(d['display'], 12, C.WHITE)
-            surf.blit(lab, (r.centerx - lab.get_width() / 2, r.bottom - 20))
+            lab = ui.text_outline(d['display'], 10, C.WHITE)
+            surf.blit(lab, (r.centerx - lab.get_width() / 2, r.bottom - 15))
         # cursores
         for cur in (self.c1, self.c2):
             if cur is self.c2 and self.mode == 'arcade':
@@ -264,9 +268,9 @@ class CharacterSelect(Scene):
             off = 0 if not both else (-4 if cur is self.c1 else 4)
             w = 6 if (t // 8) % 2 or cur.ready else 4
             pygame.draw.rect(surf, cur.color, r.inflate(14 + off, 14 + off), w)
-            tag = ui.text_outline(cur.label, 14, cur.color)
-            tx = r.left - 4 if cur is self.c1 else r.right - tag.get_width() + 4
-            surf.blit(tag, (tx, r.top - 26))
+            tag = ui.text_outline(cur.label, 12, cur.color)
+            tx = r.left + 4 if cur is self.c1 else r.right - tag.get_width() - 4
+            surf.blit(tag, (tx, r.top + 4))
             if cur.flash:
                 s = pygame.Surface(r.size, pygame.SRCALPHA); s.fill((255, 255, 255, cur.flash * 10))
                 surf.blit(s, r.topleft)

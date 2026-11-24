@@ -64,6 +64,25 @@ SKELETONS = {
         f_sh=(900, 900), f_el=(1090, 1230), f_ha=(1110, 830),
         b_hip=(520, 1520), b_kn=(380, 1950), b_an=(230, 2390), b_toe=(130, 2500),
         f_hip=(760, 1520), f_kn=(1040, 1900), f_an=(1030, 2380), f_toe=(1300, 2480),
+    ),    'angel': dict(
+        src='angel.jpg', height=120, outlined=True, front_f=True,
+        head=(429, 169), neck=(425, 362), pelvis=(398, 791), b_sh=(247, 417), b_el=(155, 543), b_ha=(208, 384), f_sh=(565, 449), f_el=(610, 676), f_ha=(519, 742), b_hip=(350, 833), b_kn=(229, 1038), b_an=(133, 1219), b_toe=(66, 1256), f_hip=(495, 833), f_kn=(567, 1038), f_an=(664, 1219), f_toe=(736, 1256),
+    ),
+    'facu': dict(
+        src='facu.jpg', height=124, outlined=True, front_f=True,
+        head=(349, 395), neck=(342, 538), pelvis=(291, 960), b_sh=(182, 596), b_el=(160, 785), b_ha=(291, 676), f_sh=(436, 611), f_el=(480, 793), f_ha=(429, 858), b_hip=(218, 989), b_kn=(145, 1236), b_an=(87, 1425), b_toe=(36, 1484), f_hip=(364, 989), f_kn=(465, 1207), f_an=(444, 1382), f_toe=(538, 1418),
+    ),
+    'pedro': dict(
+        src='pedro.jpg', height=124, outlined=True, front_f=True,
+        head=(800, 158), neck=(797, 378), pelvis=(807, 931), b_sh=(611, 480), b_el=(502, 684), b_ha=(662, 567), f_sh=(1018, 451), f_el=(1164, 713), f_ha=(938, 873), b_hip=(698, 960), b_kn=(553, 1236), b_an=(436, 1425), b_toe=(335, 1469), f_hip=(916, 960), f_kn=(1062, 1207), f_an=(1178, 1440), f_toe=(1229, 1498),
+    ),
+    'emi': dict(
+        src='emi.jpg', height=122, outlined=True,
+        head=(454, 72), neck=(465, 222), pelvis=(485, 620), b_sh=(341, 310), b_el=(299, 454), b_ha=(330, 532), f_sh=(620, 289), f_el=(713, 341), f_ha=(666, 170), b_hip=(413, 651), b_kn=(320, 806), b_an=(258, 981), b_toe=(176, 1064), f_hip=(578, 651), f_kn=(661, 816), f_an=(744, 976), f_toe=(806, 1074),
+    ),
+    'denis': dict(
+        src='denis.jpg', height=126, outlined=True,
+        head=(793, 150), neck=(771, 364), pelvis=(764, 873), b_sh=(575, 509), b_el=(524, 684), b_ha=(495, 829), f_sh=(931, 436), f_el=(1105, 502), f_ha=(1076, 291), b_hip=(684, 931), b_kn=(611, 1207), b_an=(553, 1382), b_toe=(480, 1440), f_hip=(858, 931), f_kn=(989, 1164), f_an=(1076, 1382), f_toe=(1149, 1469),
     ),
 }
 
@@ -91,7 +110,43 @@ LEG_BEND_MIN = 0.52        # flexión máxima de rodilla (fracción del largo de
 
 
 # --------------------------------------------------------------- segmentado
+def segment_outlined(path, k_rel=0.004):
+    """Recorte para ilustraciones con contorno negro sobre fondo claro: primero se
+    cierra el contorno, así la ropa blanca no se confunde con el fondo."""
+    a = np.asarray(Image.open(path).convert('RGB')).astype(np.int16)
+    mx, mn = a.max(2), a.min(2)
+    lum = a.mean(2)
+    H = a.shape[0]
+    dark = (lum < 95).astype(np.uint8)
+    k = max(3, int(k_rel * H)) | 1
+    barrier = cv2.dilate(dark, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k, k))) > 0
+    cand = ((mx - mn) < 45) & (mn > 120) & ~barrier
+    n, lab = cv2.connectedComponents(cand.astype(np.uint8), connectivity=4)
+    border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))); border.discard(0)
+    bg = np.isin(lab, list(border))
+    # el borde dilatado exterior pertenece al fondo salvo el trazo oscuro real
+    bg2 = cv2.dilate(bg.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k, k))) > 0
+    fg = ~bg2 | (dark > 0) & ~bg
+    fg &= ~bg
+    n, lab, st, _ = cv2.connectedComponentsWithStats(fg.astype(np.uint8), connectivity=8)
+    big = 1 + np.argmax(st[1:, cv2.CC_STAT_AREA])
+    fg = lab == big
+    # rellenar agujeros internos
+    inv = (~fg).astype(np.uint8)
+    n, lab = cv2.connectedComponents(inv, connectivity=4)
+    border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]])))
+    holes = (inv > 0) & ~np.isin(lab, list(border))
+    # sólo agujeros chicos (entre piernas/brazos quedan los grandes, que son fondo)
+    n2, lab2, st2, _ = cv2.connectedComponentsWithStats(holes.astype(np.uint8), connectivity=4)
+    for i in range(1, n2):
+        if st2[i, 4] < 0.0015 * fg.sum() or not (((mx - mn) < 45) & (mn > 120))[lab2 == i].mean() > 0.9:
+            fg[lab2 == i] = True
+    return a.astype(np.uint8), fg
+
+
 def segment(path, name):
+    if SKELETONS.get(name, {}).get('outlined'):
+        return segment_outlined(path)
     a = np.asarray(Image.open(path).convert('RGB')).astype(np.int16)
     mx, mn = a.max(2), a.min(2)
     cand = ((mx - mn) < 28) & (mn > 105)
@@ -264,6 +319,19 @@ class RigCharacter:
                 r_, g_, b_ = L_[..., 0], L_[..., 1], L_[..., 2]
                 op = layer[..., 3] > 0
                 skin = op & (r_ > 110) & (g_ > b_ + 10) & (r_ > g_ + 15) & (r_ - g_ < 110)
+                if sk.get('outlined'):
+                    # piel = colores parecidos a la piel real de la cara de este personaje
+                    # (la regla genérica confundía remeras amarillas o pantalones beige)
+                    fz = self.head_ell & fgs & (py > self.J['head'][1] + 0.35 * (self.J['neck'][1] - self.J['head'][1]))
+                    fpx = small[fz].astype(np.float32)
+                    lumf = fpx.mean(1)
+                    fpx = fpx[(lumf > 70) & (lumf < 230)]
+                    if len(fpx) > 30:
+                        crit = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.5)
+                        _, _, cen = cv2.kmeans(fpx, 4, None, crit, 3, cv2.KMEANS_PP_CENTERS)
+                        Lf = L_.astype(np.float32)
+                        dmin = np.min([np.linalg.norm(Lf - c_, axis=2) for c_ in cen], axis=0)
+                        skin = op & (dmin < 34)
                 if self.torso_poly is not None:
                     inner = cv2.erode(self.torso_poly.astype(np.uint8), np.ones((9, 9), np.uint8)) > 0
                     skin = op & ((g_ >= b_ - 2) & (r_ > 60) | inner & ~((b_ > g_ + 15) & (r_ > 120)))
@@ -273,8 +341,9 @@ class RigCharacter:
                     hd = np.hypot(px - self.J['b_ha'][0], py - self.J['b_ha'][1])
                     skin |= op & (hd < 0.075 * self.H)
                     # restos color piel del puño apoyado en el pecho (también cerca del cuello)
-                    skin_c = (r_ > 95) & (r_ > g_ + 12) & (g_ > b_ - 5)
-                    skin |= op & skin_c & (hd < 0.14 * self.H)
+                    if not sk.get('outlined'):
+                        skin_c = (r_ > 95) & (r_ > g_ + 12) & (g_ > b_ - 5)
+                        skin |= op & skin_c & (hd < 0.14 * self.H)
                 if skin.sum() > 20:
                     skin = (cv2.dilate(skin.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0) & op
                     layer[skin] = 0

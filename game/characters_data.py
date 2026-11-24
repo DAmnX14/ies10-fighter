@@ -324,3 +324,190 @@ def move_list(char):
         inp = m['input'].replace('R', 'ESPECIAL').replace('T', 'ULTIMATE')
         lst.append((m['name'], inp + (' (barra llena)' if m.get('ult') else '')))
     return lst
+
+
+# ====================================================================== PERSONAJES NUEVOS
+import copy as _copy
+
+
+def _like(char, key, **over):
+    """Copia un movimiento existente (misma animación base) y le cambia lo indicado."""
+    m = _copy.deepcopy(CHARACTERS[char]['moves'][key])
+    m.update(over)
+    return m
+
+
+def _swap_proj(m, new):
+    for evs in m.get('events', {}).values():
+        for i, e in enumerate(evs):
+            if e[0] == 'proj':
+                evs[i] = ('proj', new)
+    return m
+
+
+def _strikes(fx, sfx, color):
+    return {0: [('voice', 'ultimate_2'), ('aura', True), ('sfx', 'carga')],
+            2: [('strike', fx, 80, False), ('sfx', sfx), ('shake', 10, 12), ('flash', color, 4)],
+            5: [('strike', fx, 80, False), ('sfx', sfx), ('shake', 10, 12), ('flash', color, 4)],
+            8: [('strike', fx, 170, True), ('sfx', sfx), ('sfx', 'explosion'), ('shake', 22, 30),
+                ('flash', (255, 255, 255), 10)],
+            11: [('aura', False)]}
+
+
+# ---------------------------------------------------------------- ANGEL
+CHARACTERS['angel'] = dict(
+    display='ANGEL', color=(255, 190, 40), color2=(80, 230, 120),
+    title='EL COMPILADOR HUMANO',
+    quote='Tu defensa tiene más bugs que mi primer código.',
+    win_quotes=['Compiló a la primera. Vos no.', 'git commit -m "le gané"', 'Error 404: rival no encontrado.'],
+    lose_quote='Funcionaba en mi máquina...',
+    stats=dict(fuerza=8, velocidad=5, resistencia=8, alcance=6, ejecucion=7),
+    health=1050,
+    moves=dict(
+        especial_1=_swap_proj(_like('nico', 'especial_1', name='BUG EN PRODUCCIÓN'), 'codigo'),
+        especial_2=_like('luciano', 'especial_2', name='DEPLOY FORZADO'),
+        ultimate_1=_like('luciano', 'ultimate_1', name='BUCLE INFINITO'),
+        ultimate_2=_like('luciano', 'ultimate_3', name='STACK OVERFLOW', input='↓+T',
+                         events=_strikes('lluvia_codigo', 'rayo', (80, 255, 120)), hold={8: 8}),
+    ),
+)
+CHARACTERS['angel']['moves']['ultimate_1']['events'][0] = [('voice', 'ultimate_1'), ('aura', True)]
+
+# ---------------------------------------------------------------- FACU
+CHARACTERS['facu'] = dict(
+    display='FACU', color=(255, 140, 30), color2=(60, 200, 255),
+    title='EL DOMADOR DE LA IA',
+    quote='Le pregunté a la IA cómo ganarte. Tardó 0,2 segundos.',
+    win_quotes=['Mi gato peleaba mejor que vos.', 'Prompt: "dejalo en el piso". Listo.',
+                'Hasta la IA me dijo que fue demasiado fácil.'],
+    lose_quote='La IA alucinó... y mi gato se durmió.',
+    stats=dict(fuerza=5, velocidad=8, resistencia=5, alcance=9, ejecucion=8),
+    health=950,
+    moves=dict(
+        especial_1=_swap_proj(_like('nico', 'especial_1', name='MICHI NARANJA'), 'gato'),
+        especial_2=_like('parada', 'especial_1', name='ZARPAZO GATUNO'),
+        ultimate_1=dict(anim='ultimate_1', name='PROMPT DEFINITIVO', input='T', ult=True,
+                        events={0: [('voice', 'ultimate_1'), ('aura', True), ('sfx', 'carga')],
+                                4: [('proj', 'rayo_ia'), ('sfx', 'energia'), ('shake', 6, 50)],
+                                8: [('sfx', 'energia')],
+                                12: [('flash', (60, 200, 255), 8), ('sfx', 'explosion'), ('shake', 14, 16)],
+                                14: [('aura', False)]},
+                        hold={2: 6, 12: 6}),
+        ultimate_2=_like('luciano', 'ultimate_3', name='LLUVIA DE MICHIS', input='↓+T',
+                         events=_strikes('gatos', 'maullido', (255, 160, 40)), hold={8: 8}),
+    ),
+)
+
+# ---------------------------------------------------------------- PEDRO
+CHARACTERS['pedro'] = dict(
+    display='PEDRO', color=(120, 210, 255), color2=(255, 255, 255),
+    title='EL HOMBRE DE LA PAZ',
+    quote='No quiero pelear... pero si insistís, lo hacemos en paz.',
+    win_quotes=['Que la paz te acompañe. En el piso, pero en paz.', 'Respirá hondo. Ya pasó.',
+                'Perdón, ¿te dolió? Te invito un mate.'],
+    lose_quote='Está bien... la paz también se aprende perdiendo.',
+    stats=dict(fuerza=6, velocidad=6, resistencia=9, alcance=7, ejecucion=7),
+    health=1100,
+    moves=dict(
+        especial_1=dict(anim='especial_1', name='PALOMA DE LA PAZ', input='R',
+                        events={0: [('voice', 'especial_1')], 3: [('proj', 'paloma'), ('sfx', 'aleteo')]}),
+        especial_2=dict(anim='especial_2', name='ONDA ZEN', input='↓+R',
+                        events={0: [('voice', 'especial_2'), ('sfx', 'carga')],
+                                4: [('blast', 95, 150), ('sfx', 'campana'), ('shake', 6, 10),
+                                    ('flash', (200, 240, 255), 4)]},
+                        hold={3: 4}),
+        ultimate_1=dict(anim='ultimate_1', name='PAZ INTERIOR', input='T', ult=True,
+                        events={0: [('voice', 'ultimate_1'), ('aura', True), ('sfx', 'carga')],
+                                3: [('sfx', 'campana')],
+                                8: [('strike', 'luz', 260, True), ('sfx', 'campana'), ('sfx', 'explosion'),
+                                    ('shake', 20, 30), ('flash', (255, 255, 230), 14)],
+                                10: [('aura', False)]},
+                        hold={4: 8, 7: 6, 8: 8}),
+        ultimate_2=_like('luciano', 'ultimate_2', name='BANDERA BLANCA',
+                         hits=[H((8, 11), 'f_ha', 330, r=34, off=(8, 0), stun=50, kb=24, kd=True, launch=-14,
+                                 sfx='ko_impacto', fx='chispa_fuerte', stop=26, id='fin', chip=0.15)]),
+    ),
+)
+CHARACTERS['pedro']['moves']['ultimate_2']['events'][8] = [('vx', 18), ('fx', 'puno_energia', 'f_ha'),
+                                                            ('sfx', 'aire_fuerte'), ('afterimage', True)]
+
+# ---------------------------------------------------------------- EMI
+CHARACTERS['emi'] = dict(
+    display='EMI', color=(30, 200, 190), color2=(255, 230, 90),
+    title='EL ALUMNO EJEMPLAR',
+    quote='Estudié toda la noche... tus movimientos.',
+    win_quotes=['Aprobado con diez. Vos, a marzo.', 'Esto entra en la prueba, anotalo.',
+                'Ni copiándote me ganabas.'],
+    lose_quote='Me tocó el tema que no estudié...',
+    stats=dict(fuerza=6, velocidad=8, resistencia=6, alcance=7, ejecucion=8),
+    health=980,
+    moves=dict(
+        especial_1=_swap_proj(_like('nico', 'especial_1', name='AVIÓN DE PAPEL'), 'avion'),
+        especial_2=_like('luciano', 'especial_2', name='MOCHILAZO'),
+        ultimate_1=_like('luciano', 'ultimate_1', name='PRUEBA SORPRESA'),
+        ultimate_2=_like('luciano', 'ultimate_3', name='TABLA DEL NUEVE', input='↓+T',
+                         events=_strikes('numeros', 'tiza', (255, 240, 120)), hold={8: 8}),
+    ),
+)
+
+# ---------------------------------------------------------------- DENIS
+CHARACTERS['denis'] = dict(
+    display='DENIS', color=(230, 30, 50), color2=(255, 255, 255),
+    title='EL MILLONARIO',
+    quote='Vos alentás a cualquiera. Yo soy de River.',
+    win_quotes=['¡Uno más para la vitrina!', 'Esto fue un baile, como en Madrid.',
+                'La banda roja nunca se mancha.'],
+    lose_quote='Fue offside... clarísimo que fue offside.',
+    stats=dict(fuerza=8, velocidad=7, resistencia=6, alcance=8, ejecucion=6),
+    health=1000,
+    moves=dict(
+        especial_1=dict(anim='especial_1', name='PELOTAZO', input='R',
+                        events={0: [('voice', 'especial_1')], 1: [('sfx', 'aire_debil')],
+                                3: [('proj', 'pelota'), ('sfx', 'patada_fuerte')]}),
+        especial_2=_like('parada', 'especial_1', name='BANDA ROJA',
+                         hits=[H((2, 4), 'f_ha', 125, r=20, stun=26, bstun=16, kb=14, kd=True, launch=-8,
+                                 sfx='golpe_fuerte', fx='chispa_fuerte', stop=11, chip=0.12)]),
+        ultimate_1=_like('nehuen', 'ultimate_3', name='EL MONUMENTAL RUGE', input='T',
+                         events={0: [('voice', 'ultimate_1'), ('aura', True), ('sfx', 'hinchada')],
+                                 3: [('quake', 75, 700, False), ('strike', 'papelitos', 0, False),
+                                     ('sfx', 'terremoto'), ('shake', 14, 20), ('flash', (230, 30, 50), 5)],
+                                 6: [('quake', 75, 700, False), ('sfx', 'caida_suelo'), ('shake', 16, 20),
+                                     ('flash', (255, 255, 255), 5)],
+                                 9: [('quake', 170, 850, True), ('strike', 'papelitos', 0, False),
+                                     ('sfx', 'explosion'), ('shake', 24, 40), ('flash', (230, 30, 50), 10)],
+                                 11: [('aura', False)]}),
+        ultimate_2=dict(anim='ultimate_2', name='GOLAZO DE MEDIA CANCHA', input='↓+T', ult=True,
+                        events={0: [('voice', 'ultimate_2'), ('aura', True), ('sfx', 'carga')],
+                                3: [('vx', 8), ('sfx', 'dash'), ('dust',)], 5: [('vx', 0)],
+                                7: [('proj', 'pelota_gigante'), ('sfx', 'patada_fuerte'), ('sfx', 'explosion'),
+                                    ('shake', 12, 16), ('flash', (255, 255, 255), 6)],
+                                10: [('sfx', 'hinchada')], 12: [('aura', False)]},
+                        hold={2: 10, 7: 6}),
+    ),
+)
+CHARACTERS['denis']['moves']['especial_2']['events'][2] = [('vx', 15), ('sfx', 'dash'), ('dust',),
+                                                            ('afterimage', True)]
+
+PROJECTILES.update({
+    'codigo': dict(fx='codigo', speed=10, dmg=85, joint='f_ha', off=(10, 0), r=38, stun=20, kb=8, life=110,
+                   sfx='golpe_fuerte', chip=0.15),
+    'gato': dict(fx='gato', speed=9, dmg=80, joint='f_ha', off=(8, 6), r=40, stun=22, kb=8, life=120,
+                 sfx='maullido', chip=0.15),
+    'paloma': dict(fx='paloma', speed=8, dmg=75, joint='neck', off=(26, 10), r=40, stun=22, kb=7, life=130,
+                   sfx='golpe_debil', chip=0.1),
+    'avion': dict(fx='avion', speed=12, dmg=70, joint='f_ha', off=(10, 0), r=32, stun=18, kb=6, life=100,
+                  sfx='golpe_debil', chip=0.1),
+    'pelota': dict(fx='pelota', speed=13, dmg=85, joint='f_toe', off=(6, -4), r=34, stun=20, kb=9, life=100,
+                   sfx='golpe_fuerte', chip=0.15),
+    'pelota_gigante': dict(fx='pelota_gigante', speed=11, dmg=330, joint='f_toe', off=(14, -20), r=90, stun=40,
+                           kb=22, kd=True, life=140, sfx='ko_impacto', chip=0.2),
+    'rayo_ia': dict(fx='rayo_ia', speed=0, dmg=26, joint='f_ha', off=(4, 0), r=60, stun=40, kb=1,
+                    life=64, beam=True, interval=6, lock=True, sfx='golpe_debil', chip=0.03,
+                    final=dict(dmg=90, kd=True, kb=14, launch=-14)),
+})
+
+_INPUTS = {'especial_1': 'R', 'especial_2': '↓+R', 'ultimate_1': 'T', 'ultimate_2': '↓+T', 'ultimate_3': '→+T'}
+for _c in ('angel', 'facu', 'pedro', 'emi', 'denis'):
+    for _k, _m in CHARACTERS[_c]['moves'].items():
+        _m['anim'] = _k
+        _m['input'] = _INPUTS[_k]

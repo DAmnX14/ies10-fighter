@@ -54,7 +54,7 @@ Para regenerar: `python tools/build_sprites.py` (o `python tools/build_sprites.p
 
 ## PANTOJA — El Marido De Parada
 
-Altura nativa: 114 px · 26 animaciones · 201 cuadros
+Altura nativa: 114 px · 32 animaciones · 228 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -84,10 +84,16 @@ Altura nativa: 114 px · 26 animaciones · 201 cuadros
 | `ultimate_1` | `pantoja_ultimate_1.png` | 16 | 5 | no | Ultimate 1 — **Terremoto Pantoja** |
 | `ultimate_2` | `pantoja_ultimate_2.png` | 18 | 4 | no | Ultimate 2 — **Lluvia De Cachetadas** |
 | `ultimate_3` | `pantoja_ultimate_3.png` | 14 | 4 | no | Ultimate 3 — **Colectivazo** |
+| `enamorado` | `pantoja_enamorado.png` | 4 | 10 | sí |  |
+| `abrazo` | `pantoja_abrazo.png` | 4 | 8 | no |  |
+| `saludo` | `pantoja_saludo.png` | 7 | 7 | no |  |
+| `provocar` | `pantoja_provocar.png` | 4 | 6 | sí |  |
+| `enojado` | `pantoja_enojado.png` | 4 | 3 | sí |  |
+| `confundido` | `pantoja_confundido.png` | 4 | 9 | no |  |
 
 ## PARADA — El Besa Perro
 
-Altura nativa: 126 px · 26 animaciones · 208 cuadros
+Altura nativa: 126 px · 32 animaciones · 235 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -117,10 +123,16 @@ Altura nativa: 126 px · 26 animaciones · 208 cuadros
 | `ultimate_1` | `parada_ultimate_1.png` | 21 | 3 | no | Ultimate 1 — **Mil Piñas** |
 | `ultimate_2` | `parada_ultimate_2.png` | 16 | 4 | no | Ultimate 2 — **Tornado Verde** |
 | `ultimate_3` | `parada_ultimate_3.png` | 18 | 3 | no | Ultimate 3 — **Cien Patadas** |
+| `enamorado` | `parada_enamorado.png` | 4 | 10 | sí |  |
+| `abrazo` | `parada_abrazo.png` | 4 | 8 | no |  |
+| `saludo` | `parada_saludo.png` | 7 | 7 | no |  |
+| `provocar` | `parada_provocar.png` | 4 | 6 | sí |  |
+| `enojado` | `parada_enojado.png` | 4 | 3 | sí |  |
+| `confundido` | `parada_confundido.png` | 4 | 9 | no |  |
 
 ## NEHUEN — El Bostero
 
-Altura nativa: 128 px · 26 animaciones · 196 cuadros
+Altura nativa: 128 px · 32 animaciones · 223 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -150,10 +162,16 @@ Altura nativa: 128 px · 26 animaciones · 196 cuadros
 | `ultimate_1` | `nehuen_ultimate_1.png` | 16 | 4 | no | Ultimate 1 — **Solo Infinito** |
 | `ultimate_2` | `nehuen_ultimate_2.png` | 15 | 5 | no | Ultimate 2 — **Meteoro Piluso** |
 | `ultimate_3` | `nehuen_ultimate_3.png` | 13 | 5 | no | Ultimate 3 — **La Bombonera Late** |
+| `enamorado` | `nehuen_enamorado.png` | 4 | 10 | sí |  |
+| `abrazo` | `nehuen_abrazo.png` | 4 | 8 | no |  |
+| `saludo` | `nehuen_saludo.png` | 7 | 7 | no |  |
+| `provocar` | `nehuen_provocar.png` | 4 | 6 | sí |  |
+| `enojado` | `nehuen_enojado.png` | 4 | 3 | sí |  |
+| `confundido` | `nehuen_confundido.png` | 4 | 9 | no |  |
 
 ## LUCIANO — Voltio
 
-Altura nativa: 126 px · 26 animaciones · 199 cuadros
+Altura nativa: 126 px · 32 animaciones · 226 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -183,10 +201,16 @@ Altura nativa: 126 px · 26 animaciones · 199 cuadros
 | `ultimate_1` | `luciano_ultimate_1.png` | 18 | 4 | no | Ultimate 1 — **Combo Disciplinario** |
 | `ultimate_2` | `luciano_ultimate_2.png` | 16 | 5 | no | Ultimate 2 — **Amonestación Final** |
 | `ultimate_3` | `luciano_ultimate_3.png` | 13 | 5 | no | Ultimate 3 — **Alto Voltaje** |
+| `enamorado` | `luciano_enamorado.png` | 4 | 10 | sí |  |
+| `abrazo` | `luciano_abrazo.png` | 4 | 8 | no |  |
+| `saludo` | `luciano_saludo.png` | 7 | 7 | no |  |
+| `provocar` | `luciano_provocar.png` | 4 | 6 | sí |  |
+| `enojado` | `luciano_enojado.png` | 4 | 3 | sí |  |
+| `confundido` | `luciano_confundido.png` | 4 | 9 | no |  |
 
 ## NICO — El Jefe De Arcetech
 
-Altura nativa: 126 px · 25 animaciones · 174 cuadros
+Altura nativa: 126 px · 31 animaciones · 201 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -215,6 +239,12 @@ Altura nativa: 126 px · 25 animaciones · 174 cuadros
 | `especial_2` | `nico_especial_2.png` | 8 | 4 | no | Ataque especial 2 — **Reinicio Forzado** |
 | `ultimate_1` | `nico_ultimate_1.png` | 10 | 5 | no | Ultimate 1 — **Pantallazo Azul** |
 | `ultimate_2` | `nico_ultimate_2.png` | 14 | 5 | no | Ultimate 2 — **Despido Inmediato** |
+| `enamorado` | `nico_enamorado.png` | 4 | 10 | sí |  |
+| `abrazo` | `nico_abrazo.png` | 4 | 8 | no |  |
+| `saludo` | `nico_saludo.png` | 7 | 7 | no |  |
+| `provocar` | `nico_provocar.png` | 4 | 6 | sí |  |
+| `enojado` | `nico_enojado.png` | 4 | 3 | sí |  |
+| `confundido` | `nico_confundido.png` | 4 | 9 | no |  |
 
 ## Efectos especiales (`assets/effects/`)
 
@@ -239,6 +269,21 @@ Mismo formato: tira horizontal, cuadros de tamaño uniforme (indicado abajo), es
 | `puno_energia` | `puno_energia.png` | 90×64 | 4 | Puño de energía de «Amonestación final» (Luciano) |
 | `estela` | `estela.png` | 48×24 | 3 | Estela de velocidad |
 | `destello` | `destello.png` | 64×64 | 1 | Destello |
+| `codigo` | `codigo.png` | 44×30 | 4 |  |
+| `gato` | `gato.png` | 40×28 | 4 |  |
+| `gatos` | `gatos.png` | 48×176 | 4 |  |
+| `paloma` | `paloma.png` | 36×28 | 4 |  |
+| `avion` | `avion.png` | 32×20 | 4 |  |
+| `pelota` | `pelota.png` | 26×26 | 4 |  |
+| `pelota_gigante` | `pelota_gigante.png` | 72×72 | 4 |  |
+| `rayo_ia` | `rayo_ia.png` | 96×64 | 4 |  |
+| `lluvia_codigo` | `lluvia_codigo.png` | 48×176 | 4 |  |
+| `numeros` | `numeros.png` | 48×176 | 4 |  |
+| `luz` | `luz.png` | 48×176 | 4 |  |
+| `papelitos` | `papelitos.png` | 96×176 | 4 |  |
+| `corazon` | `corazon.png` | 24×24 | 4 |  |
+| `enojo` | `enojo.png` | 24×24 | 4 |  |
+| `brillo` | `brillo.png` | 32×32 | 4 |  |
 
 ## Interfaz (`assets/interface/`)
 

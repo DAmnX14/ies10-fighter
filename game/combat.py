@@ -10,6 +10,7 @@ from game.stage import Stage
 from game.particles import FXManager, SpriteFX, Ring, SpeedLines, FloatText
 from game.player import Fighter, FREE
 from game.characters_data import PROJECTILES, ULTIMATE_COST
+from game import encounters
 
 
 # ====================================================================== proyectiles
@@ -159,10 +160,16 @@ class Match:
         self.state_t = 0
         self.controls_enabled = False
         self.round_winner = None
+        self.encounter = None
         if self.round == 1 and not self.training:
             for f in (self.p1, self.p2):
                 f.state = 'intro'
                 f.set_anim('presentacion')
+            ev = encounters.pick(self.p1.name, self.p2.name)
+            if ev:
+                # escena especial antes de pelear (pareja, amigos, rivales, bronca contra Parada)
+                self.encounter = encounters.Encounter(self, *ev)
+                self.state = 'encounter'
         self.camera.zoom_target = 1.0
         self.camera.focus = None
 
@@ -490,6 +497,16 @@ class Match:
 
     def round_flow(self):
         t = self.state_t
+        if self.state == 'encounter':
+            if t == 1:
+                self.audio.play('publico', 0.6)
+            self.encounter.update()
+            if self.encounter.done:
+                self.state = 'intro'
+                self.state_t = 55          # sigue directo con "RONDA 1"
+                if self.encounter.skipped:
+                    self.banner = None
+            return
         if self.state == 'intro':
             if self.training:
                 if t == 2:

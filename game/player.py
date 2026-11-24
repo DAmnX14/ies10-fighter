@@ -29,7 +29,8 @@ class Fighter:
         self.moves = normals()
         self.moves.update(self.data['moves'])
         self.color = self.data['color']
-        self.push_w = {'pantoja': 78, 'parada': 64, 'nehuen': 62, 'luciano': 64, 'nico': 64}.get(name, 64)
+        self.push_w = {'pantoja': 78, 'parada': 64, 'nehuen': 62, 'luciano': 64, 'nico': 64, 'angel': 72, 'facu': 60,
+                       'pedro': 66, 'emi': 64, 'denis': 64}.get(name, 64)
         self.reset_round()
         self.wins = 0
 
