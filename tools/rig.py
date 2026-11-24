@@ -86,6 +86,7 @@ DRAW_ORDER = ['f_up', 'f_lo', 'b_th', 'b_shin', 'b_foot', 'f_th', 'f_shin',
               'f_foot', 'torso', 'b_up', 'b_lo', 'head']
 HEAD_SCALE = 1.10          # cabeza un poco más grande: la cara se lee mejor a resolución nativa
 ARM_STRETCH = 1.08         # estiramiento máximo de un brazo (más se deforma el dibujo)
+SMOOTH_WARP = True        # rotación de partes con interpolación suave
 LEG_BEND_MIN = 0.52        # flexión máxima de rodilla (fracción del largo de la pierna)
 
 
@@ -271,6 +272,9 @@ class RigCharacter:
                 if not sk.get('front_f'):
                     hd = np.hypot(px - self.J['b_ha'][0], py - self.J['b_ha'][1])
                     skin |= op & (hd < 0.075 * self.H)
+                    # restos color piel del puño apoyado en el pecho (también cerca del cuello)
+                    skin_c = (r_ > 95) & (r_ > g_ + 12) & (g_ > b_ - 5)
+                    skin |= op & skin_c & (hd < 0.14 * self.H)
                 if skin.sum() > 20:
                     skin = (cv2.dilate(skin.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0) & op
                     layer[skin] = 0
@@ -281,6 +285,8 @@ class RigCharacter:
                     src_rgb = small.copy()
                     src_rgb[~known] = 0
                     fill = cv2.inpaint(src_rgb, (~known).astype(np.uint8) * 255, 9, cv2.INPAINT_TELEA)
+                    # suavizar el parche para que no queden vetas
+                    fill = cv2.GaussianBlur(fill, (0, 0), 2.0)
                     sel = (hole > 0) & ~known
                     layer[sel, :3] = fill[sel]
                     layer[sel, 3] = 255
@@ -478,10 +484,20 @@ class RigCharacter:
             M[:, :2] = Rd @ (np.diag([HEAD_SCALE, HEAD_SCALE]) if b == 'head' else np.diag([k, 1.0])) @ Rs_inv
             t = np.array([cx - src_p[0], cy - src_p[1]])
             M[:, 2] = M[:, :2] @ t + np.array([dst_p[0] + ox, dst_p[1] + oy])
-            warped = cv2.warpAffine(crop, M, (W, Hh), flags=cv2.INTER_NEAREST,
-                                    borderMode=cv2.BORDER_CONSTANT, borderValue=0)
-            a = warped[..., 3:4].astype(np.float32) / 255
-            canvas[..., :3] = canvas[..., :3] * (1 - a) + warped[..., :3] * a
+            if SMOOTH_WARP:
+                # interpolación bilineal con alfa premultiplicado: los bordes de las
+                # partes rotadas salen lisos en vez de "serruchados"
+                cp = crop.astype(np.float32)
+                cp[..., :3] *= cp[..., 3:4] / 255
+                warped = cv2.warpAffine(cp, M, (W, Hh), flags=cv2.INTER_LINEAR,
+                                        borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+                a = warped[..., 3:4] / 255
+                canvas[..., :3] = canvas[..., :3] * (1 - a) + warped[..., :3]
+            else:
+                warped = cv2.warpAffine(crop, M, (W, Hh), flags=cv2.INTER_NEAREST,
+                                        borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+                a = warped[..., 3:4].astype(np.float32) / 255
+                canvas[..., :3] = canvas[..., :3] * (1 - a) + warped[..., :3] * a
             canvas[..., 3:4] = canvas[..., 3:4] * (1 - a) + a
             if b == 'head':
                 headm = np.maximum(headm * (1 - a[..., 0]), a[..., 0])
@@ -500,6 +516,9 @@ class RigCharacter:
         rgb = np.where(al[..., None] > 1e-4, small[..., :3] / np.maximum(al[..., None], 1e-4), 0)
         out = np.zeros((CANVAS_H, CANVAS_W, 4), np.uint8)
         mask = al > 0.45
+        if SMOOTH_WARP:
+            # contorno limpio: quita púas y muescas de 1 píxel
+            mask = cv2.medianBlur(mask.astype(np.uint8) * 255, 3) > 0
         # nitidez de la cara: realza ojos, cejas y boca que se pierden al reducir
         hm = cv2.resize(headm, (CANVAS_W, CANVAS_H), interpolation=cv2.INTER_AREA) > 0.5
         hm = cv2.erode(hm.astype(np.uint8), np.ones((2, 2), np.uint8)) > 0

@@ -374,7 +374,7 @@ SPECIALS = {
         'ultimate_2': dict(keys=[
             K(1, ry=8, lean=6, head=-6),
             K(1, ry=18, lean=12, bf=(-5, 0), ff=(5, 0), fh=(170, 0.6), bh=(170, 0.6), sy=0.94),
-            K(1, ry=-6, lrel=1, sy=1.1, fh=(-110, 1.0), bh=(-100, 1.0), bf=(0, -6), ff=(0, -8)),
+            K(1, ry=-2, lrel=1, sy=1.04, fh=(-105, 0.85), bh=(-100, 0.85), bf=(0, -6), ff=(0, -8)),
             K(1, ry=-10, lrel=1, rot=60, bf=(8, -26), ff=(-8, -30), fh=(40, 0.5), bh=(50, 0.5)),
             K(1, ry=-10, lrel=1, rot=150, bf=(8, -26), ff=(-8, -30), fh=(40, 0.5), bh=(50, 0.5)),
             K(1, ry=-10, lrel=1, rot=240, bf=(8, -26), ff=(-8, -30), fh=(40, 0.5), bh=(50, 0.5)),
@@ -559,10 +559,33 @@ ANIM_ORDER = ['idle', 'caminar', 'caminar_atras', 'saltar', 'saltar_adelante', '
               'victoria', 'derrota', 'especial_1', 'especial_2', 'ultimate_1', 'ultimate_2', 'ultimate_3']
 
 
+# Ajustes de postura agachada por personaje: Parada tiene la pierna trasera muy
+# estirada en el dibujo original y al agacharse hondo el pie se salía del cuadro.
+CROUCH_ANIMS = ('agacharse', 'bloquear_agachado', 'golpe_agachado', 'patada_agachado')
+CROUCH_FIX = {'parada': dict(max_ry=20, bf=(-12, 0), ff=(10, 0), lean_add=3)}
+
+
+def _fix_crouch(char, name, a):
+    fx = CROUCH_FIX.get(char)
+    if not fx or name not in CROUCH_ANIMS or 'keys' not in a:
+        return a
+    keys = []
+    for kf, n in a['keys']:
+        kf = dict(kf)
+        if kf.get('ry', 0) >= 16:
+            kf['ry'] = min(kf['ry'], fx['max_ry'])
+            kf['bf'] = fx['bf']
+            if 'ff_abs' not in kf:
+                kf['ff'] = fx['ff']
+            kf['lean'] = kf.get('lean', 0) + fx['lean_add']
+        keys.append((kf, n))
+    return dict(a, keys=keys)
+
+
 def get_anim(char, name):
     if name in SPECIALS.get(char, {}):
         return SPECIALS[char][name]
-    return ANIMS[name]
+    return _fix_crouch(char, name, ANIMS[name])
 
 
 def has_anim(char, name):

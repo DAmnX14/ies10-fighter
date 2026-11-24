@@ -24,6 +24,33 @@ def frames_for(char, name):
     return [k for k, n in a['keys']], a
 
 
+def render_grounded(rc, kf):
+    """Renderiza un cuadro sin que el cuerpo se hunda debajo del piso.
+    Antes, al caer o levantarse, el cuerpo quedaba ~5 px (15 px en pantalla)
+    por debajo del suelo y se cortaba con el borde del cuadro."""
+    kf = dict(kf)
+    u_px = (rc.H / SS) / 100.0              # px nativos por unidad de pose
+    limit = ANCHOR_Y + 2
+    for _ in range(12):
+        p = rc.resolve(kf)
+        img, P = rc.render(p)
+        ys = np.where(img[..., 3].any(1))[0]
+        if not len(ys) or ys.max() <= limit:
+            break
+        exc = (ys.max() - (ANCHOR_Y + 1)) / u_px
+        if ys.max() >= CANVAS_H - 1:
+            exc = max(exc, 4.0)                    # cortado: no se ve cuánto sobra
+        if kf.get('lrel', 0) >= 0.5 or kf.get('rot', 0):
+            kf['ry'] = kf.get('ry', 0) - exc       # todo el cuerpo sube
+        else:
+            for s_ in 'bf':                        # pies apoyados: sube el pie que se hunde
+                if s_ + 'f_abs' in kf:
+                    x, y = kf[s_ + 'f_abs']; kf[s_ + 'f_abs'] = (x, y - exc)
+                else:
+                    x, y = kf.get(s_ + 'f', (0, 0)); kf[s_ + 'f'] = (x, min(y, 0) - exc * 0.5)
+    return p, img, P
+
+
 def portrait(rc, src_dir, name):
     from rig import segment, SKELETONS
     sk = SKELETONS[name]
@@ -45,7 +72,8 @@ def portrait(rc, src_dir, name):
 
 def main():
     src = os.path.join(ROOT, 'assets', 'source')
-    for name in CHARS:
+    only = [a for a in sys.argv[1:] if a in CHARS]
+    for name in (only or CHARS):
         print('==', name, flush=True)
         rc = RigCharacter(name, src)
         rc.build_palette()
@@ -60,8 +88,7 @@ def main():
             kfs, spec = frames_for(name, an)
             frames, joints, boxes = [], [], []
             for kf in kfs:
-                p = rc.resolve(kf)
-                img, P = rc.render(p)
+                p, img, P = render_grounded(rc, kf)
                 frames.append(img)
                 jd = {j: [round(v, 1) for v in rc.to_native(P[j])] for j in JOINTS}
                 if p.get('_swap'):
