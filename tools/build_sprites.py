@@ -12,6 +12,7 @@ from anim_defs import ANIM_ORDER, get_anim, has_anim
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 CHARS = ['pantoja', 'parada', 'nehuen', 'luciano', 'nico', 'angel', 'facu', 'pedro', 'emi', 'denis']
+PORTRAIT = 144      # retrato a 144 px: se reduce suave o se amplía x2/x3 sin deformar los píxeles
 JOINTS = ['f_ha', 'b_ha', 'f_an', 'b_an', 'f_toe', 'b_toe', 'head', 'neck', 'pelvis',
           'f_el', 'b_el', 'f_kn', 'b_kn']
 
@@ -25,29 +26,56 @@ def frames_for(char, name):
 
 
 def render_grounded(rc, kf):
-    """Renderiza un cuadro sin que el cuerpo se hunda debajo del piso.
-    Antes, al caer o levantarse, el cuerpo quedaba ~5 px (15 px en pantalla)
-    por debajo del suelo y se cortaba con el borde del cuadro."""
+    """Renderiza un cuadro con los pies exactamente sobre el suelo (bottom-center).
+
+    Regla general, igual para todos los luchadores:
+    - Ningún cuadro puede quedar por debajo del suelo (se cortaba con el borde).
+    - En las poses apoyadas en el piso (sin salto ni voltereta), si al menos un pie
+      está apoyado, el punto más bajo del cuerpo tiene que tocar el suelo: antes, en
+      caminar, victoria o algunas patadas la pierna no llegaba y el luchador
+      "flotaba" 3-5 px (9-15 px en pantalla).
+    """
     kf = dict(kf)
     u_px = (rc.H / SS) / 100.0              # px nativos por unidad de pose
-    limit = ANCHOR_Y + 2
-    for _ in range(12):
+    airborne = kf.get('lrel', 0) >= 0.5 or kf.get('rot', 0)
+    p = img = P = None
+    for _ in range(14):
         p = rc.resolve(kf)
         img, P = rc.render(p)
         ys = np.where(img[..., 3].any(1))[0]
-        if not len(ys) or ys.max() <= limit:
+        if not len(ys):
             break
-        exc = (ys.max() - (ANCHOR_Y + 1)) / u_px
-        if ys.max() >= CANVAS_H - 1:
-            exc = max(exc, 4.0)                    # cortado: no se ve cuánto sobra
-        if kf.get('lrel', 0) >= 0.5 or kf.get('rot', 0):
-            kf['ry'] = kf.get('ry', 0) - exc       # todo el cuerpo sube
-        else:
-            for s_ in 'bf':                        # pies apoyados: sube el pie que se hunde
-                if s_ + 'f_abs' in kf:
-                    x, y = kf[s_ + 'f_abs']; kf[s_ + 'f_abs'] = (x, y - exc)
-                else:
-                    x, y = kf.get(s_ + 'f', (0, 0)); kf[s_ + 'f'] = (x, min(y, 0) - exc * 0.5)
+        low = ys.max()
+        if low > ANCHOR_Y + 1:                                   # se hunde
+            exc = (low - ANCHOR_Y) / u_px
+            if low >= CANVAS_H - 1:
+                exc = max(exc, 4.0)                              # cortado: no se ve cuánto sobra
+            kf['ry'] = kf.get('ry', 0) - exc
+            continue
+        if not airborne and low < ANCHOR_Y - 1:                 # flota
+            ank = [rc.to_native(P[s_ + '_an'])[1] for s_ in 'bf'] + [rc.to_native(P[s_ + '_toe'])[1] for s_ in 'bf']
+            if max(ank) >= ANCHOR_Y - 16:                        # hay un pie que debería estar apoyado
+                kf['ry'] = kf.get('ry', 0) + (ANCHOR_Y - low) / u_px
+                continue
+        break
+    # red de seguridad: si la pose no alcanzó, se alinea el cuadro entero (sprite y
+    # articulaciones) para que el punto más bajo quede exactamente sobre el suelo
+    ys = np.where(img[..., 3].any(1))[0]
+    if len(ys):
+        low = ys.max()
+        planted = max(rc.to_native(P[s_ + k_])[1] for s_ in 'bf' for k_ in ('_an', '_toe')) >= ANCHOR_Y - 16
+        d = 0
+        if low > ANCHOR_Y:
+            d = ANCHOR_Y - low                                   # subir
+        elif not airborne and planted and low < ANCHOR_Y:
+            d = ANCHOR_Y - low                                   # bajar
+        if d and abs(d) <= 12:
+            img = np.roll(img, d, axis=0)
+            if d > 0:
+                img[:d] = 0
+            else:
+                img[d:] = 0
+            P = {k_: (v[0], v[1] + d * SS) for k_, v in P.items()}
     return p, img, P
 
 
@@ -77,7 +105,7 @@ def portrait(rc, src_dir, name):
     crop = imgp[y0 + pad:y0 + pad + size, x0 + pad:x0 + pad + size]
     m = fgp[y0 + pad:y0 + pad + size, x0 + pad:x0 + pad + size]
     rgba = np.dstack([crop, m * 255]).astype(np.uint8)
-    small = cv2.resize(rgba, (72, 72), interpolation=cv2.INTER_AREA)
+    small = cv2.resize(rgba, (PORTRAIT, PORTRAIT), interpolation=cv2.INTER_AREA)
     small[..., 3] = np.where(small[..., 3] > 110, 255, 0)
     return small
 

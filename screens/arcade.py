@@ -126,7 +126,7 @@ class LadderScreen(Scene):
             r = pygame.Rect(x - 90, y - 90, 180, 180)
             pygame.draw.rect(surf, (0, 0, 0), r.inflate(12, 12))
             pygame.draw.rect(surf, C.YELLOW if cur and (t // 10) % 2 else d['color'], r.inflate(6, 6))
-            por = pygame.transform.scale(assets.character(opp).portrait, (180, 180))
+            por = assets.character(opp).portrait_at(180)
             if done:
                 por = por.copy(); por.fill((80, 80, 80, 255), special_flags=pygame.BLEND_RGBA_MULT)
             surf.blit(por, r.topleft)

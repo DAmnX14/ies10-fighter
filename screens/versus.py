@@ -76,8 +76,8 @@ class VersusScreen(Scene):
         # retratos grandes
         # columnas laterales: retrato, nombre y frase (ancho 280) — los cuerpos van al centro
         COLW = 280
-        p1 = pygame.transform.scale(assets.character(self.c1).portrait, (COLW, COLW))
-        p2 = pygame.transform.flip(pygame.transform.scale(assets.character(self.c2).portrait, (COLW, COLW)), True, False)
+        p1 = assets.character(self.c1).portrait_at(COLW)
+        p2 = assets.character(self.c2).portrait_at(COLW, flip=True)
         surf.blit(p1, (30 - off, 70))
         surf.blit(p2, (C.WIDTH - 30 - COLW + off, 70))
         # cuerpos, a escala 2, entre las columnas y debajo del «VS»

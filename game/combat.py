@@ -74,6 +74,15 @@ class Projectile:
             self.m.apply_hit(self.owner, opp, hit, opp.x, opp.y - 200, force=True)
             self.m.fx.add(SpriteFX('explosion', opp.x, opp.y - 200, scale=1.6))
 
+    def hit_rect(self):
+        """Caja de golpe del proyectil (para el modo debug)."""
+        d = self.d
+        if d.get('beam'):
+            x0 = self.x if self.facing > 0 else self.x - self.length
+            return pygame.Rect(x0, self.y - 70, self.length, 140)
+        r = d['r']
+        return pygame.Rect(self.x - r, self.y - r, r * 2, r * 2)
+
     def rect_hit(self, opp):
         d = self.d
         hb = opp.hurtbox()
@@ -136,7 +145,7 @@ class Match:
         self.combo_show = {1: (0, 0, 0), 2: (0, 0, 0)}  # (hits, daño, ticks)
         self.result = None
         self.infinite_meter = self.training
-        self.show_hitboxes = False
+        self.show_hitboxes = getattr(game, 'debug', False)     # modo debug (F9), se mantiene entre peleas
         self.slowmo = 0
         self.winner = None
         self.round_winner = None
@@ -634,8 +643,15 @@ class Match:
                 f.draw_debug(world, cam)
         for p in self.projectiles:
             p.draw(world, cam)
+            if self.show_hitboxes:
+                r = p.hit_rect() if hasattr(p, 'hit_rect') else None
+                if r is not None:
+                    x, y = cam.to_screen(r.x, r.y)
+                    pygame.draw.rect(world, (255, 80, 0), (x, y, r.w, r.h), 2)
         self.fx.draw_front(world, cam)
         self.stage.draw_front(world, cam)
+        if self.show_hitboxes:
+            self.draw_debug_overlay(world, cam)
         if world is not surf:
             fx_ = cam.focus.x if cam.focus else (self.p1.x + self.p2.x) / 2
             sx, sy = cam.to_screen(fx_, self.stage.ground_y - 200)
@@ -654,6 +670,17 @@ class Match:
             self.draw_cutin(surf)
         if self.banner and not self.cutin:
             self.draw_banner(surf)
+
+    def draw_debug_overlay(self, surf, cam):
+        """Línea de suelo, límites del escenario y referencias del modo debug."""
+        _, gy = cam.to_screen(0, self.stage.ground_y)
+        pygame.draw.line(surf, (255, 0, 255), (0, gy), (C.WIDTH, gy), 1)
+        for xw in (self.stage.left, self.stage.right):
+            x, _ = cam.to_screen(xw, 0)
+            pygame.draw.line(surf, (255, 120, 0), (x, 0), (x, C.HEIGHT), 1)
+        leg = ui.text_outline('DEBUG (F9)  verde=hurtbox  rojo=hitbox  amarillo=empuje  azul=sprite  '
+                              'magenta=suelo/pies  naranja=límites/proyectil', 9, (255, 255, 255))
+        surf.blit(leg, (C.WIDTH // 2 - leg.get_width() // 2, 118))
 
     def draw_cutin(self, surf):
         c = self.cutin
@@ -675,7 +702,7 @@ class Match:
             return
         bx = 0 if f.side == 1 else C.WIDTH - bw
         surf.blit(band, (bx, y), (bx, 0, bw, h))
-        por = pygame.transform.scale(f.spr.portrait, (220, 220))
+        por = f.spr.portrait_at(220)
         if f.side == 2:
             por = pygame.transform.flip(por, True, False)
         px = (-240 + 300 * k) if f.side == 1 else (C.WIDTH + 20 - 300 * k - 0)
@@ -707,7 +734,7 @@ class Match:
             left = f.side == 1
             x = 120 if left else C.WIDTH - 120 - bw
             # retrato
-            por = pygame.transform.scale(f.spr.portrait, (88, 88))
+            por = f.spr.portrait_at(88)
             if not left:
                 por = pygame.transform.flip(por, True, False)
             px = 18 if left else C.WIDTH - 106

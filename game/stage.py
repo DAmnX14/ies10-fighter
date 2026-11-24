@@ -4,6 +4,8 @@ import random
 import pygame
 import config as C
 
+FG_MARGIN = 26          # px de pantalla entre los pies y el público de primer plano
+
 
 class Stage:
     def __init__(self, stage_id='aula'):
@@ -131,6 +133,10 @@ class Stage:
 
     def draw_front(self, surf, cam):
         # primer plano con paralaje (se mueve más rápido que el fondo)
+        # el público de primer plano va SIEMPRE por debajo de la línea del suelo: antes
+        # empezaba en y≈595 de pantalla y tapaba los pies y piernas de los luchadores
         fx = -cam.x * 1.35 - 150 + cam.ox
-        surf.blit(self.fg, (fx, C.HEIGHT - 150 + cam.oy * 1.3 + (cam.base_y - cam.y) * 0.3))
+        _, gy = cam.to_screen(0, self.ground_y)
+        top = max(gy + FG_MARGIN - 28, C.HEIGHT - 150)
+        surf.blit(self.fg, (fx, top + cam.oy * 0.3))
         surf.blit(self.vignette, (0, 0))

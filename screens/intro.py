@@ -160,9 +160,9 @@ class IntroScene(Scene):
         k = min(1.0, lt / 16)
         for i, (name, col, side) in enumerate((('pantoja', (255, 70, 160), 1), ('parada', (40, 210, 110), -1))):
             por = assets.character(name).portrait
-            h = 72
-            band = por.subsurface((0, int(h * 0.30), 72, int(h * 0.26)))   # franja de los ojos
-            img = pygame.transform.scale(band, (C.WIDTH // 2 + 300, int((C.WIDTH // 2 + 300) * band.get_height() / 72)))
+            h = por.get_width()                                            # el retrato puede ser de 72 o 144 px
+            band = por.subsurface((0, int(h * 0.30), h, int(h * 0.26)))    # franja de los ojos
+            img = pygame.transform.scale(band, (C.WIDTH // 2 + 300, int((C.WIDTH // 2 + 300) * band.get_height() / h)))
             if side < 0:
                 img = pygame.transform.flip(img, True, False)
             y = 90 + i * 280

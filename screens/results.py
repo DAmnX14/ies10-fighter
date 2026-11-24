@@ -86,7 +86,7 @@ class ResultScreen(Scene):
         pygame.draw.ellipse(surf, (0, 0, 0), (cx - 130, 650, 260, 34))
         self.wa.draw(surf, cx, 668, 1, 4)
         # perdedor pequeño y oscurecido
-        img, dx, dy = assets.character(self.loser).frame_surface('derrota', self.la.frame, -1, 2)
+        img, dx, dy = assets.character(self.loser).renderer.surface('derrota', self.la.frame, -1, 2)
         dark = img.copy(); dark.fill((90, 90, 110, 255), special_flags=pygame.BLEND_RGBA_MULT)
         surf.blit(dark, (1080 + dx, 610 + dy))
         # título

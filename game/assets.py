@@ -52,6 +52,32 @@ class CharacterSprites:
             self.anims[an] = Strip(os.path.join(d, info['file']), self.fw, self.fh, info['frames'])
         self.portrait = image(os.path.join(d, f'{name}_retrato.png'))
         self._scaled = {}
+        self._portraits = {}
+        # perfil, geometría por cuadro y renderer común (game/render.py)
+        from game.render import FighterProfile, FighterRenderer, compute_geometry
+        self.profile = FighterProfile(name, self.meta)
+        self._geom = {an: compute_geometry(self.profile, info) for an, info in self.meta['animations'].items()}
+        self.renderer = FighterRenderer(self)
+
+    def geometry(self, anim, idx):
+        g = self._geom[anim]
+        return g[max(0, min(idx, len(g) - 1))]
+
+    def portrait_at(self, size, flip=False):
+        """Retrato al tamaño pedido sin deformar los píxeles: se amplía por un entero con
+        vecino más cercano y recién después, si hace falta, se ajusta con suavizado."""
+        key = (size, flip)
+        if key not in self._portraits:
+            src = self.portrait
+            n = src.get_width()
+            k = max(1, round(size / n))
+            img = pygame.transform.scale(src, (n * k, n * k)) if k > 1 else src
+            if img.get_width() != size:
+                img = pygame.transform.smoothscale(img, (size, size))
+            if flip:
+                img = pygame.transform.flip(img, True, False)
+            self._portraits[key] = img
+        return self._portraits[key]
 
     def info(self, anim):
         return self.meta['animations'][anim]

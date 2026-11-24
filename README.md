@@ -63,6 +63,10 @@ También funciona en Linux y macOS con los mismos pasos.
 - Las barridas sólo se bloquean **agachado**; las patadas aéreas sólo **de pie**.
 - **ESC** o **P**: pausa (continuar, lista de movimientos, salir).
 - **F11**: pantalla completa.
+- **F9** (durante la pelea): **modo debug**. Muestra hurtbox (verde), hitboxes activas (rojo),
+  caja de empuje (amarillo), rectángulo del sprite (azul), ancla y línea de los pies (magenta),
+  límites del escenario, cajas de los proyectiles y, debajo de cada luchador, posición X/Y,
+  escala, animación, cuadro y si los pies están apoyados. En Entrenamiento también con **F2**.
 - Todos los controles se pueden cambiar en **OPCIONES → CONTROLES JUGADOR 1 / 2**.
 
 ### Joystick / mando
@@ -207,6 +211,24 @@ IES10_FIGHTER/
   Si querés reemplazar cualquier sonido, poné un archivo `.ogg` o `.wav` con **el mismo
   nombre** en `assets/sounds/` o `assets/music/` (ver `documentation/audio_credits.md`).
 - **Fuente**: *Press Start 2P* (SIL Open Font License).
+
+### Render de los luchadores (para agregar o ajustar personajes)
+
+Todos los luchadores se dibujan con el mismo sistema (`game/render.py`):
+
+- **Ancla en los pies (bottom-center)**: cada cuadro de 240×176 px tiene su punto de suelo en
+  (112, 170). Ese punto se dibuja en la posición del luchador, que está sobre el suelo del
+  escenario (`stage.ground_y`, definido en `config.STAGES`). Al generar los sprites, cada cuadro
+  apoyado se alinea para que su punto más bajo quede exactamente en esa línea; si un personaje
+  nuevo trajera cuadros desalineados, el render los corrige igual (hasta 6 px).
+- **Escala entera** (x3 en combate, x2 en menús) con vecino más cercano: el pixel art no se
+  deforma ni se ve borroso. Los retratos se amplían por enteros y recién después se ajustan.
+- **Hurtbox por cuerpo real** (cabeza, torso y piernas del cuadro), **hitboxes** sobre la
+  articulación que golpea, y **caja de empuje** según el ancho del luchador: todas usan la
+  misma transformación que el dibujo, así nunca se desalinean.
+- **Perfil por luchador** (`FighterProfile`): escala, offsets, ancla, tamaño de referencia,
+  empuje, márgenes de la hurtbox y velocidad de animación; se ajusta sin tocar código en
+  `config.FIGHTER_PROFILES`.
 
 ### Regenerar recursos (opcional)
 

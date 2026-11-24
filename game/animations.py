@@ -9,15 +9,9 @@ import config as C
 from game import assets
 
 
-def draw_fighter(surf, name, anim, frame, x, y, facing=1, scale=C.SCALE, glow=None):
-    spr = assets.character(name)
-    img, dx, dy = spr.frame_surface(anim, frame, facing, scale)
-    if glow:
-        g = img.copy()
-        g.fill(glow + (0,), special_flags=pygame.BLEND_RGB_MULT)
-        for ox, oy in ((-4, 0), (4, 0), (0, -4), (0, 4)):
-            surf.blit(g, (x + dx + ox, y + dy + oy))
-    surf.blit(img, (x + dx, y + dy))
+def draw_fighter(surf, name, anim, frame, x, y, facing=1, scale=C.SCALE, glow=None, alpha=None):
+    """Dibuja un luchador fuera del combate con el mismo renderer que en la pelea."""
+    return assets.character(name).renderer.draw(surf, x, y, anim, frame, facing, scale, glow=glow, alpha=alpha)
 
 
 class AnimPlayer:
@@ -36,7 +30,7 @@ class AnimPlayer:
     def update(self):
         info = self.spr.info(self.anim)
         self.tick += 1
-        if self.tick >= info['dur']:
+        if self.tick >= max(1, round(info['dur'] / self.spr.profile.anim_speed)):
             self.tick = 0
             self.frame += 1
             if self.frame >= info['frames']:

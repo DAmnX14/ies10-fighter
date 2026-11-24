@@ -282,7 +282,7 @@ class CharacterSelect(Scene):
             pygame.draw.rect(surf, d['color'], r.inflate(6, 6))
             bg = pygame.Surface(r.size); bg.fill(tuple(c // 4 for c in d['color']))
             surf.blit(bg, r.topleft)
-            por = pygame.transform.scale(assets.character(n).portrait, (TILE, TILE))
+            por = assets.character(n).portrait_at(TILE)
             surf.blit(por, r.topleft)
             lab = ui.text_outline(d['display'], 10, C.WHITE)
             surf.blit(lab, (r.centerx - lab.get_width() / 2, r.bottom - 15))

@@ -49,6 +49,11 @@ class FightScene(Scene):
         if e.type != pygame.KEYDOWN:
             return
         m = self.match
+        if e.key == pygame.K_F9 and not getattr(e, 'player', None):
+            # modo debug: cajas, ancla, pies, posición, escala, animación y cuadro
+            m.show_hitboxes = not m.show_hitboxes
+            self.game.debug = m.show_hitboxes
+            return
         if not self.paused and m.state == 'encounter' and m.encounter is not None and \
                 (nav(e) == 'ok' or getattr(e, 'pad', None) in ('ok', 'start') or e.key == pygame.K_ESCAPE):
             m.encounter.skip()          # saltear la escena previa

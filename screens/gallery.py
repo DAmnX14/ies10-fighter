@@ -106,5 +106,5 @@ class GalleryScene(Scene):
             # 10 retratos dentro del ancho del panel izquierdo (no se meten debajo de la ficha)
             r = pygame.Rect(64 + i * 48, 148, 42, 42)
             pygame.draw.rect(surf, C.YELLOW if i == self.ci else (40, 40, 60), r.inflate(6, 6))
-            surf.blit(pygame.transform.scale(assets.character(c).portrait, (42, 42)), r.topleft)
+            surf.blit(assets.character(c).portrait_at(42), r.topleft)
         help_bar(surf, '← → PERSONAJE      ▲▼ ANIMACIÓN      ENTER GRITO      ESC VOLVER')

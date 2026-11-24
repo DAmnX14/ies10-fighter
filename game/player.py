@@ -29,10 +29,10 @@ class Fighter:
         self.moves = normals()
         self.moves.update(self.data['moves'])
         self.color = self.data['color']
-        # medio ancho de "cuerpo" para que los dos luchadores no se superpongan: se mide
-        # en el sprite de reposo (sin contar los puños de la guardia)
-        x0, _, x1, _ = self.spr.bbox('idle', 0)
-        self.push_w = max(64, int((x1 - x0) * 0.40 * C.SCALE))
+        # perfil y renderer comunes (game/render.py): escala, offsets, cajas, empuje
+        self.profile = self.spr.profile
+        self.rnd = self.spr.renderer
+        self.push_w = self.profile.push_w
         self.reset_round()
         self.wins = 0
 
@@ -95,7 +95,7 @@ class Fighter:
 
     def step_anim(self, loop=None, speed=1.0):
         info = self.anim_info()
-        dur = max(1, int(round(info['dur'] * speed)))
+        dur = max(1, int(round(info['dur'] * speed / self.profile.anim_speed)))
         self.atick += 1
         if self.atick >= dur:
             self.atick = 0
@@ -325,20 +325,20 @@ class Fighter:
                 jx, jy = self.spr.joint(self.anim, self.frame, h['j'])
                 ox, oy = h['off']
                 x, y = self.world_point(jx + ox, jy + oy)
-                out.append((h, x, y, h['r'] * C.SCALE * self.reach))
+                out.append((h, x, y, h['r'] * self.profile.scale * self.reach))
         return out
 
     def world_point(self, jx, jy):
-        ax, ay = self.spr.ax, self.spr.ay
-        return self.x + (jx - ax) * C.SCALE * self.facing, self.y + (jy - ay) * C.SCALE
+        """Punto del cuadro actual (px nativos) -> mundo, con la misma transformación del dibujo."""
+        return self.rnd.to_world(self.x, self.y, self.facing, jx, jy, self.anim, self.frame)
 
     def hurtbox(self):
-        x0, y0, x1, y1 = self.spr.bbox(self.anim, self.frame)
-        w = x1 - x0
-        x0 += w * 0.14; x1 -= w * 0.14
-        a = self.world_point(x0, y0 + 2)
-        b = self.world_point(x1, y1)
-        return pygame.Rect(min(a[0], b[0]), a[1], abs(b[0] - a[0]), b[1] - a[1])
+        """Caja del cuerpo real (cabeza, torso y piernas) del cuadro actual."""
+        return self.rnd.hurtbox(self.x, self.y, self.facing, self.anim, self.frame)
+
+    def pushbox(self):
+        return pygame.Rect(int(self.x - self.push_w), int(self.y - self.profile.ref_h * self.profile.scale),
+                           int(self.push_w * 2), int(self.profile.ref_h * self.profile.scale))
 
     # ------------------------------------------------------------------ recibir
     def take_hit(self, hit, attacker, dmg, blocked, locked=False):
@@ -423,15 +423,15 @@ class Fighter:
                 best = None
                 for fr in range(h['f'][0], min(h['f'][1], nfr - 1) + 1):
                     jx, _ = self.spr.joint(m['anim'], fr, h['j'])
-                    r = (jx + h['off'][0] - self.spr.ax) * C.SCALE
+                    r = (jx + h['off'][0] - self.profile.anchor[0]) * self.profile.scale
                     best = r if best is None else max(best, r)
                 if best is not None:
                     reach = best if reach is None else min(reach, best)
             vfront = None
             vi = victim.spr.info('recibir_golpe')
             for fr in range(vi['frames']):
-                x0, _, x1, _ = victim.spr.bbox('recibir_golpe', fr)
-                f = (x1 - (x1 - x0) * 0.14 - victim.spr.ax) * C.SCALE
+                hx1 = victim.spr.geometry('recibir_golpe', fr).hurt[2]
+                f = (hx1 - victim.profile.anchor[0]) * victim.profile.scale
                 vfront = f if vfront is None else min(vfront, f)
             d = base if reach is None else reach + (vfront or 0) + 4   # sin encimarse
             cache[key] = max(base, min(d, base + 140))
@@ -607,16 +607,18 @@ class Fighter:
 
     # ------------------------------------------------------------------ dibujo
     def draw(self, surf, cam):
+        """Todo pasa por el renderer común: misma ancla, escala y offsets que las cajas."""
         M = self.match
         fx = assets.effects()
+        rnd = self.rnd
         # estela de imágenes residuales
         for i, (an, fr, x, y, fc) in enumerate(self.trail[:-1]):
-            img, dx, dy = self.spr.frame_surface(an, fr, fc)
+            img, dx, dy = rnd.surface(an, fr, fc)
             ghost = img.copy()
             ghost.fill(self.color + (0,), special_flags=pygame.BLEND_RGB_MULT)
             ghost.set_alpha(40 + i * 25)
             sx, sy = cam.to_screen(x, y)
-            surf.blit(ghost, (sx + dx, sy + dy))
+            surf.blit(ghost, (round(sx + dx), round(sy + dy)))
         # aura
         if self.aura:
             frames = fx.tinted('aura', self.color)
@@ -625,26 +627,45 @@ class Fighter:
             big = pygame.transform.scale(a, (int(a.get_width() * 1.2), int(a.get_height() * 1.25)))
             big.set_alpha(230)
             surf.blit(big, (sx - big.get_width() // 2, sy - big.get_height() + 20))
-        img, dx, dy = self.spr.frame_surface(self.anim, self.frame, self.facing)
         sx, sy = cam.to_screen(self.x, self.y)
+        flash = alpha = None
         if self.flash > 0:
-            img = img.copy()
-            img.fill((120, 120, 120, 0), special_flags=pygame.BLEND_RGB_ADD)
+            flash = (120, 120, 120)
         elif self.block_flash > 0:
-            img = img.copy()
-            img.fill((70, 90, 160, 0), special_flags=pygame.BLEND_RGB_ADD)
+            flash = (70, 90, 160)
         elif self.invuln > 0 and self.state == 'getup' and (M.tick // 3) % 2:
-            img = img.copy(); img.set_alpha(150)
-        surf.blit(img, (sx + dx, sy + dy))
+            alpha = 150
+        img, x, y = rnd.draw(surf, sx, sy, self.anim, self.frame, self.facing, flash=flash, alpha=alpha)
         if self.aura and (M.tick // 4) % 3 == 0:
             glow = img.copy()
             glow.fill(tuple(c // 8 for c in self.color) + (0,), special_flags=pygame.BLEND_RGB_ADD)
-            surf.blit(glow, (sx + dx, sy + dy))
+            surf.blit(glow, (x, y))
 
     def draw_debug(self, surf, cam):
-        r = self.hurtbox()
-        x, y = cam.to_screen(r.x, r.y)
-        pygame.draw.rect(surf, (0, 255, 0), (x, y, r.w, r.h), 2)
-        for h, hx, hy, rad in self.active_hits():
+        """Modo debug: sprite, hurtbox, pushbox, hitboxes activas, ancla, pies y datos."""
+        from game import ui
+        rnd = self.rnd
+
+        def scr(r):
+            x, y = cam.to_screen(r.x, r.y)
+            return pygame.Rect(int(x), int(y), r.w, r.h)
+        pygame.draw.rect(surf, (80, 140, 255), scr(rnd.sprite_rect(self.x, self.y, self.facing, self.anim,
+                                                                   self.frame)), 1)          # sprite completo
+        pygame.draw.rect(surf, (255, 220, 0), scr(self.pushbox()), 1)                         # empuje
+        pygame.draw.rect(surf, (0, 255, 0), scr(self.hurtbox()), 2)                           # hurtbox
+        for h, hx, hy, rad in self.active_hits():                                              # hitboxes
             sx, sy = cam.to_screen(hx, hy)
             pygame.draw.circle(surf, (255, 0, 0), (int(sx), int(sy)), int(rad), 2)
+        ax, ay = cam.to_screen(self.x, self.y)
+        g = rnd.geom(self.anim, self.frame)
+        fx_, fy_ = cam.to_screen(*rnd.to_world(self.x, self.y, self.facing, self.profile.anchor[0], g.feet_y,
+                                               self.anim, self.frame))
+        pygame.draw.line(surf, (255, 0, 255), (ax - 40, fy_), (ax + 40, fy_), 1)              # pies
+        pygame.draw.line(surf, (255, 255, 255), (ax - 8, ay), (ax + 8, ay), 2)                # ancla
+        pygame.draw.line(surf, (255, 255, 255), (ax, ay - 8), (ax, ay + 8), 2)
+        lines = [f'{self.name.upper()}  x={self.x:.0f} y={self.y:.0f}  esc=x{self.profile.scale}',
+                 f'{self.anim} [{self.frame + 1}/{self.anim_info()["frames"]}]  {self.state}',
+                 f'pies={"suelo" if g.grounded else "aire"} corr={g.fix_y:+d}']
+        for i, ln in enumerate(lines):
+            t = ui.text_outline(ln, 9, (255, 255, 255))
+            surf.blit(t, (ax - t.get_width() // 2, ay + 12 + i * 13))

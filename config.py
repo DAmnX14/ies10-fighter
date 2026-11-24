@@ -22,6 +22,14 @@ SETTINGS_PATH = os.path.join(BASE_DIR, 'settings.json')
 CHARACTERS = ['pantoja', 'parada', 'nehuen', 'luciano', 'angel', 'facu', 'pedro', 'emi', 'denis', 'nico']
 BOSS = 'nico'
 
+# Ajustes opcionales de render/colisión por luchador (game/render.py → FighterProfile).
+# Todo sale por defecto del <nombre>_meta.json; sólo hace falta poner algo acá para
+# corregir un personaje puntual sin tocar el código. Claves posibles:
+#   scale (entero), offset_x / offset_y (px nativos), anchor (x, y), anim_speed (1.0 = normal),
+#   push_w (medio ancho de empuje, px de pantalla), hurt_margin y head_top (px nativos).
+# Ejemplo:  FIGHTER_PROFILES = {'pantoja': dict(offset_y=1, anim_speed=0.95)}
+FIGHTER_PROFILES = {}
+
 # Escenarios: la imagen se escala con la misma proporción en X e Y (sin deformar)
 STAGES = {
     'aula': dict(name='AULA DEL IES 10', file='escenario.jpg', height=860, ground_src=1330, indoor=True,

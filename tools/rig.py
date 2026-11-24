@@ -496,7 +496,8 @@ class RigCharacter:
                 for s in 'bf':
                     hip = add(pel_t, rot(sub(J[s + '_hip'], pel0), R))
                     tg = add(J[s + '_an'], (p[s + 'fx'] * u, p[s + 'fy'] * u))
-                    if length(sub(tg, hip)) < LEG_BEND_MIN * self.leglen[s] and p[s + 'fy'] > -8:
+                    # sólo cuentan las piernas apoyadas: la que está en el aire puede doblarse más
+                    if length(sub(tg, hip)) < LEG_BEND_MIN * self.leglen[s] and p[s + 'fy'] > -1:
                         ok = False
                 if ok or ry <= 0:
                     break
