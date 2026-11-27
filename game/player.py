@@ -434,7 +434,9 @@ class Fighter:
                 f = (hx1 - victim.profile.anchor[0]) * victim.profile.scale
                 vfront = f if vfront is None else min(vfront, f)
             d = base if reach is None else reach + (vfront or 0) + 4   # sin encimarse
-            cache[key] = max(base, min(d, base + 140))
+            # nunca más cerca que los dos cuerpos uno al lado del otro
+            d = max(d, (self.push_w + victim.push_w) * 0.92)
+            cache[key] = max(base, min(d, base + 180))
         return cache[key]
 
     def facing_to(self, other):

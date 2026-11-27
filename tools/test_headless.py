@@ -62,7 +62,7 @@ def main():
              ('angel', 'facu'), ('pedro', 'emi'), ('denis', 'nehuen'), ('facu', 'parada')]
     for idx, (a, b) in enumerate(pairs):
         done = {}
-        g.stage_id = 'plaza' if idx % 2 else 'aula'
+        g.stage_id = C.STAGE_ORDER[idx % len(C.STAGE_ORDER)]
         fs = FightScene(g, a, b, 'cpu', lambda s: done.setdefault('x', 1), 3)
         fs.ctrl[1] = AIController(3)
         g.change(lambda: fs, instant=True)

@@ -161,3 +161,9 @@ Generado con `python tools/build_audio_v2.py` (síntesis original, sin muestras 
 Las ilustraciones `assets/source/angel.jpg`, `facu.jpg`, `pedro.jpg`, `emi.jpg` y `denis.jpg` fueron provistas por el autor del proyecto.
 
 Las ilustraciones de Angel, Facu, Pedro, Emi y Denis se reemplazaron en la versión 1.3.1 por skins nuevas provistas por el autor del proyecto.
+
+
+## Versión 1.5
+
+- Música nueva: `musica_gloriosa` y `musica_patio` (síntesis FM original, `python tools/build_audio_v2.py musica_gloriosa musica_patio`).
+- Los fondos `assets/backgrounds/la_gloriosa.jpg` y `el_patio.jpg` fueron provistos por el autor del proyecto.

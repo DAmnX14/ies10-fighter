@@ -62,7 +62,8 @@ class ArcadeRun:
         sub = 'JEFE FINAL' if self.stage == len(self.ladder) - 1 else f'COMBATE {self.stage + 1} DE {len(self.ladder)}'
         lvl = self.level()
         last = self.stage == len(self.ladder) - 1
-        g.stage_id = 'plaza' if (last or self.stage % 2 == 1) else 'aula'
+        # el jefe final pelea en la plaza; el resto rota por todos los escenarios
+        g.stage_id = 'plaza' if last else C.STAGE_ORDER[self.stage % len(C.STAGE_ORDER)]
 
         def launch():
             start_fight(g, self.char, opp, 'arcade', lvl, on_finish=self.fight_over)

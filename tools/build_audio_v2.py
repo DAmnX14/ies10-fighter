@@ -294,6 +294,55 @@ def song_plaza():
     return master(np.concatenate([stereo((intro, 0)), body]))
 
 
+def song_gloriosa():
+    """La Gloriosa: cancha cerrada de noche. Rock de tribuna con bombo y palmas, en Sol mayor."""
+    bpm = 152
+    A = parse('G5:2 G5:2 B5:2 D6:2 B5:4 G5:2 A5:2 B5:2 A5:2 G5:2 E5:2 D5:8 '
+              'E5:2 E5:2 G5:2 B5:2 A5:4 G5:2 F#5:2 G5:2 A5:2 B5:2 C6:2 D6:8')
+    Bm = parse('E6:4 D6:2 B5:2 C6:4 A5:4 D6:4 B5:2 G5:2 A5:8 '
+               'E6:4 D6:2 B5:2 C6:2 B5:2 A5:2 F#5:2 G5:4 B5:4 G5:8')
+    lead = A + A + Bm
+    roots = ['G1', 'G1', 'C2', 'D2', 'E2', 'C2', 'D2', 'D2'] * 2 + ['C2', 'G1', 'D2', 'E2', 'C2', 'D2', 'G1', 'G1']
+    chords = ['G3-B3-D4', 'G3-B3-D4', 'C3-E3-G3', 'D3-F#3-A3', 'E3-G3-B3', 'C3-E3-G3', 'D3-F#3-A3', 'D3-F#3-A3'] * 2 \
+        + ['C3-E3-G3', 'G3-B3-D4', 'D3-F#3-A3', 'E3-G3-B3', 'C3-E3-G3', 'D3-F#3-A3', 'G3-B3-D4', 'G3-B3-D4']
+    bars = len(roots)
+    lead_s = fm_line(lead, bpm, 'brass', .30, vib=.006, detune=.004)
+    harm = fm_line(lead, bpm, 'lead', .10, octave=-1)
+    bass = fm_line(bass_line(roots), bpm, 'bass', .45)
+    sv = stabs(chords, 'x-x-..x-x-x-..x.')
+    st = sum(fm_line(v, bpm, 'orch', .09) for v in sv)
+    dr = drums2({'k': 'x...x...x...x...', 's': '....x.......x...', 't': 'x..x..x.x..x..x.',
+                 'h': 'x.x.x.x.x.x.x.x.', 'c': 'x...............'}, bpm, bars, .9)
+    claps = drums2({'s': '..x...x...x.x.x.'}, bpm, bars, .35)
+    intro = drums2({'t': 'x..x..x.x..x..x.', 'k': 'x...x...x...x...', 'c': 'x...............'}, bpm, 2, .9)
+    body = stereo((lead_s, -.12), (harm, .3), (bass, 0), (st, .25), (dr, 0), (claps, -.3))
+    return master(np.concatenate([stereo((intro, 0)), body]))
+
+
+def song_patio():
+    """El Patio: recreo al atardecer. Funk arcade relajado con campanitas, en Fa mayor."""
+    bpm = 136
+    A = parse('F5:3 A5:1 C6:2 A5:2 Bb5:4 A5:2 G5:2 F5:2 G5:2 A5:2 C6:2 D6:8 '
+              'C6:3 A5:1 F5:2 A5:2 G5:4 E5:2 C5:2 D5:2 E5:2 F5:2 G5:2 F5:8')
+    Bm = parse('D6:2 C6:2 A5:2 F5:2 G5:4 Bb5:4 A5:2 G5:2 F5:2 E5:2 F5:8 '
+               'D6:2 C6:2 Bb5:2 A5:2 G5:4 C6:4 A5:4 G5:2 E5:2 F5:8')
+    lead = A + A + Bm
+    roots = ['F1', 'F1', 'Bb1', 'C2', 'D2', 'Bb1', 'C2', 'F1'] * 2 + ['Bb1', 'C2', 'A1', 'D2', 'G1', 'C2', 'F1', 'F1']
+    chords = ['F3-A3-C4', 'F3-A3-C4', 'Bb2-D3-F3', 'C3-E3-G3', 'D3-F3-A3', 'Bb2-D3-F3', 'C3-E3-G3', 'F3-A3-C4'] * 2 \
+        + ['Bb2-D3-F3', 'C3-E3-G3', 'A2-C3-E3', 'D3-F3-A3', 'G2-Bb2-D3', 'C3-E3-G3', 'F3-A3-C4', 'F3-A3-C4']
+    bars = len(roots)
+    lead_s = fm_line(lead, bpm, 'lead', .28, vib=.005, detune=.003)
+    echo = at(lead_s * .3, 60 / bpm * .75)
+    bass = fm_line(bass_line(roots, 'funk'), bpm, 'slap', .48)
+    bells = fm_line(B.chords_to_arp(chords, 16, (0, 1, 2, 1), 2), bpm, 'bell', .07, octave=1)
+    pad = sum(fm_line([(c.split('-')[i], 16) for c in chords], bpm, 'pad', .05, octave=1) for i in range(3))
+    dr = drums2({'k': 'x..x..x...x.....', 's': '....x.......x...', 'h': 'x.xxx.xxx.xxx.xx', 'o': '......x.......x.'},
+                bpm, bars, .8)
+    intro = drums2({'k': 'x..x..x...x.....', 's': '....x.......xxxx', 'h': 'x.xxx.xxx.xxx.xx'}, bpm, 2, .8)
+    body = stereo((lead_s, -.1), (echo, .45), (bass, 0), (bells, -.35), (pad, .3), (dr, 0))
+    return master(np.concatenate([stereo((intro, 0)), body]))
+
+
 def song_menu():
     """Menú: tema heroico de torneo en Re menor."""
     bpm = 126
@@ -340,10 +389,14 @@ def main():
         print('voces...', flush=True)
         for k, x in voices().items():
             save(k, x)
-    if not only or 'musica' in only:
+    if not only or 'musica' in only or any(a.startswith('musica_') for a in only):
         print('música...', flush=True)
-        for name, fn in [('musica_menu', song_menu), ('musica_seleccion', song_select),
-                         ('musica_aula', song_aula), ('musica_plaza', song_plaza)]:
+        songs = [('musica_menu', song_menu), ('musica_seleccion', song_select), ('musica_aula', song_aula),
+                 ('musica_plaza', song_plaza), ('musica_gloriosa', song_gloriosa), ('musica_patio', song_patio)]
+        pick = [a[len('musica_'):] for a in only if a.startswith('musica_')]
+        for name, fn in songs:
+            if pick and name not in ['musica_' + p for p in pick]:
+                continue
             x = fn()
             save(name, x, MUS, stereo=True)
             print(' ', name, round(len(x) / SR, 1), 's', flush=True)

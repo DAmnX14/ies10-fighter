@@ -3,7 +3,7 @@
 Juego de lucha 2D estilo arcade de los 90, hecho en **Python + Pygame**, con diez
 luchadores del IES N.º 10: **PANTOJA, PARADA, NEHUEN, LUCIANO, ANGEL, FACU, PEDRO, EMI y DENIS**,
 más **NICO**, el jefe final.
-Dos escenarios: el **aula del IES 10** y **la plaza**. Una producción de **Arce Tech**.
+Cuatro escenarios: el **aula del IES 10**, **la plaza**, **La Gloriosa** (la cancha) y **El Patio** del colegio. Una producción de **Arce Tech**.
 
 ![Logo](assets/interface/logo.png)
 
@@ -151,7 +151,7 @@ Antes de la primera ronda, algunas parejas tienen su propia escena (se saltea co
 
 ### Música
 
-Cada escenario tiene su propio tema de pelea (aula y plaza), más temas nuevos para el menú y la
+Cada escenario tiene su propio tema de pelea (aula, plaza, La Gloriosa y El Patio), más temas nuevos para el menú y la
 selección de personajes, con sonido FM de placa arcade de 16 bits. Todo es composición original.
 
 Cada ultimate tiene: animación de preparación, “super flash” con pantalla congelada,

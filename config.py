@@ -36,8 +36,12 @@ STAGES = {
                  music='musica_aula'),
     'plaza': dict(name='LA PLAZA', file='plaza.png', height=989, ground_src=700, indoor=False,
                   music='musica_plaza'),
+    'gloriosa': dict(name='LA GLORIOSA', file='la_gloriosa.jpg', height=800, ground_src=1010, indoor=True,
+                     music='musica_gloriosa', shafts=False),
+    'patio': dict(name='EL PATIO', file='el_patio.jpg', height=800, ground_src=1010, indoor=False,
+                  music='musica_patio', leaves=False),
 }
-STAGE_ORDER = ['aula', 'plaza']
+STAGE_ORDER = ['aula', 'plaza', 'gloriosa', 'patio']
 
 # Estadio: la imagen se escala manteniendo proporción (sin deformar)
 STAGE_HEIGHT = 860

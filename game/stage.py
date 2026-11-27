@@ -14,6 +14,8 @@ class Stage:
         self.id = stage_id
         self.name = cfg['name']
         self.indoor = cfg['indoor']
+        self.shafts = cfg.get('shafts', self.indoor)      # haces de luz de las ventanas del aula
+        self.leaves = cfg.get('leaves', not self.indoor)  # hojas que caen (plaza)
         raw = pygame.image.load(os.path.join(C.ASSETS, 'backgrounds', cfg['file'])).convert()
         k = cfg['height'] / raw.get_height()           # misma escala en X e Y: no se deforma
         self.k = k
@@ -98,7 +100,7 @@ class Stage:
     def draw_back(self, surf, cam):
         ox, oy = cam.to_screen(0, 0)
         surf.blit(self.bg, (ox, oy))
-        if self.indoor:
+        if self.shafts:
             surf.blit(self.shaft, (ox, oy), special_flags=pygame.BLEND_RGB_ADD)
         # destello de tubo fluorescente
         if self.indoor and self.flicker > 0 and (self.flicker // 2) % 2 == 0:
@@ -110,12 +112,13 @@ class Stage:
             if -5 < x < C.WIDTH + 5:
                 a = 120 + int(80 * math.sin(m[3] * 3))
                 if not self.indoor:
-                    col = ((70, 190, 80), (230, 150, 40), (40, 150, 70))[int(m[2] * 30) % 3]
-                    pygame.draw.rect(surf, col, (x, y, 5, 3))
+                    if self.leaves:
+                        col = ((70, 190, 80), (230, 150, 40), (40, 150, 70))[int(m[2] * 30) % 3]
+                        pygame.draw.rect(surf, col, (x, y, 5, 3))
                 elif a > 140:
                     pygame.draw.rect(surf, (255, 250, 220), (x, y, 2, 2))
         px, py = cam.to_screen(cam.x + C.WIDTH / 2, self.ground_y)
-        if self.indoor:
+        if self.shafts:
             surf.blit(self.pool, (px - 450, py - 120), special_flags=pygame.BLEND_RGB_ADD)
         if self.dim > 0.01:
             s = pygame.Surface((C.WIDTH, C.HEIGHT), pygame.SRCALPHA)

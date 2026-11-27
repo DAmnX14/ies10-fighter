@@ -404,10 +404,25 @@ class Match:
             return
         if b.move and b.move.get('passthrough') and b.move['passthrough'][0] <= b.mframe <= b.move['passthrough'][1]:
             return
-        if a.state == 'lying' or b.state == 'lying':
-            return
-        # durante un agarre de ultimate la posición la maneja el agarre
+        # durante un agarre de ultimate la posición la maneja el agarre (que ya respeta
+        # el ancho de los dos cuerpos)
         if a.state == 'locked' or b.state == 'locked':
+            return
+        lying = a if a.state == 'lying' else b if b.state == 'lying' else None
+        if lying is not None:
+            # el caído no se mueve; el que está parado no puede pisarlo (salvo que lo salte)
+            other = b if lying is a else a
+            if not other.on_ground:
+                return
+            w = other.push_w + lying.push_w
+            dx = other.x - lying.x
+            if abs(dx) < w:
+                s = 1 if dx > 0 else -1 if dx < 0 else -lying.facing
+                st = self.stage
+                nx = lying.x + s * w
+                if not (st.left <= nx <= st.right):          # contra la pared: va del otro lado
+                    nx = lying.x - s * w
+                other.x = max(st.left, min(st.right, nx))
             return
         # si uno está muy por encima del otro (saltándolo), no se empujan
         if abs(a.y - b.y) > 260:
