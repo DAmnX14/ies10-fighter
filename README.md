@@ -212,6 +212,15 @@ IES10_FIGHTER/
   nombre** en `assets/sounds/` o `assets/music/` (ver `documentation/audio_credits.md`).
 - **Fuente**: *Press Start 2P* (SIL Open Font License).
 
+### Inspector de animaciones (debug)
+
+En **PERSONAJES** apretá **F8**: se abre un inspector con cada animación de cada luchador.
+Permite pausar (ESPACIO), avanzar o retroceder cuadro por cuadro (`,` `.`), cambiar la
+velocidad (`-` `+`), girar al personaje (F) y reiniciar (R). Muestra el cuadro a escala de
+juego con el ancla, el suelo, la hurtbox y las articulaciones, los datos del cuadro (recorte,
+ticks, bucle, escala, corrección de pies) y la tira completa con el recorte de cada cuadro;
+los cuadros que tocan el borde del lienzo se marcan en rojo.
+
 ### Poses de referencia
 
 Las poses de guardia, bloqueo, patada media, patada alta, barrida, recibir golpe, salto,

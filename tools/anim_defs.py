@@ -840,3 +840,42 @@ SPECIALS['denis']['ultimate_2'] = _mega_kick()                            # GOLA
 # ------------------------------------------------ NEHUEN bostero: sin guitarra
 SPECIALS['nehuen']['especial_1'] = SPECIALS['nico']['especial_1']        # BUFANDAZO (revolea y tira la bufanda)
 SPECIALS['nehuen']['ultimate_1'] = _beam()                               # AZUL Y ORO (rayo)
+
+
+# ------------------------------------------------ v1.7: poses que el dibujo soporta
+# Caída "de cuerpo entero": el cuerpo se inclina hacia atrás como una pieza, con los
+# brazos sueltos al costado y las rodillas apenas flexionadas (antes los brazos y las
+# piernas se revoleaban por separado y el personaje parecía un muñeco roto).
+_ARMS_REL = dict(fh=(70, 0.62), bh=(80, 0.55))
+_LIE = dict(lrel=1, rot=-88, ry=40, rx=-20, head=-6, ff=(-10, 0), bf=(6, 0), **_ARMS_REL)
+ANIMS['caida'] = dict(keys=[
+    K(1, ref='recibiendo-golpe'),
+    K(1, lrel=1, rot=-16, ry=-2, rx=-6, lean=-6, head=-8, ff=(3, -4), **_ARMS_REL),
+    K(1, lrel=1, rot=-38, ry=8, rx=-10, head=-8, ff=(4, -5), **_ARMS_REL),
+    K(1, lrel=1, rot=-62, ry=22, rx=-15, head=-6, ff=(2, -2), **_ARMS_REL),
+    K(1, **_LIE),
+    K(1, **dict(_LIE, rot=-84, ry=36)),
+    K(1, **_LIE),
+    K(1, **_LIE),
+], dur=5)
+ANIMS['levantarse'] = dict(keys=[
+    K(1, **_LIE),
+    K(1, lrel=1, rot=-62, ry=32, rx=-15, head=-4, ff=(-2, -6), fh=(95, 0.75), bh=(95, 0.7)),
+    K(1, lrel=0.6, rot=-28, ry=28, rx=-8, lean=10, ff=(2, 0), bf=(-4, 0), fh=(90, 0.85), bh=(95, 0.7)),
+    K(1, ry=24, rx=-3, lean=10, bf=(-7, 0), ff=(7, 0)),
+    BL({'ry': 24, 'bf': (-7, 0), 'ff': (7, 0), 'lean': 8}, G, 0.6),
+    K(1, **G),
+], dur=5)
+# Presentación: guardia + golpe al aire + vuelta a la guardia (sin el brazo trasero
+# extendido de «provocando», que el dibujo de frente no puede mostrar bien)
+ANIMS['presentacion'] = dict(keys=[
+    K(1, **G), BL(G, GA, 0.5), K(1, **GA), BL(G, GA, 0.5),
+    K(1, ref='guardia', fh_off=(0.30, -0.02), lean=3, rx=1),
+    K(1, ref='guardia', fh_off=(0.42, -0.04), lean=5, rx=2),
+    K(1, ref='guardia', fh_off=(0.20, 0.0), lean=2, rx=1),
+    K(1, **G),
+    K(1, ref='guardia', head=-4, ry=1), K(1, ref='guardia', head=-6, ry=2), K(1, ref='guardia', head=-3, ry=1),
+    K(1, **G),
+], dur=6)
+ANIMS['provocar'] = dict(keys=[K(1, ref='guardia', fh_off=(0.25 + 0.1 * (i % 2), -0.02), lean=4 + i % 2, rx=2)
+                               for i in range(4)], dur=6, loop=True)

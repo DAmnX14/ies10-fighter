@@ -105,6 +105,11 @@ DRAW_ORDER = ['f_up', 'f_lo', 'b_th', 'b_shin', 'b_foot', 'f_th', 'f_shin',
               'f_foot', 'torso', 'b_up', 'b_lo', 'head']
 HEAD_SCALE = 1.10          # cabeza un poco más grande: la cara se lee mejor a resolución nativa
 ARM_STRETCH = 1.08         # estiramiento máximo de un brazo (más se deforma el dibujo)
+# límites de articulación (ver RigCharacter._joint_limits)
+ARM_LIMITS = {'f': (-112.0, 118.0), 'b': (-100.0, 112.0)}   # grados, marco del torso
+FOOT_LIMIT = 75.0
+HEAD_LIMIT = 24.0
+LEAN_LIMIT = 36.0
 SMOOTH_WARP = True        # rotación de partes con interpolación suave
 LEG_BEND_MIN = 0.52        # flexión máxima de rodilla (fracción del largo de la pierna)
 
@@ -603,7 +608,38 @@ class RigCharacter:
                 p['tw'] = 0.0
             if db > 0.26:
                 p['bhx'], p['bhy'] = br[0] + dbx / db * 0.26, br[1] + dby / db * 0.26
+        self._joint_limits(p)
         return p
+
+    def _joint_limits(self, p):
+        """Límites de articulación, iguales para todos los luchadores.
+
+        Los sprites salen de UNA ilustración de frente cortada en partes; si una pose
+        pide algo que el dibujo no tiene (brazo detrás de la espalda, puño por encima de la
+        cabeza, pie metido detrás de la otra pierna) las partes se ven rotas. Acá la pose
+        se acota al rango que el dibujo soporta, en lugar de corregir cada animación.
+        Ángulos de mano en el marco del torso: 0 = adelante, -90 = arriba, 90 = abajo.
+        """
+        for s in 'bf':
+            hx, hy = p[s + 'hx'], p[s + 'hy']
+            e = math.hypot(hx, hy)
+            if e < 1e-6:
+                continue
+            a = math.degrees(math.atan2(hy, hx))
+            a = (a + 180) % 360 - 180
+            lo, hi = ARM_LIMITS[s]
+            if a < lo or a > hi:
+                # fuera de rango: el brazo se queda en el borde más cercano (sin cruzar la espalda)
+                d_lo = abs(((a - lo) + 180) % 360 - 180)
+                d_hi = abs(((a - hi) + 180) % 360 - 180)
+                a = lo if d_lo < d_hi else hi
+            e = min(e, ARM_STRETCH)
+            r = math.radians(a)
+            p[s + 'hx'], p[s + 'hy'] = math.cos(r) * e, math.sin(r) * e
+        for s in 'bf':
+            p[s + 'fa'] = max(-FOOT_LIMIT, min(FOOT_LIMIT, p[s + 'fa']))
+        p['head'] = max(-HEAD_LIMIT, min(HEAD_LIMIT, p['head']))
+        p['lean'] = max(-LEAN_LIMIT, min(LEAN_LIMIT, p['lean']))
 
     def solve(self, p):
         """Devuelve posiciones de articulaciones y ángulos de cada hueso."""

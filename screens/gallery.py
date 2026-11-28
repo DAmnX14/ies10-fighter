@@ -41,6 +41,11 @@ class GalleryScene(Scene):
             self.audio.voice(self.name(), an)
 
     def handle_event(self, e):
+        if e.type == pygame.KEYDOWN and e.key == pygame.K_F8:
+            # inspector de animaciones (debug)
+            from screens.anim_debug import AnimDebugScene
+            self.game.change(lambda: AnimDebugScene(self.game, self.ci, self.ai), instant=True)
+            return
         a = nav(e)
         if a == 'left':
             self.ci = (self.ci - 1) % len(C.CHARACTERS); self.audio.play('menu_mover'); self.reset_player()
@@ -107,4 +112,4 @@ class GalleryScene(Scene):
             r = pygame.Rect(64 + i * 48, 148, 42, 42)
             pygame.draw.rect(surf, C.YELLOW if i == self.ci else (40, 40, 60), r.inflate(6, 6))
             surf.blit(assets.character(c).portrait_at(42), r.topleft)
-        help_bar(surf, '← → PERSONAJE      ▲▼ ANIMACIÓN      ENTER GRITO      ESC VOLVER')
+        help_bar(surf, '← → PERSONAJE    ▲▼ ANIMACIÓN    ENTER GRITO    F8 INSPECTOR    ESC VOLVER')
