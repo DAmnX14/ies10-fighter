@@ -63,6 +63,22 @@ class CharacterSprites:
         g = self._geom[anim]
         return g[max(0, min(idx, len(g) - 1))]
 
+    def cutin_art(self, move_key):
+        """Arte dibujado para el corte de una ultimate (dibujados/dibujados.json → cutins), o None."""
+        cache = self.__dict__.setdefault('_cutins', {})
+        if move_key not in cache:
+            img = None
+            d = os.path.join(C.CHAR_DIR, self.name, 'dibujados')
+            try:
+                with open(os.path.join(d, 'dibujados.json'), encoding='utf-8') as f:
+                    fn = json.load(f).get('cutins', {}).get(move_key)
+                if fn:
+                    img = image(os.path.join(d, fn))
+            except (OSError, ValueError):
+                img = None
+            cache[move_key] = img
+        return cache[move_key]
+
     def portrait_at(self, size, flip=False):
         """Retrato al tamaño pedido sin deformar los píxeles: se amplía por un entero con
         vecino más cercano y recién después, si hace falta, se ajusta con suavizado."""

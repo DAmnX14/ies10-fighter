@@ -719,12 +719,24 @@ class Match:
             return
         bx = 0 if f.side == 1 else C.WIDTH - bw
         surf.blit(band, (bx, y), (bx, 0, bw, h))
-        por = f.spr.portrait_at(220)
-        if f.side == 2:
-            por = pygame.transform.flip(por, True, False)
-        px = (-240 + 300 * k) if f.side == 1 else (C.WIDTH + 20 - 300 * k - 0)
-        px -= out * 400 * (1 if f.side == 1 else -1)
-        surf.blit(por, (px if f.side == 1 else px - 0, y - 20))
+        art = f.spr.cutin_art(getattr(f, 'move_key', '')) if f.move is not None else None
+        if art is not None:
+            # arte dibujado de la ultimate (más alto que la franja, sale por arriba)
+            hh = h + 90
+            por = pygame.transform.smoothscale(art, (int(art.get_width() * hh / art.get_height()), hh))
+            if f.side == 2:
+                por = pygame.transform.flip(por, True, False)
+            pw = por.get_width()
+            px = (-pw + (pw + 40) * k) if f.side == 1 else (C.WIDTH - (pw + 40) * k)
+            px -= out * 500 * (1 if f.side == 1 else -1)
+            surf.blit(por, (px, y + h - hh))
+        else:
+            por = f.spr.portrait_at(220)
+            if f.side == 2:
+                por = pygame.transform.flip(por, True, False)
+            px = (-240 + 300 * k) if f.side == 1 else (C.WIDTH + 20 - 300 * k - 0)
+            px -= out * 400 * (1 if f.side == 1 else -1)
+            surf.blit(por, (px if f.side == 1 else px - 0, y - 20))
         name = ui.text_gradient(c['name'], 40, (255, 255, 255), f.color, extrude=4)
         tx = C.WIDTH / 2 + (1 - k) * 600 * (1 if f.side == 1 else -1)
         ui.blit_center(surf, name, tx + 80 * (1 if f.side == 1 else -1), y + h / 2 + 10)

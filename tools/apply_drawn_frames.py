@@ -7,6 +7,7 @@ dibujadas (p. ej. generadas con SpriteCook a partir de su ilustración). Para ca
     lo mismo que en sus otras animaciones, sin deformar: misma escala en X e Y),
   - "reemplaza": {animación: [cuadros]} que pasan a usar ese dibujo,
   - "aire" (opcional): pose en el aire, se ubica a la altura del cuadro que reemplaza,
+  - "alinear": "pelvis" (opcional): centra el dibujo en la pelvis (embestidas) en vez de en los pies,
   - "respirar" (opcional): el torso sube y baja 1-2 px en el reposo (los pies quedan fijos),
   - "golpea" (opcional): articulación que golpea; se recoloca en el punto más adelantado
     del dibujo para que la hitbox coincida con el puño o el pie.
@@ -81,6 +82,9 @@ def apply(name):
                 if pc.get('acostado'):
                     x0b, _, x1b, _ = info['bbox'][fi]
                     left = int(round((x0b + x1b) / 2 - dw / 2))
+                elif pc.get('alinear') == 'pelvis':
+                    # embestidas: el centro del dibujo va donde está la pelvis del cuadro reemplazado
+                    left = int(round(info['joints'][fi]['pelvis'][0] - dw / 2))
                 else:
                     left = int(round(fx_old - _feet_x(drawn)))
                 left = max(0, min(FW - dw, left))

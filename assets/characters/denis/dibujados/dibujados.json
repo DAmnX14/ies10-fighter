@@ -134,17 +134,6 @@
    "alto": 128,
    "fuente": "autor (sprites provistos por el autor)"
   },
-  "golpe": {
-   "asset_id": "d748693b-a0f5-42a1-9d4f-bdc21803e98f",
-   "alto": 121,
-   "reemplaza": {
-    "golpe": [
-     2,
-     3
-    ]
-   },
-   "golpea": "f_ha"
-  },
   "tirado": {
    "asset_id": "0b4f3bea-4bee-44c2-87e3-79b19ce446ae",
    "ancho": 124,
@@ -160,6 +149,187 @@
      0
     ]
    }
+  },
+  "caminar-1": {
+   "reemplaza": {
+    "caminar": [
+     0,
+     1
+    ],
+    "caminar_atras": [
+     6,
+     7
+    ]
+   },
+   "alto": 126,
+   "fuente": "autor"
+  },
+  "caminar-2": {
+   "reemplaza": {
+    "caminar": [
+     2,
+     3
+    ],
+    "caminar_atras": [
+     4,
+     5
+    ]
+   },
+   "alto": 126,
+   "fuente": "autor"
+  },
+  "caminar-3": {
+   "reemplaza": {
+    "caminar": [
+     4,
+     5
+    ],
+    "caminar_atras": [
+     2,
+     3
+    ]
+   },
+   "alto": 126,
+   "fuente": "autor"
+  },
+  "caminar-4": {
+   "reemplaza": {
+    "caminar": [
+     6,
+     7
+    ],
+    "caminar_atras": [
+     0,
+     1
+    ]
+   },
+   "alto": 127,
+   "fuente": "autor"
+  },
+  "agachado-guardia": {
+   "reemplaza": {
+    "agacharse": [
+     1,
+     2
+    ],
+    "bloquear_agachado": [
+     0,
+     1
+    ]
+   },
+   "alto": 105,
+   "fuente": "autor"
+  },
+  "golpe-agachado": {
+   "reemplaza": {
+    "golpe": [
+     2,
+     3
+    ]
+   },
+   "golpea": "f_ha",
+   "alto": 113,
+   "fuente": "autor"
+  },
+  "golpe-fuerte": {
+   "reemplaza": {
+    "golpe_fuerte": [
+     3,
+     4,
+     5
+    ]
+   },
+   "golpea": "b_ha",
+   "alto": 126,
+   "fuente": "autor"
+  },
+  "salto-adelante": {
+   "reemplaza": {
+    "saltar_adelante": [
+     2,
+     3,
+     4
+    ]
+   },
+   "aire": true,
+   "alto": 73,
+   "fuente": "autor"
+  },
+  "patada-aerea": {
+   "reemplaza": {
+    "patada_aerea": [
+     1,
+     2,
+     3
+    ]
+   },
+   "aire": true,
+   "golpea": "f_an",
+   "alto": 80,
+   "fuente": "autor"
+  },
+  "cayendo": {
+   "reemplaza": {
+    "caida": [
+     1,
+     2,
+     3
+    ]
+   },
+   "aire": true,
+   "alto": 99,
+   "fuente": "autor"
+  },
+  "levantandose": {
+   "reemplaza": {
+    "levantarse": [
+     1,
+     2
+    ]
+   },
+   "alto": 87,
+   "fuente": "autor"
+  },
+  "pelotazo": {
+   "reemplaza": {
+    "especial_1": [
+     2,
+     3,
+     4
+    ]
+   },
+   "golpea": "f_an",
+   "alto": 123,
+   "fuente": "autor",
+   "alinear": "pelvis"
+  },
+  "banda-roja": {
+   "reemplaza": {
+    "especial_2": [
+     2,
+     3,
+     4
+    ]
+   },
+   "golpea": "f_ha",
+   "alto": 114,
+   "fuente": "autor",
+   "alinear": "pelvis"
+  },
+  "golazo": {
+   "reemplaza": {
+    "ultimate_2": [
+     6,
+     7,
+     8
+    ]
+   },
+   "golpea": "f_an",
+   "alto": 105,
+   "fuente": "autor"
   }
+ },
+ "cutins": {
+  "ultimate_1": "cutin_ultimate_1.png"
  }
 }

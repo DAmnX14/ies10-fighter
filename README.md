@@ -226,9 +226,11 @@ Además de los cuadros generados por el rig, un personaje puede tener **poses di
 ilustración). `dibujados.json` indica qué cuadros de qué animación reemplaza cada dibujo y su
 tamaño; `tools/apply_drawn_frames.py` los escala sin deformar, los apoya en el suelo, ajusta el
 recorte y pone la hitbox en el puño o el pie. Se aplica solo al regenerar los sprites.
-Hoy los tiene **Denis**: guardia (con respiración), bloqueo, patada media, patada alta, barrida,
-recibir golpe, salto, victoria, derrota y provocación son **dibujos del autor**; el puñetazo y
-el tirado en el piso, de SpriteCook.
+Hoy los tiene **Denis**, con dibujos del autor en guardia (con respiración), caminar,
+agachado, bloqueos, golpe, golpe fuerte, patadas, barrida, salto, salto adelante, patada aérea,
+recibir golpe, caída, levantarse, victoria, derrota, provocación, sus dos especiales y el golazo;
+el tirado en el piso es de SpriteCook. El cartel de «El Monumental ruge» usa el arte del autor
+(`cutins` en `dibujados.json`).
 
 **Cómo pasar sprites dibujados de otro personaje:** una imagen por pose, de cuerpo entero,
 mirando a la derecha, todas al mismo tamaño y estilo (sirve con fondo cuadriculado o liso,
