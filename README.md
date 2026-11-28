@@ -149,6 +149,13 @@ Antes de la primera ronda, algunas parejas tienen su propia escena (se saltea co
 - **Denis y Nehuen** (River – Boca): cara a cara, rayos y cargadas: **¡SUPERCLÁSICO!**
 - **Angel, Facu, Pedro, Emi o Denis contra Parada**: todos lo odian → **¡TODOS CONTRA PARADA!**
 
+### Fondos animados
+
+Los cuatro escenarios están animados (`game/stage_anim.py`): el público se balancea y salta
+—y se agita más con los golpes fuertes y estalla con el K.O.—, las banderas flamean, las
+luces brillan y parpadean, la fuente de la plaza tira agua y en el patio cruzan pájaros al
+atardecer. Las zonas animadas de cada fondo se configuran en `STAGE_ANIM`.
+
 ### Música
 
 Cada escenario tiene su propio tema de pelea (aula, plaza, La Gloriosa y El Patio), más temas nuevos para el menú y la

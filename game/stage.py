@@ -32,6 +32,12 @@ class Stage:
                        random.uniform(0, 6.28)] for _ in range(70)]
         self._make_overlays()
         self.dim = 0.0
+        from game.stage_anim import StageAnimator
+        self.anim = StageAnimator(self)              # público, banderas, luces, agua, pájaros
+
+    def excite(self, amount):
+        """El público reacciona (golpes fuertes, K.O.)."""
+        self.anim.excite(amount)
 
     def _make_overlays(self):
         W, H = C.WIDTH, C.HEIGHT
@@ -80,6 +86,7 @@ class Stage:
 
     def update(self):
         self.t += 1
+        self.anim.update()
         if self.flicker > 0:
             self.flicker -= 1
         elif random.random() < 0.004:
@@ -100,6 +107,7 @@ class Stage:
     def draw_back(self, surf, cam):
         ox, oy = cam.to_screen(0, 0)
         surf.blit(self.bg, (ox, oy))
+        self.anim.draw(surf, ox, oy)
         if self.shafts:
             surf.blit(self.shaft, (ox, oy), special_flags=pygame.BLEND_RGB_ADD)
         # destello de tubo fluorescente

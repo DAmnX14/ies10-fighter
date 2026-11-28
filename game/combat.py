@@ -319,6 +319,7 @@ class Match:
         self.fx.add(SpriteFX(hit.get('fx', 'chispa_golpe'), px, py, att.facing, scale=1.3 if big else 1.0))
         self.fx.sparks(px, py, att.facing, att.color, 14 if big else 8)
         self.fx.burst(px, py, (255, 255, 255), 6 if big else 3, 7, 5, 0.3)
+        self.stage.excite(0.5 if big else 0.15)
         if big:
             self.camera.shake(9, 12)
             self.fx.add(Ring(px, py, (255, 255, 255), 10, 120, 12, 6))
@@ -389,6 +390,7 @@ class Match:
         self.slowmo = 70
         self.controls_enabled = False
         self.round_winner = att
+        self.stage.excite(3.0)                       # el público estalla con el K.O.
         self.audio.play('ko_impacto')
         self.audio.announce('loc_ko')
         self.screen_flash((255, 255, 255), 10)
