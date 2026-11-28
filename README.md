@@ -226,7 +226,15 @@ Además de los cuadros generados por el rig, un personaje puede tener **poses di
 ilustración). `dibujados.json` indica qué cuadros de qué animación reemplaza cada dibujo y su
 tamaño; `tools/apply_drawn_frames.py` los escala sin deformar, los apoya en el suelo, ajusta el
 recorte y pone la hitbox en el puño o el pie. Se aplica solo al regenerar los sprites.
-Hoy los tiene **Denis**: golpe, patada, recibir golpe, tirado en el piso y victoria.
+Hoy los tiene **Denis**: guardia (con respiración), bloqueo, patada media, patada alta, barrida,
+recibir golpe, salto, victoria, derrota y provocación son **dibujos del autor**; el puñetazo y
+el tirado en el piso, de SpriteCook.
+
+**Cómo pasar sprites dibujados de otro personaje:** una imagen por pose, de cuerpo entero,
+mirando a la derecha, todas al mismo tamaño y estilo (sirve con fondo cuadriculado o liso,
+igual que el zip de Denis). Con el nombre de la pose alcanza: guardia, guardia-alta,
+patada-media, patada-alta, barrida, recibiendo-golpe, salto, celebrando, triste, provocando,
+golpe, agachado, tirado…
 Los IDs de SpriteCook de cada dibujo están en `spritecook-assets.json`.
 
 ### Inspector de animaciones (debug)

@@ -10,24 +10,9 @@
    "sha12": "3fa36eb4ecdb"
   },
   {
-   "asset_id": "10003956-8929-40fe-a5fb-c982cff7a1f1",
-   "label": "denis_patada",
-   "sha12": "2dd4c3ee8976"
-  },
-  {
-   "asset_id": "3f833988-0027-49eb-8498-3c0dff432f1d",
-   "label": "denis_recibir_golpe",
-   "sha12": "99f61e490bdd"
-  },
-  {
    "asset_id": "0b4f3bea-4bee-44c2-87e3-79b19ce446ae",
    "label": "denis_tirado",
    "sha12": "b709ee5b565a"
-  },
-  {
-   "asset_id": "34348715-a933-47e2-a491-639bc27b1718",
-   "label": "denis_victoria",
-   "sha12": "29ebc19615e7"
   }
  ]
 }

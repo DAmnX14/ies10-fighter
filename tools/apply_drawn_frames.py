@@ -6,6 +6,8 @@ dibujadas (p. ej. generadas con SpriteCook a partir de su ilustración). Para ca
   - "alto" (o "ancho" si "acostado"): tamaño final en px nativos (el personaje de pie mide
     lo mismo que en sus otras animaciones, sin deformar: misma escala en X e Y),
   - "reemplaza": {animación: [cuadros]} que pasan a usar ese dibujo,
+  - "aire" (opcional): pose en el aire, se ubica a la altura del cuadro que reemplaza,
+  - "respirar" (opcional): el torso sube y baja 1-2 px en el reposo (los pies quedan fijos),
   - "golpea" (opcional): articulación que golpea; se recoloca en el punto más adelantado
     del dibujo para que la hitbox coincida con el puño o el pie.
 El dibujo se escala, se apoya con los pies en el suelo (ancla 112,170) alineado con los pies
@@ -18,6 +20,7 @@ from PIL import Image
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 FW, FH, AX, AY = 240, 176, 112, 170
+BREATH = [0, 0, 1, 1, 2, 1, 1, 0]          # px que baja el torso en cada cuadro del reposo
 
 
 def _fit(img, cfg):
@@ -81,11 +84,25 @@ def apply(name):
                 else:
                     left = int(round(fx_old - _feet_x(drawn)))
                 left = max(0, min(FW - dw, left))
-                top = AY + 1 - dh                                # pies sobre el suelo
+                if pc.get('aire'):
+                    # pose en el aire (salto): misma altura que el cuadro que reemplaza
+                    top = info['bbox'][fi][3] - dh
+                else:
+                    top = AY + 1 - dh                            # pies sobre el suelo
                 top = max(0, top)
                 new = np.zeros((FH, FW, 4), np.uint8)
                 hh = min(dh, FH - top)
                 new[top:top + hh, left:left + dw] = drawn[:hh]
+                if pc.get('respirar'):
+                    # respiración: sólo la parte de arriba del cuerpo baja 1-2 px (los pies no se mueven)
+                    dy = BREATH[fi % len(BREATH)]
+                    if dy:
+                        cut = top + int(dh * 0.55)
+                        upper = new[top:cut].copy()
+                        new[top:cut] = 0
+                        sl = new[top + dy:cut + dy]
+                        m = upper[:len(sl), ..., 3] > 0
+                        sl[m] = upper[:len(sl)][m]
                 strip[:, fi * FW:(fi + 1) * FW] = new
                 ys, xs = np.where(new[..., 3] > 0)
                 info['bbox'][fi] = [int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1]
