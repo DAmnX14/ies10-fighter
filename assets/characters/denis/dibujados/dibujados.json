@@ -1,0 +1,15 @@
+{
+  "fuente": "SpriteCook (generados a partir de assets/source/denis.jpg como referencia)",
+  "referencia_asset_id": "56f11421-d03d-4f2c-b6e2-235047795834",
+  "poses": {
+    "golpe":         {"asset_id": "d748693b-a0f5-42a1-9d4f-bdc21803e98f", "alto": 121, "reemplaza": {"golpe": [2, 3]},
+                      "golpea": "f_ha"},
+    "patada":        {"asset_id": "10003956-8929-40fe-a5fb-c982cff7a1f1", "alto": 121, "reemplaza": {"patada": [2, 3]},
+                      "golpea": "f_an"},
+    "recibir_golpe": {"asset_id": "3f833988-0027-49eb-8498-3c0dff432f1d", "alto": 116, "reemplaza": {"recibir_golpe": [0, 1]}},
+    "tirado":        {"asset_id": "0b4f3bea-4bee-44c2-87e3-79b19ce446ae", "ancho": 124, "acostado": true,
+                      "reemplaza": {"caida": [4, 5, 6, 7], "levantarse": [0]}},
+    "victoria":      {"asset_id": "34348715-a933-47e2-a491-639bc27b1718", "alto": 140,
+                      "reemplaza": {"victoria": [2, 3, 4, 5, 6, 7, 8, 9]}}
+  }
+}

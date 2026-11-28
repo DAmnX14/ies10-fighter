@@ -212,6 +212,16 @@ IES10_FIGHTER/
   nombre** en `assets/sounds/` o `assets/music/` (ver `documentation/audio_credits.md`).
 - **Fuente**: *Press Start 2P* (SIL Open Font License).
 
+### Cuadros dibujados (SpriteCook)
+
+Además de los cuadros generados por el rig, un personaje puede tener **poses dibujadas** en
+`assets/characters/<nombre>/dibujados/` (por ejemplo, generadas con SpriteCook a partir de su
+ilustración). `dibujados.json` indica qué cuadros de qué animación reemplaza cada dibujo y su
+tamaño; `tools/apply_drawn_frames.py` los escala sin deformar, los apoya en el suelo, ajusta el
+recorte y pone la hitbox en el puño o el pie. Se aplica solo al regenerar los sprites.
+Hoy los tiene **Denis**: golpe, patada, recibir golpe, tirado en el piso y victoria.
+Los IDs de SpriteCook de cada dibujo están en `spritecook-assets.json`.
+
 ### Inspector de animaciones (debug)
 
 En **PERSONAJES** apretá **F8**: se abre un inspector con cada animación de cada luchador.

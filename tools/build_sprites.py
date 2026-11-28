@@ -164,3 +164,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # cuadros dibujados (no deformados) por encima de los generados, si el personaje los tiene
+    import apply_drawn_frames
+    for _c in ([a for a in sys.argv[1:] if a in CHARS] or CHARS):
+        apply_drawn_frames.apply(_c)
