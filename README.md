@@ -115,7 +115,7 @@ agotado, empate, “¡Perfecto!”, contador de combos y pantalla **«PANTOJA WI
 |---|:-:|:-:|:-:|:-:|:-:|---|
 | **PANTOJA** – *El Marido de Parada* | 9 | 4 | 9 | 5 | 5 | Pesado, mucha vida, golpes demoledores |
 | **PARADA** – *El Besa Perro* | 6 | 9 | 5 | 6 | 9 | Velocísimo, combos de impacto múltiple |
-| **NEHUEN** – *El Bostero* | 6 | 6 | 6 | 9 | 6 | Gran alcance, ataques aéreos y a distancia |
+| **NEHUEN** – *El Bostero* (hincha de Boca) | 6 | 6 | 6 | 9 | 6 | Gran alcance, ataques aéreos y a distancia; todo en azul y oro |
 | **LUCIANO** – *Voltio* | 7 | 7 | 7 | 6 | 8 | Equilibrado, combos y remate brutal |
 | **NICO** – *El Jefe de ArceTech* (jefe final) | 8 | 7 | 8 | 7 | 8 | Completo y peligroso: proyectil, rodillazo y ultimates de pantalla completa |
 | **ANGEL** – *El Compilador Humano* (programador) | 8 | 5 | 8 | 6 | 7 | Robusto: código como proyectil, combo en bucle y lluvia de código |
@@ -130,7 +130,7 @@ agotado, empate, “¡Perfecto!”, contador de combos y pantalla **«PANTOJA WI
 |---|---|---|---|---|---|
 | Pantoja | **Panzazo** (embestida con la panza) | **Grito metalero** (onda sonora con cuernos) | **Terremoto Pantoja**: salto gigante y golpe al suelo que sacude toda el aula | **Lluvia de cachetadas**: 10 cachetadas + gancho final | **Colectivazo**: embestida que arrastra al rival por toda el aula |
 | Parada | **Ráfaga esmeralda** (dash con puño) | **Patada huracán** (doble patada ascendente) | **Mil piñas**: ráfaga supersónica de 14 puñetazos + empujón final | **Tornado verde**: cruces relámpago a través del rival + patada al cielo | **Cien patadas**: ráfaga de patadas + patada final al cielo |
-| Nehuen | **Acorde sónico** (proyectil de notas) | **Patada del piluso** (anti-aérea) | **Solo infinito**: rayo de notas musicales que atrapa al rival + explosión | **Meteoro piluso**: salto altísimo, voltereta y caída en picada explosiva | **La Bombonera late**: tres pisotones que hacen temblar el piso |
+| Nehuen | **Bufandazo** (revolea y tira la bufanda azul y oro) | **Chilena xeneize** (anti-aérea) | **Azul y oro**: rayo que atrapa al rival + explosión | **La Doce salta**: salto altísimo y caída en picada con lluvia de papelitos | **La Bombonera late**: tres pisotones que hacen temblar el piso |
 | Luciano | **Credencial voladora** (boomerang) | **Gancho preceptor** (uppercut) | **Combo disciplinario**: combo de 6 golpes que termina en uppercut | **Amonestación final**: carga de poder y un único puñetazo devastador | **Alto voltaje**: tres rayos que caen sobre el rival |
 | Nico | **Hoja de arce** (proyectil) | **Reinicio forzado** (rodillazo volador) | **Pantallazo azul**: golpe a toda la pantalla | **Despido inmediato**: combo y patada que manda al rival a volar | — |
 | Angel | **Bug en producción** (proyectil de código) | **Deploy forzado** (uppercut) | **Bucle infinito**: combo de 6 golpes en loop | **Stack overflow**: tres columnas de código caen sobre el rival | — |
@@ -211,6 +211,14 @@ IES10_FIGHTER/
   Si querés reemplazar cualquier sonido, poné un archivo `.ogg` o `.wav` con **el mismo
   nombre** en `assets/sounds/` o `assets/music/` (ver `documentation/audio_credits.md`).
 - **Fuente**: *Press Start 2P* (SIL Open Font License).
+
+### Poses de referencia
+
+Las poses de guardia, bloqueo, patada media, patada alta, barrida, recibir golpe, salto,
+victoria, derrota y presentación de **todos** los luchadores salen de las imágenes de
+referencia del autor (`tools/ref_poses.py`). Allí están marcadas las articulaciones de cada
+imagen; `tools/rig.py` adapta esa postura a cada personaje según el largo de sus piernas y
+brazos. Para cambiar una pose basta con corregir esas coordenadas y regenerar los sprites.
 
 ### Render de los luchadores (para agregar o ajustar personajes)
 

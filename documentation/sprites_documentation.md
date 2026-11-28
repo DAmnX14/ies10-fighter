@@ -132,7 +132,7 @@ Altura nativa: 126 px · 32 animaciones · 235 cuadros
 
 ## NEHUEN — El Bostero
 
-Altura nativa: 128 px · 32 animaciones · 223 cuadros
+Altura nativa: 128 px · 32 animaciones · 221 cuadros
 
 | Animación | Archivo | Cuadros | Ticks/cuadro | Bucle | Descripción |
 |---|---|:-:|:-:|:-:|---|
@@ -157,10 +157,10 @@ Altura nativa: 128 px · 32 animaciones · 223 cuadros
 | `levantarse` | `nehuen_levantarse.png` | 6 | 5 | no | Levantarse |
 | `victoria` | `nehuen_victoria.png` | 10 | 7 | no | Celebración de victoria |
 | `derrota` | `nehuen_derrota.png` | 8 | 8 | no | Animación de derrota |
-| `especial_1` | `nehuen_especial_1.png` | 8 | 5 | no | Ataque especial 1 — **Acorde Sónico** |
-| `especial_2` | `nehuen_especial_2.png` | 9 | 4 | no | Ataque especial 2 — **Patada Del Piluso** |
-| `ultimate_1` | `nehuen_ultimate_1.png` | 16 | 4 | no | Ultimate 1 — **Solo Infinito** |
-| `ultimate_2` | `nehuen_ultimate_2.png` | 15 | 5 | no | Ultimate 2 — **Meteoro Piluso** |
+| `especial_1` | `nehuen_especial_1.png` | 7 | 4 | no | Ataque especial 1 — **Bufandazo** |
+| `especial_2` | `nehuen_especial_2.png` | 9 | 4 | no | Ataque especial 2 — **Chilena Xeneize** |
+| `ultimate_1` | `nehuen_ultimate_1.png` | 15 | 5 | no | Ultimate 1 — **Azul Y Oro** |
+| `ultimate_2` | `nehuen_ultimate_2.png` | 15 | 5 | no | Ultimate 2 — **La Doce Salta** |
 | `ultimate_3` | `nehuen_ultimate_3.png` | 13 | 5 | no | Ultimate 3 — **La Bombonera Late** |
 | `enamorado` | `nehuen_enamorado.png` | 4 | 10 | sí |  |
 | `abrazo` | `nehuen_abrazo.png` | 4 | 8 | no |  |
@@ -284,6 +284,9 @@ Mismo formato: tira horizontal, cuadros de tamaño uniforme (indicado abajo), es
 | `corazon` | `corazon.png` | 24×24 | 4 |  |
 | `enojo` | `enojo.png` | 24×24 | 4 |  |
 | `brillo` | `brillo.png` | 32×32 | 4 |  |
+| `bufanda` | `bufanda.png` | 48×30 | 4 |  |
+| `rayo_xeneize` | `rayo_xeneize.png` | 96×64 | 4 |  |
+| `papelitos_boca` | `papelitos_boca.png` | 96×176 | 4 |  |
 
 ## Interfaz (`assets/interface/`)
 

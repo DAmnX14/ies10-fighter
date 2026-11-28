@@ -511,3 +511,37 @@ for _c in ('angel', 'facu', 'pedro', 'emi', 'denis'):
     for _k, _m in CHARACTERS[_c]['moves'].items():
         _m['anim'] = _k
         _m['input'] = _INPUTS[_k]
+
+
+# ====================================================================== NEHUEN BOSTERO (v1.6)
+# Deja la guitarra: ahora es hincha fanático de Boca (azul y oro). Textos originales.
+_n = CHARACTERS['nehuen']
+_n.update(
+    title='EL BOSTERO',
+    quote='Acá se juega como en la Bombonera: con todo.',
+    win_quotes=['¡Dale Bo! Uno más para la historia.', 'Azul y oro, como la copa que me llevo.',
+                'Te ganó la mitad más uno, pibe.'],
+    lose_quote='Fue penal... clarísimo que fue penal.',
+)
+_n['moves']['especial_1'] = dict(anim='especial_1', name='BUFANDAZO', input='R',
+                                 events={0: [('voice', 'especial_1')], 2: [('sfx', 'aire_fuerte')],
+                                         3: [('proj', 'bufanda'), ('sfx', 'proyectil')]})
+_n['moves']['especial_2']['name'] = 'CHILENA XENEIZE'
+_n['moves']['ultimate_1'] = dict(anim='ultimate_1', name='AZUL Y ORO', input='T', ult=True,
+                                 events={0: [('voice', 'ultimate_1'), ('aura', True), ('sfx', 'hinchada')],
+                                         4: [('proj', 'rayo_xeneize'), ('sfx', 'energia'), ('shake', 6, 50)],
+                                         8: [('sfx', 'hinchada')],
+                                         12: [('flash', (255, 210, 60), 8), ('sfx', 'explosion'), ('shake', 14, 16)],
+                                         14: [('aura', False)]},
+                                 hold={2: 6, 12: 6})
+_u2 = _n['moves']['ultimate_2']
+_u2['name'] = 'LA DOCE SALTA'
+_u2['events'][0] = [('voice', 'ultimate_2'), ('aura', True), ('sfx', 'hinchada')]
+_u2['events'][11] = _u2['events'][11] + [('strike', 'papelitos_boca', 0, False)]
+_u3 = _n['moves']['ultimate_3']
+_u3['events'][0] = [('voice', 'ultimate_3'), ('aura', True), ('sfx', 'hinchada')]
+_u3['events'][3] = _u3['events'][3] + [('strike', 'papelitos_boca', 0, False)]
+_u3['events'][9] = _u3['events'][9] + [('strike', 'papelitos_boca', 0, False)]
+PROJECTILES['bufanda'] = dict(fx='bufanda', speed=10, dmg=85, joint='f_ha', off=(10, 0), r=42, stun=20, kb=8,
+                              life=120, sfx='golpe_fuerte', chip=0.15)
+PROJECTILES['rayo_xeneize'] = dict(PROJECTILES['rayo_notas'], fx='rayo_xeneize')

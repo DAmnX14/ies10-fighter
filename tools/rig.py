@@ -31,7 +31,7 @@ SKELETONS = {
         f_hip=(725, 1500), f_kn=(1000, 1900), f_an=(990, 2380), f_toe=(1290, 2475),
     ),
     'nehuen': dict(
-        src='nehuen.jpg', height=128,
+        src='nehuen.jpg', height=128, recolor='boca',
         pelvis=(560, 1470), neck=(640, 760), head=(640, 300),
         b_sh=(300, 800), b_el=(110, 1060), b_ha=(555, 830),
         f_sh=(820, 790), f_el=(935, 1140), f_ha=(1000, 790),
@@ -169,9 +169,52 @@ def segment_outlined(path, k_rel=0.004, dark_lum=95, cand_mn=120):
     return a.astype(np.uint8), fg
 
 
+def boca_shirt(a):
+    """Nehuen bostero: la remera blanca con la guitarra pasa a ser una camiseta azul con
+    una franja amarilla horizontal (colores azul y oro, sin escudos ni marcas)."""
+    a = a.astype(np.int16).copy()
+    h, w = a.shape[:2]
+    poly = np.array([(200, 650), (560, 620), (820, 700), (885, 900), (870, 1100), (805, 1412),
+                     (275, 1412), (240, 1100), (145, 900)], np.int32)
+    m = np.zeros((h, w), np.uint8)
+    cv2.fillPoly(m, [poly], 1)
+    m = m > 0
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    mx, mn = a.max(2), a.min(2)
+    lum = a.mean(2)
+    skin = (r > g + 8) & (g > b) & (r - b > 35)
+    light = (mx - mn < 70) & (lum > 135) & ~skin                    # tela blanca/celeste
+    printed = (lum >= 38) & (lum < 135) & (b >= r - 5) & ~skin      # estampa (letras, guitarra)
+    # estampa (letras y guitarra) en el interior de la remera: también es tela, salvo el
+    # contorno de los brazos que la cruzan (oscuro pegado a la piel)
+    inner = cv2.erode(m.astype(np.uint8), np.ones((41, 41), np.uint8)) > 0
+    near_skin = cv2.dilate(skin.astype(np.uint8), np.ones((25, 25), np.uint8)) > 0
+    printed = printed | (inner & ~skin & ~near_skin & (lum < 135))
+    cloth = m & (light | printed)
+    # sombreado: luminosidad de la tela con la estampa borrada (se rellena desde la tela lisa)
+    lum8 = np.clip(lum, 0, 255).astype(np.uint8)
+    lum8 = cv2.inpaint(lum8, (printed & m).astype(np.uint8) * 255, 9, cv2.INPAINT_TELEA)
+    lum_s = cv2.GaussianBlur(lum8.astype(np.float32), (0, 0), 6) * 0.5 + lum8 * 0.5
+    t = np.clip((lum_s - 60) / 195.0, 0, 1)
+    dark, mid, hi = np.array([10, 30, 90]), np.array([20, 60, 160]), np.array([60, 110, 210])
+    col = np.where((t < 0.5)[..., None], dark + (mid - dark) * (t / 0.5)[..., None],
+                   mid + (hi - mid) * ((t - 0.5) / 0.5)[..., None])
+    # franja amarilla horizontal a la altura del pecho
+    yy = np.arange(h)[:, None].repeat(w, 1)
+    band = cloth & (yy >= 1005) & (yy <= 1120)
+    gold_d, gold_h = np.array([200, 150, 20]), np.array([255, 205, 40])
+    gcol = gold_d + (gold_h - gold_d) * t[..., None]
+    col = np.where(band[..., None], gcol, col)
+    a[cloth] = col[cloth].astype(np.int16)
+    return a.astype(np.uint8)
+
+
 def segment(path, name):
     if SKELETONS.get(name, {}).get('outlined'):
         return segment_outlined(path, **SKELETONS[name].get('seg', {}))
+    if SKELETONS.get(name, {}).get('recolor') == 'boca':
+        img, fg = segment(path, '_' + name)
+        return boca_shirt(img), fg
     a = np.asarray(Image.open(path).convert('RGB')).astype(np.int16)
     mx, mn = a.max(2), a.min(2)
     cand = ((mx - mn) < 28) & (mn > 105)
@@ -448,9 +491,87 @@ class RigCharacter:
             p[s + 'fa'] = 0.0
         return p
 
+    # ------------------------------------------------------------ poses de referencia
+    def ref_params(self, name, lrel=0.0):
+        """Pose de referencia (tools/ref_poses.py) → parámetros del rig de ESTE personaje."""
+        from ref_poses import POSES, REF_LEG, REF_ARM
+        R = POSES[name]
+        J = self.J; u = self.u
+        pel0 = J['pelvis']
+        k_leg = (self.leglen['b'] + self.leglen['f']) / 2 / REF_LEG     # ref px → px de trabajo
+        p = {}
+        # altura de la cadera según el largo de pierna del personaje
+        pel_h = (R['ground'] - R['pelvis'][1]) * k_leg
+        pel_y = self.ground_y - pel_h
+        p['ry'] = (pel_y - pel0[1]) / u
+        p['rx'] = 0.0
+        pel = (pel0[0], pel_y)
+        # torso y cabeza por ángulo
+        lean = ang(sub(R['neck'], R['pelvis'])) - self.rest_ang['torso']
+        lean = max(-40.0, min(40.0, lean))
+        p['lean'] = lean
+        hd = ang(sub(R['head'], R['neck'])) - self.rest_ang['head'] - lean
+        p['head'] = max(-35.0, min(35.0, hd))
+        # manos: dirección y extensión relativas al largo del brazo, en el marco del torso
+        for s in 'bf':
+            v = sub(R[s + '_ha'], R[s + '_sh'])
+            loc = rot(mul(v, 1.0 / REF_ARM), -lean)
+            p[s + 'hx'], p[s + 'hy'] = loc
+        # pies: tobillo relativo a la cadera, escalado por el largo de pierna
+        for s in 'bf':
+            hip_c = add(pel, sub(J[s + '_hip'], pel0))
+            kl = self.leglen[s] / REF_LEG
+            tgt = add(hip_c, mul(sub(R[s + '_an'], R[s + '_hip']), kl))
+            if lrel >= 0.5:
+                off = sub(sub(tgt, pel), sub(J[s + '_an'], pel0))
+            else:
+                off = sub(tgt, J[s + '_an'])
+            p[s + 'fx'], p[s + 'fy'] = off[0] / u, off[1] / u
+            if lrel < 0.5 and not R.get('air'):
+                p[s + 'fy'] = min(p[s + 'fy'], 0.0)          # nunca debajo del suelo
+            fa = ang(sub(R[s + '_toe'], R[s + '_an'])) - self.rest_ang[s + '_foot']
+            fa = (fa + 180) % 360 - 180
+            p[s + 'fa'] = max(-90.0, min(90.0, fa))
+        p['lrel'] = lrel
+        return p
+
     def resolve(self, kf):
-        """Convierte un keyframe genérico a parámetros numéricos completos."""
+        """Convierte un keyframe genérico a parámetros numéricos completos.
+
+        Extras:
+          ref='pose'      parte de una pose de referencia; rx/ry/lean/head/rot/sx/sy se SUMAN,
+                          ff/bf (offsets) y fh_off/bh_off se suman a pies y manos.
+          blend=(A, B, t) interpola entre dos keyframes ya resueltos (0 = A, 1 = B).
+        """
+        if 'blend' in kf:
+            A, B, t = kf['blend']
+            pa, pb = self.resolve(A), self.resolve(B)
+            out = dict(pa if t < 0.5 else pb)
+            for k in set(pa) | set(pb):
+                va, vb = pa.get(k), pb.get(k)
+                if isinstance(va, (int, float)) and isinstance(vb, (int, float)) and not isinstance(va, bool):
+                    out[k] = va + (vb - va) * t
+            extra = {k: v for k, v in kf.items() if k != 'blend'}
+            if extra:
+                for k, v in extra.items():
+                    if k in ('rx', 'ry', 'lean', 'head', 'rot') and isinstance(v, (int, float)):
+                        out[k] = out.get(k, 0.0) + v
+                    else:
+                        out[k] = v
+            return out
         p = self.default_params()
+        if 'ref' in kf:
+            p.update(self.ref_params(kf['ref'], kf.get('lrel', 0.0)))
+            p['_ref'] = True            # la pose manda: no se intercambian los brazos
+            kf = dict(kf)
+            del kf['ref']
+            for k in ('rx', 'ry', 'lean', 'head', 'rot'):
+                if k in kf:
+                    p[k] += kf.pop(k)
+            for k in ('ff', 'bf'):
+                if k in kf:
+                    v = kf.pop(k)
+                    p[k[0] + 'fx'] += v[0]; p[k[0] + 'fy'] += v[1]
         for k, v in kf.items():
             if k in ('bh', 'fh'):            # mano: (ang, ext) polar torso-local
                 a, e = v
@@ -476,7 +597,7 @@ class RigCharacter:
             dbx, dby = p['bhx'] - br[0], p['bhy'] - br[1]
             db = math.hypot(dbx, dby)
             df = math.hypot(p['fhx'] - fr[0], p['fhy'] - fr[1])
-            if db > 0.45 and db >= df:
+            if db > 0.45 and db >= df and not p.get('_ref'):
                 p['fhx'], p['fhy'] = p['bhx'], p['bhy']
                 p['_swap'] = True
                 p['tw'] = 0.0

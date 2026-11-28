@@ -14,7 +14,7 @@ ENDINGS = {
                 'de su remera rosa.', '', 'El kiosco del IES 10 le regaló', 'alfajores de por vida.'],
     'parada': ['Parada fue tan rápido', 'que terminó el torneo antes', 'de que sonara el timbre.', '',
                'Su campera verde es ahora', 'una leyenda del recreo.'],
-    'nehuen': ['Nehuen celebró con un solo', 'de guitarra que se escuchó', 'en todo Fraile Pintado.', '',
+    'nehuen': ['Nehuen dio la vuelta olímpica', 'con la bufanda azul y oro.', 'Se escuchó en todo Fraile Pintado.', '',
                'Su piluso ahora cuelga', 'en el salón de la fama del IES 10.'],
     'angel': ['Angel compiló el torneo entero', 'sin un solo warning.', '',
               'Ahora el sistema de notas del IES 10', 'corre con su código.', 'Nadie entiende cómo, pero anda.'],

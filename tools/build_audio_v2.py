@@ -110,6 +110,11 @@ ENCOUNTER_LINES = {
 }
 
 
+NEHUEN_BOCA = {'especial_1': '¡Bufandazo!', 'especial_2': '¡Chilena!', 'ultimate_1': '¡Azul y oro!',
+               'ultimate_2': '¡La Doce salta!', 'ultimate_3': '¡La Bombonera late!',
+               'victoria': '¡Dale Bo!'}
+
+
 def voices():
     try:
         v = B.Voice()
@@ -135,7 +140,18 @@ def voices():
         for k, txt in lines.items():
             out[f'{c}_voz_{k}'] = B.shout(v.say(txt, voice=vn, pitch=pitch, rate=160, rng_=70), fac)
     out['loc_nuevo_retador'] = B.announcer(v.say('¡Nuevo retador!', **A))
+    # Nehuen bostero (v1.6): gritos de los poderes nuevos
+    vn, pitch, fac = B.VOICES['nehuen']
+    for k, txt in NEHUEN_BOCA.items():
+        out[f'nehuen_voz_{k}'] = B.shout(v.say(txt, voice=vn, pitch=pitch, rate=175, rng_=90), fac)
     return out
+
+
+def nehuen_voices():
+    v = B.Voice()
+    vn, pitch, fac = B.VOICES['nehuen']
+    return {f'nehuen_voz_{k}': B.shout(v.say(txt, voice=vn, pitch=pitch, rate=175, rng_=90), fac)
+            for k, txt in NEHUEN_BOCA.items()}
 
 
 # ================================================================== síntesis FM (2 operadores)
@@ -385,6 +401,10 @@ def main():
         print('efectos...', flush=True)
         for k, x in sfx().items():
             save(k, x)
+    if only == ['nehuen']:
+        for k, x in nehuen_voices().items():
+            save(k, x)
+        return
     if not only or 'voces' in only:
         print('voces...', flush=True)
         for k, x in voices().items():

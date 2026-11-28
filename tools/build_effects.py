@@ -536,6 +536,68 @@ def friendship():
     save('brillo', frames, 4, True)
 
 
+
+# ------------------------------------------------------------------ Nehuen bostero (azul y oro)
+BLUE = (20, 60, 170, 255)
+BLUE_D = (10, 30, 100, 255)
+GOLD = (255, 205, 40, 255)
+
+
+def scarf():
+    """Bufanda azul y oro que vuela girando (original, sin escudos)."""
+    frames = []
+    for i in range(4):
+        im, d = new(48, 30)
+        ph = i * math.pi / 2
+        pts_top, pts_bot = [], []
+        for k in range(9):
+            x = 4 + k * 5
+            y = 15 + 6 * math.sin(ph + k * 0.8)
+            pts_top.append((x, y - 5)); pts_bot.append((x, y + 5))
+        d.polygon(pts_top + pts_bot[::-1], fill=BLUE)
+        for k in range(9):                                   # franjas amarillas
+            if k % 3 == 1:
+                x = 4 + k * 5
+                y = 15 + 6 * math.sin(ph + k * 0.8)
+                d.rectangle([x - 2, y - 5, x + 2, y + 5], fill=GOLD)
+        for k in (0, 8):                                     # flecos
+            x = 4 + k * 5
+            y = 15 + 6 * math.sin(ph + k * 0.8)
+            for f in range(-4, 5, 2):
+                d.line([(x, y + f), (x + (-4 if k == 0 else 4), y + f + 1)], fill=GOLD, width=1)
+        frames.append(outline(im, (5, 15, 50, 255)))
+    save('bufanda', frames, 3, True)
+
+
+def xeneize_beam():
+    frames = []
+    for i in range(4):
+        im, d = new(96, 64)
+        for y in range(14, 50):
+            a = 1 - abs(y - 32) / 18
+            gold = abs(y - 32) < 6
+            col = (255, 210, 60, int(255 * (0.6 + 0.4 * a))) if gold else (30, 80, 200, int(255 * (0.35 + 0.65 * a)))
+            d.line([(0, y), (95, y)], fill=col)
+        for k in range(5):
+            x = (k * 22 + i * 9) % 96
+            star(d, x, 32 + (k % 2 * 2 - 1) * 10, 1, 4, 4, 0, (255, 255, 255, 255))
+        frames.append(im)
+    save('rayo_xeneize', frames, 3, True)
+
+
+def confetti_boca():
+    frames = []
+    for i in range(4):
+        im, d = new(96, 176)
+        r = np.random.default_rng(9)
+        for k in range(40):
+            x = int(r.integers(2, 92)); y = int((r.integers(0, 176) + i * 14) % 176)
+            col = BLUE if k % 2 == 0 else GOLD
+            d.polygon([(x, y), (x + 5, y + 2), (x + 3, y + 7), (x - 2, y + 5)], fill=col)
+        frames.append(im)
+    save('papelitos_boca', frames, 2, True)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     lightning(); leaf()
@@ -546,6 +608,7 @@ def main():
     tornado(); energy_fist(); fist_trail(); flash_star()
     code_proj(); cat_proj(); cats_column(); dove_proj(); plane_proj(); ball_proj(); ai_beam()
     code_column(); numbers_column(); light_column(); confetti_column(); hearts(); anger(); friendship()
+    scarf(); xeneize_beam(); confetti_boca()
     with open(os.path.join(OUT, 'effects_meta.json'), 'w') as f:
         json.dump(META, f, indent=1)
     print('efectos:', len(META))
